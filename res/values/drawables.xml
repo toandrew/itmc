@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="dtransparent">#00ffffff</item>
+    <item type="drawable" name="color_pressed">#b2ff7e00</item>
+    <item type="drawable" name="transparent">#00ffffff</item>
+    <item type="drawable" name="loading_window_bg">#cc000000</item>
+    <item type="drawable" name="smooth_select_view_bg_color">#ff003300</item>
+    <item type="drawable" name="d_white">#ffffffff</item>
+    <item type="drawable" name="d_black">#ff000000</item>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all">全部</string>
+    <string name="actors_colon">主演：</string>
+    <string name="area_colon">地区：</string>
+    <string name="tags_colon">类型：</string>
+    <string name="time_colon">时间：</string>
+    <string name="all_specials">专题</string>
+    <string name="channel_more">更多</string>
+    <string name="find_media_searching">努力搜索中…</string>
+    <string name="filter">筛选</string>
+    <string name="search_result_recommend_title">大家都在看</string>
+    <string name="search_result_recommend_hint">没有找到相关视频，请换个关键词试试</string>
+</resources>

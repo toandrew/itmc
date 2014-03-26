@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_result_view_flipper"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/search_recommend_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/viewpager_bg_height"
+            android:layout_marginTop="@dimen/viewpager_bg_margin_top"
+            android:background="@drawable/channel_bottom_bg" />
+
+        <com.infthink.itmc.widget.LoadingListView
+            android:id="@+id/search_recommend_loading_list_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@drawable/d_black" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/search_result_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <RelativeLayout
+            android:id="@+id/search_result_title"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/search_result_title_height"
+            android:background="@drawable/search_result_bg" >
+
+            <TextView
+                android:id="@+id/search_result_title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/search_result_title_edge_margin"
+                android:layout_marginTop="@dimen/search_result_title_tv_top_margin"
+                android:gravity="center_vertical"
+                android:text="@string/find_media_searching"
+                android:textColor="@color/p_60_white"
+                android:textSize="@dimen/text_size_34" />
+
+            <Button
+                android:id="@+id/search_result_title_btn"
+                android:layout_width="@dimen/search_result_title_btn_width"
+                android:layout_height="@dimen/search_result_title_btn_height"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/search_result_title_edge_margin"
+                android:layout_marginTop="@dimen/search_result_title_btn_top_margin"
+                android:background="@drawable/filter_bg"
+                android:gravity="center"
+                android:text="@string/filter"
+                android:textColor="@color/p_60_white"
+                android:textSize="@dimen/text_size_26" />
+        </RelativeLayout>
+
+        <com.infthink.itmc.widget.LoadingListView
+            android:id="@+id/search_result_loading_list_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/search_result_title"
+            android:background="@drawable/search_result_bg" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/search_result_recommend_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/search_result_bg"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/search_result_recommend_hint"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/search_result_recommend_hint_height"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/search_result_recommend_hint"
+            android:textColor="@color/p_80_white"
+            android:textSize="@dimen/text_size_34" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/list_divider" />
+
+        <TextView
+            android:id="@+id/search_result_recommend_title"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/search_result_recommend_title_height"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/search_result_recommend_title_left_margin"
+            android:gravity="center_vertical"
+            android:text="@string/search_result_recommend_title"
+            android:textColor="@color/p_80_white"
+            android:textSize="@dimen/text_size_34" />
+
+        <com.infthink.itmc.widget.LoadingListView
+            android:id="@+id/search_result_recommend_loading_listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
+
+</ViewFlipper>

@@ -1,0 +1,86 @@
+<resources>
+
+    <!--
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
+    -->
+    <dimen name="all_special_view_padding_top">27.0px</dimen>
+    
+    <dimen name="banner_height">208.0px</dimen>
+    <dimen name="banner_indicator_margin_bottom">5.0px</dimen>
+    <dimen name="banner_indicator_view_width">17.0px</dimen>
+    <dimen name="banner_indicator_view_height">17.0px</dimen>
+    
+    <dimen name="category_more_margin_right">11.0px</dimen>
+    <dimen name="channel_item_height">31.0px</dimen>
+    <dimen name="channel_item_margin_top">23.0px</dimen>
+    <dimen name="channel_item_margin_bottom">9.0px</dimen>
+    <dimen name="channel_item_name_margin">7.0px</dimen>
+    <dimen name="channel_item_name_margin_top">-2.0px</dimen>
+    <dimen name="channel_top_bg_height">121.0px</dimen>
+    <dimen name="cover_text_margin_horizontal">7.0px</dimen>
+    <dimen name="cover_text_margin_margin_top">3.0px</dimen>
+    <dimen name="cover_text_margin_margin_bottom">-2.0px</dimen>
+    
+    <dimen name="home_banner_margin_top">20.0px</dimen>
+    <dimen name="home_onlinevideo_bottombar_height">124.0px</dimen>
+    <dimen name="home_specialbnt_margin_horizontal">15.0px</dimen>
+    <dimen name="home_media_padding_top">7.0px</dimen>
+
+    <dimen name="loading_text_margin_left">9.0px</dimen>
+    <dimen name="localmedia_line_divider_margin_left">140.0px</dimen>
+    
+    <dimen name="myvideo_thumb_margin_horizontal">3.0px</dimen>
+    <dimen name="myvideo_thumb_margin_vertical">0.0px</dimen>
+    <dimen name="myvideo_item_clickable_margin_left">140.0px</dimen>
+    <dimen name="myvideo_item_height">96.0px</dimen>
+    <dimen name="myvideo_iteminfo_margin_left">15.0px</dimen>
+    <dimen name="myvideo_itemtitle_margin_bottom">3.0px</dimen>
+    
+    <dimen name="page_margin">10.0px</dimen>
+    <dimen name="pager_title_height">60.0px</dimen>
+    <dimen name="pager_title_padding_bottom">5.0px</dimen>
+    <dimen name="page_indicator_arrowbar_width">805.0px</dimen>
+    <dimen name="page_indicator_arrowbar_height">14.0px</dimen>
+    <dimen name="poster_width">147.0px</dimen>
+    <dimen name="poster_height">208.0px</dimen>
+    <dimen name="poster_margin">1.0px</dimen>
+
+    <dimen name="shadow_mask_height">23.0px</dimen>
+    <dimen name="shadow_mask_magrin_top">59.5px</dimen>
+    <dimen name="select_item_right_margin">7.0px</dimen>
+    <dimen name="select_item_cb_right_margin">8.0px</dimen>
+    <dimen name="subject_posterrow_margin_top">13.0px</dimen>
+    <dimen name="search_result_title_height">60.0px</dimen>
+    <dimen name="search_result_title_edge_margin">20.0px</dimen>
+    <dimen name="search_result_title_tv_top_margin">10.0px</dimen>
+    <dimen name="search_result_title_btn_width">51.0px</dimen>
+    <dimen name="search_result_title_btn_height">33.0px</dimen>
+    <dimen name="search_result_title_btn_top_margin">10.0px</dimen>
+    <dimen name="search_result_recommend_hint_height">173.0px</dimen>
+    <dimen name="search_result_recommend_title_height">60.0px</dimen>
+    <dimen name="search_result_recommend_title_left_margin">10.0px</dimen>
+    <dimen name="search_hint_item_height">82.0px</dimen>
+    <dimen name="search_recommend_item_tv_left_margin">27.0px</dimen>
+    <dimen name="search_result_margin">20.0px</dimen>
+    <dimen name="search_result_name_margin_bottom">7.0px</dimen>
+    <dimen name="search_result_desc_margin_bottom">3.0px</dimen>
+    <dimen name="search_result_ratingstar_margin_left">-3.0px</dimen>
+    <dimen name="search_result_ratingstar_margin_top">3.0px</dimen>
+
+    <dimen name="text_size_20">13.399994px</dimen>
+    <dimen name="text_size_24">16.079987px</dimen>
+    <dimen name="text_size_26">17.419983px</dimen>
+    <dimen name="text_size_30">20.099976px</dimen>
+    <dimen name="text_size_32">21.439972px</dimen>
+    <dimen name="text_size_34">22.779999px</dimen>
+    <dimen name="text_size_36">24.119995px</dimen>
+    <dimen name="thumb_area_width">136.0px</dimen>
+    <dimen name="thumb_area_height">94.0px</dimen>
+    <dimen name="thumb_content_margin">1.0px</dimen>
+    
+    <dimen name="viewpager_bg_height">704.0px</dimen>
+    <dimen name="viewpager_bg_margin_top">60.0px</dimen>
+    <dimen name="video_thumb_width">134.0px</dimen>
+    <dimen name="video_thumb_height">92.0px</dimen>
+</resources>

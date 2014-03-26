@@ -1,0 +1,6 @@
+<resources>
+
+     <item type="id" name="director_panel">false</item>
+     <item type="id" name="director">false</item>
+
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/viewpager_bg_height"
+        android:layout_marginTop="@dimen/viewpager_bg_margin_top"
+        android:background="@drawable/channel_bottom_bg" />
+
+    <com.infthink.itmc.widget.ShadowFrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <com.infthink.itmc.widget.PagerView
+            android:id="@+id/pager_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.infthink.itmc.widget.ShadowView
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/shadow_mask_height"
+            android:layout_gravity="top"
+            android:layout_marginTop="@dimen/shadow_mask_magrin_top"
+            android:background="@drawable/shadow_mask" />
+    </com.infthink.itmc.widget.ShadowFrameLayout>
+</FrameLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">iTMC</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="all">All</string>
+    <string name="actors_colon">"Cast: "</string>
+    <string name="area_colon">"Country: "</string>
+    <string name="tags_colon">"Genre: "</string>
+    <string name="time_colon">"Date: "</string>
+    <string name="all_specials">Featured</string>
+    <string name="loading">Loading</string>
+    <string name="channel_more">More</string>
+    <string name="loading_video">"Loading"</string>
+    <string name="find_media_searching">Searching…</string>
+    <string name="filter">Filter</string>
+    <string name="search_result_recommend_title">"Everyone's watching"</string>
+    <string name="search_result_recommend_hint">"Couldn't find anything"</string>
+</resources>
