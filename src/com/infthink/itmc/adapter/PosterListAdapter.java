@@ -1,6 +1,7 @@
 package com.infthink.itmc.adapter;
 
 import com.infthink.itmc.R;
+import com.infthink.itmc.util.UIUtil;
 import com.infthink.itmc.widget.MediaView;
 
 import android.content.Context;
@@ -48,7 +49,7 @@ public class PosterListAdapter extends BaseGroupAdapter<Object> {
             objs[1] = mGroup.get(1 + position * 3);
         if (2 + position * 3 < mGroup.size())
             objs[2] = mGroup.get(2 + position * 3);
-//        UIUtil.fillPosterViews(localViewHolder.mediaViews, arrayOfObject);
+        UIUtil.fillPosterViews(holder.mediaViews, objs);
         convertView.setPadding(margin, topMargin, margin, 0);
         return convertView;
     }

@@ -15,6 +15,8 @@ import com.infthink.itmc.service.CoreService;
 import com.infthink.itmc.type.Banner;
 import com.infthink.itmc.type.Channel;
 import com.infthink.itmc.type.MediaInfo;
+import com.infthink.itmc.type.RankInfo;
+import com.infthink.itmc.type.RankInfoList;
 import com.infthink.itmc.type.RecommendChannel;
 import com.infthink.itmc.type.ShowBaseInfo;
 import com.infthink.itmc.util.Util;
@@ -30,10 +32,13 @@ public class DataManager {
     // 获得频道集合, 用来建立 id-name 列表
     private static final String URL_GET_CHANNEL_MAP = "http://demo.bibifa.com/getchannellist";
     // 获得推荐频道, 无参数则表示获得首页推荐
-    private static final String URL_GET_RECOMMEND_CHANNEL = "http://demo.bibifa.com/getchannelrecommendmedia"; // ?channelid=33554432
+    private static final String URL_GET_RECOMMEND_CHANNEL =
+            "http://demo.bibifa.com/getchannelrecommendmedia"; // ?channelid=33554432
     // 获得banner列表, 无参数则表示获得首页banner
     private static final String URL_GET_BANNER = "http://demo.bibifa.com/getbannermedia"; // ?channelid=33554432
-    
+    // 按更新｜rank 展示影片
+    private static final String URL_GET_LIST_BY_RANK = "http://demo.bibifa.com/getmedialist";// ?channelid=33554432&pageno=1&pagesize=3&orderby=7
+
     private CoreService mService;
     private ConcurrentLinkedQueue<Object> mRefCollection;
     private String mCommonArgs;
@@ -53,110 +58,189 @@ public class DataManager {
             }
         };
         mRefCollection.add(bitmapListener);
-        BitmapLoader.loadBitmap(mService.getBitmapCache(), bitmapListener,
-                imageUrl);
+        BitmapLoader.loadBitmap(mService.getBitmapCache(), bitmapListener, imageUrl);
     }
 
     public void loadChannelMap(final IOnloadListener<HashMap<Integer, String>> listener) {
-        SimpleTextLoadListener<HashMap<Integer, String>> textLoadListener = new SimpleTextLoadListener<HashMap<Integer, String>>() {
+        SimpleTextLoadListener<HashMap<Integer, String>> textLoadListener =
+                new SimpleTextLoadListener<HashMap<Integer, String>>() {
 
-            @Override
-            public HashMap<Integer, String> parseText(String text) {
-                HashMap<Integer, String> channelMap = new HashMap<Integer, String>();
-                if (text != null && text.length() > 0) {
-                    JSONUtils jsonUtil = JSONUtils.parse(text);
-                    int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
-                    if (status == 0) {
-                        Object obj = jsonUtil.opt("data", null);
-                        if (obj != null && obj instanceof JSONArray) {
-                            JSONArray data = (JSONArray) obj;
-                            int count = data.length();
-                            for (int i = 0; i < count; i++) {
-                                JSONObject channel = data.optJSONObject(i);
-                                int id = channel.optInt("id");
-                                String name = channel.optString("name");
-                                channelMap.put(id, name);
+                    @Override
+                    public HashMap<Integer, String> parseText(String text) {
+                        HashMap<Integer, String> channelMap = new HashMap<Integer, String>();
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null && obj instanceof JSONArray) {
+                                    JSONArray data = (JSONArray) obj;
+                                    int count = data.length();
+                                    for (int i = 0; i < count; i++) {
+                                        JSONObject channel = data.optJSONObject(i);
+                                        int id = channel.optInt("id");
+                                        String name = channel.optString("name");
+                                        channelMap.put(id, name);
+                                    }
+                                }
                             }
                         }
+                        return channelMap;
                     }
-                }
-                return channelMap;
-            }
 
-            @Override
-            public void onLoadResult(HashMap<Integer, String> object) {
-                mRefCollection.remove(this);
-                listener.onLoad(object);
-            }
+                    @Override
+                    public void onLoadResult(HashMap<Integer, String> object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
 
-        };
+                };
         mRefCollection.add(textLoadListener);
         TextLoader.loadText(mService.getTextCache(), textLoadListener, URL_GET_CHANNEL_MAP);
     }
 
-    public void loadRecommendChannel(String channelId, final IOnloadListener<RecommendChannel> listener) {
+    public void loadRecommendChannel(String channelId,
+            final IOnloadListener<RecommendChannel> listener) {
         String args = "";
         if (!Util.isEmpty(channelId)) {
-            args = "?" + channelId;
+            args = "?channelid=" + channelId;
         }
+
         String textUrl = URL_GET_RECOMMEND_CHANNEL + args;
+        android.util.Log.d("XXXXXXXXXX", "loadRecommendChannel textUrl = " + textUrl);
+        SimpleTextLoadListener<RecommendChannel> textLoadListener =
+                new SimpleTextLoadListener<RecommendChannel>() {
 
-        SimpleTextLoadListener<RecommendChannel> textLoadListener = new SimpleTextLoadListener<RecommendChannel>() {
-
-            @Override
-            public RecommendChannel parseText(String text) {
-                RecommendChannel recommendChannel = new RecommendChannel();
-                recommendChannel.channelList = new ArrayList<Channel>();
-                recommendChannel.recommend = new HashMap<Channel, ShowBaseInfo[]>();
-                if (text != null && text.length() > 0) {
-                    JSONUtils jsonUtil = JSONUtils.parse(text);
-                    int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
-                    if (status == 0) {
-                        Object obj = jsonUtil.opt("data", null);
-                        if (obj != null && obj instanceof JSONArray) {
-                            JSONArray data = (JSONArray) obj;
-                            int count = data.length();
-                            for (int i = 0; i < count; i++) {
-                                JSONObject channelJson = data.optJSONObject(i);
-                                int id = channelJson.optInt("id");
-                                int type = channelJson.optInt("midtype");
-                                if (type == 200) continue; // 电视直播，忽略
-                                Channel channel = new Channel();
-                                channel.channelID = id;
-                                channel.channelName = ITApp.getChannelMap().get(id);
-                                channel.channelType = type;
-                                recommendChannel.channelList.add(channel);
-                                JSONArray subDatas = channelJson.optJSONArray("data");
-                                int subCount = subDatas.length();
-                                MediaInfo[] medias = new MediaInfo[subCount];
-                                for (int j = 0; j < subCount; j++) {
-                                    JSONObject subData = subDatas.optJSONObject(j);
-                                    medias[j] = new MediaInfo(subData.toString());
+                    @Override
+                    public RecommendChannel parseText(String text) {
+                        RecommendChannel recommendChannel = new RecommendChannel();
+                        recommendChannel.channelList = new ArrayList<Channel>();
+                        recommendChannel.recommend = new HashMap<Channel, ShowBaseInfo[]>();
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null && obj instanceof JSONArray) {
+                                    JSONArray data = (JSONArray) obj;
+                                    int count = data.length();
+                                    for (int i = 0; i < count; i++) {
+                                        JSONObject channelJson = data.optJSONObject(i);
+                                        int id = channelJson.optInt("id");
+                                        int type = channelJson.optInt("midtype");
+                                        if (type == 200) continue; // 电视直播，忽略
+                                        Channel channel = new Channel();
+                                        channel.channelID = id;
+                                        channel.channelName = ITApp.getChannelMap().get(id);
+                                        channel.channelType = type;
+                                        recommendChannel.channelList.add(channel);
+                                        JSONArray subDatas = channelJson.optJSONArray("data");
+                                        int subCount = subDatas.length();
+                                        MediaInfo[] medias = new MediaInfo[subCount];
+                                        for (int j = 0; j < subCount; j++) {
+                                            JSONObject subData = subDatas.optJSONObject(j);
+                                            medias[j] = new MediaInfo(subData.toString());
+                                        }
+                                        android.util.Log.d("XXXXXXXXXX",
+                                                "loadRecommendChannel channelID = "
+                                                        + channel.channelID);
+                                        recommendChannel.recommend.put(channel, medias);
+                                    }
                                 }
-                                recommendChannel.recommend.put(channel, medias);
                             }
                         }
+                        return recommendChannel;
                     }
-                }
-                return recommendChannel;
-            }
 
-            @Override
-            public void onLoadResult(RecommendChannel object) {
-                mRefCollection.remove(this);
-                listener.onLoad(object);
-            }
+                    @Override
+                    public void onLoadResult(RecommendChannel object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
 
-        };
+                };
         mRefCollection.add(textLoadListener);
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
-    
+
+    public void loadChannelRank(final String channelId, int pageNo, int pageSize, final int orderBy,
+            final IOnloadListener<RankInfoList> listener) {
+        String textUrl =
+                URL_GET_LIST_BY_RANK + "?channelid=" + channelId + "&pageno=" + pageNo
+                        + "&pagesize=" + pageSize + "&orderby=" + orderBy;
+
+        SimpleTextLoadListener<RankInfoList> textLoadListener =
+                new SimpleTextLoadListener<RankInfoList>() {
+
+                    @Override
+                    public RankInfoList parseText(String text) {
+                        RankInfoList rankInfolist = new RankInfoList();
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null && obj instanceof JSONArray) {
+                                    if (orderBy == 7) {
+                                        JSONArray data = (JSONArray) obj;
+                                        int count = data.length();
+                                        rankInfolist.ranks = new RankInfo[count];
+                                        for (int i = 0; i < count; i++) {
+                                            JSONObject channelJson = data.optJSONObject(i);
+                                            int id = channelJson.optInt("id");
+                                            String name = channelJson.optString("name");
+                                            android.util.Log.d("XXXXXXXXXX",
+                                                    "loadChannelRank name = " + name);
+                                            RankInfo rankinfo = new RankInfo();
+                                            rankinfo.channelID = id;
+                                            rankinfo.channelName = name;
+                                            JSONArray subDatas = channelJson.optJSONArray("data");
+                                            int subCount = subDatas.length();
+                                            MediaInfo[] medias = new MediaInfo[subCount];
+                                            for (int j = 0; j < subCount; j++) {
+                                                JSONObject subData = subDatas.optJSONObject(j);
+                                                medias[j] = new MediaInfo(subData.toString());
+                                            }
+                                            rankinfo.mediaInfos = medias;
+                                            rankInfolist.ranks[i] = rankinfo;
+                                        }
+                                    } else if (orderBy == 1) {
+                                        JSONArray data = (JSONArray) obj;
+                                        int count = data.length();
+                                        android.util.Log.d("XXXXXXXXXX",
+                                            "loadChannelRank count = " + count);
+                                        MediaInfo[] medias = new MediaInfo[count];
+                                        RankInfo rankinfo = new RankInfo();
+                                        rankInfolist.ranks = new RankInfo[1];
+                                        for (int i = 0; i < count; i++) {
+                                            JSONObject subData = data.optJSONObject(i);
+                                            medias[i] = new MediaInfo(subData.toString());
+                                            
+                                        }
+                                        rankinfo.mediaInfos = medias;
+                                        rankInfolist.ranks[0] = rankinfo;
+                                    }
+                                }
+                            }
+                        }
+                        return rankInfolist;
+                    }
+
+                    @Override
+                    public void onLoadResult(RankInfoList object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
+
+                };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
 
     public void loadBanner(String channelId, final IOnloadListener<Banner[]> listener) {
         String args = "";
         if (!Util.isEmpty(channelId)) {
-            args = "?" + channelId;
+            args = "?channelid=" + channelId;
         }
         String textUrl = URL_GET_BANNER + args;
 

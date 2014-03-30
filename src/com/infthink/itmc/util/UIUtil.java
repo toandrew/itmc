@@ -6,24 +6,23 @@ import android.widget.TextView;
 
 import com.infthink.itmc.R;
 import com.infthink.itmc.type.MediaInfo;
+import com.infthink.itmc.type.PersonInfo;
 import com.infthink.itmc.widget.MediaView;
 
 public class UIUtil {
     // ListView 滚动到最下提示加载的view
     public static View createMediaLoadMoreView(Context context) {
         View localView = View.inflate(context, R.layout.load_more_view, null);
-        localView.setPadding(0, 0, 0, context.getResources()
-                .getDimensionPixelSize(R.dimen.page_margin));
+        localView.setPadding(0, 0, 0,
+                context.getResources().getDimensionPixelSize(R.dimen.page_margin));
         return localView;
     }
 
     public static void fillMediaSummary(View view, Object data) {
-        if (view == null)
-            return;
+        if (view == null) return;
         if (data instanceof MediaInfo) {
             MediaInfo info = (MediaInfo) data;
-            ((MediaView) view.findViewById(R.id.media_view))
-                    .setMediaInfo((MediaInfo) data);
+            ((MediaView) view.findViewById(R.id.media_view)).setMediaInfo((MediaInfo) data);
 
             // not use
             View directorView = view.findViewById(R.id.director_panel);
@@ -32,8 +31,7 @@ public class UIUtil {
                     directorView.setVisibility(View.GONE);
                 } else {
                     directorView.setVisibility(View.VISIBLE);
-                    ((TextView) directorView.findViewById(R.id.director))
-                            .setText(info.director);
+                    ((TextView) directorView.findViewById(R.id.director)).setText(info.director);
                 }
             }
 
@@ -59,8 +57,7 @@ public class UIUtil {
                     tagsView.setVisibility(View.GONE);
                 } else {
                     tagsView.setVisibility(View.VISIBLE);
-                    ((TextView) tagsView.findViewById(R.id.tags))
-                            .setText(info.tags);
+                    ((TextView) tagsView.findViewById(R.id.tags)).setText(info.tags);
                 }
             }
 
@@ -70,8 +67,7 @@ public class UIUtil {
                     arearView.setVisibility(View.GONE);
                 } else {
                     arearView.setVisibility(View.VISIBLE);
-                    ((TextView) arearView.findViewById(R.id.area))
-                            .setText(info.area);
+                    ((TextView) arearView.findViewById(R.id.area)).setText(info.area);
                 }
             }
 
@@ -81,8 +77,7 @@ public class UIUtil {
                     nameView.setVisibility(View.GONE);
                 } else {
                     nameView.setVisibility(View.VISIBLE);
-                    ((TextView) nameView.findViewById(R.id.media_name))
-                            .setText(info.mediaName);
+                    ((TextView) nameView.findViewById(R.id.media_name)).setText(info.mediaName);
                 }
             }
 
@@ -96,7 +91,67 @@ public class UIUtil {
                             .setText(info.issueDate.split("-")[0]);
                 }
             }
-
         }
     }
+
+    public static void fillPosterViews(MediaView[] paramArrayOfMediaView,
+            Object[] paramArrayOfObject) {
+        if ((paramArrayOfMediaView != null) && (paramArrayOfObject != null)) {
+            int i = 0;
+            if (i < paramArrayOfMediaView.length) {
+                paramArrayOfMediaView[i].setVisibility(4);
+                for (int j = 0; j < paramArrayOfObject.length; j++) {
+                    if (!(paramArrayOfObject[j] instanceof MediaInfo)) {
+
+                    } else {
+                        MediaInfo localMediaInfo = (MediaInfo) paramArrayOfObject[j];
+                        paramArrayOfMediaView[j].setMediaInfo(localMediaInfo);
+                        paramArrayOfMediaView[j].setDefaultPoster();
+                    }
+                }
+                paramArrayOfMediaView[i].setVisibility(0);
+                i++;
+//                if ((i < paramArrayOfObject.length) && (paramArrayOfObject[i] != null)) {
+//                    if (!(paramArrayOfObject[i] instanceof MediaInfo)) {
+//
+//                    } else {
+//                        MediaInfo localMediaInfo = (MediaInfo) paramArrayOfObject[i];
+//                        paramArrayOfMediaView[i].setMediaInfo(localMediaInfo);
+//                    }
+//
+//                    paramArrayOfMediaView[i].setVisibility(0);
+//                    i++;
+//                }
+                // while (true) {
+                // paramArrayOfMediaView[i].setVisibility(0);
+                // i++;
+                // if ((paramArrayOfObject[i] instanceof PersonInfo)) {
+                // PersonInfo localPersonInfo = (PersonInfo) paramArrayOfObject[i];
+                // paramArrayOfMediaView[i].setPersonInfo(localPersonInfo);
+                // continue;
+                // }
+                // if ((paramArrayOfObject[i] instanceof Recommendation)) {
+                // Recommendation localRecommendation = (Recommendation) paramArrayOfObject[i];
+                // if (localRecommendation.mediaInfo != null) {
+                // paramArrayOfMediaView[i].setMediaInfo(localRecommendation.mediaInfo);
+                // continue;
+                // }
+                // if (localRecommendation.personInfo == null) continue;
+                // paramArrayOfMediaView[i].setPersonInfo(localRecommendation.personInfo);
+                // continue;
+                // }
+                // if (!(paramArrayOfObject[i] instanceof SpecialSubjectMedia)) continue;
+                // SpecialSubjectMedia localSpecialSubjectMedia =
+                // (SpecialSubjectMedia) paramArrayOfObject[i];
+                // if (localSpecialSubjectMedia.mediaInfo != null) {
+                // paramArrayOfMediaView[i].setMediaInfo(localSpecialSubjectMedia.mediaInfo);
+                // continue;
+                // }
+                // if (localSpecialSubjectMedia.personInfo == null) continue;
+                // paramArrayOfMediaView[i].setPersonInfo(localSpecialSubjectMedia.personInfo);
+                // }
+            }
+        }
+    }
+
 }
