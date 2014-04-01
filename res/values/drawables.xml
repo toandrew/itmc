@@ -7,4 +7,6 @@
     <item type="drawable" name="smooth_select_view_bg_color">#ff003300</item>
     <item type="drawable" name="d_white">#ffffffff</item>
     <item type="drawable" name="d_black">#ff000000</item>
+    <style name="AppTheme" parent="android:Theme.Light" />
+     <drawable name="BackBar">#ffff</drawable>
 </resources>

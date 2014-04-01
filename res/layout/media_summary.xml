@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/media_summary"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/media_summary_height" >
+
+    <FrameLayout
+        android:id="@+id/mediaview_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:paddingTop="@dimen/detail_mediaview_container_padding_top" >
+
+        <ImageView
+             android:id="@+id/media_view_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/detail_mediaview_shadow_margin_left"
+            android:layout_marginTop="@dimen/detail_mediaview_shadow_margin_top"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/detail_poster_shadow" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/detail_poster_margin_left"
+            android:layout_marginTop="@dimen/detail_poster_margin_top" >
+            
+            <com.infthink.itmc.widget.MediaView
+                android:id="@+id/media_view"
+                android:layout_width="@dimen/poster_width"
+                android:layout_height="@dimen/poster_height"
+                />
+
+            <ImageView
+                android:id="@+id/ivPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/home_icon_recentplay" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/detial_mediainfo_margin_left"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <com.infthink.itmc.widget.RatingView
+                android:id="@+id/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/score"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:textColor="#ffff7e00"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@id/director_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/detial_mediainfo_director_margin_bottom"
+            android:layout_marginTop="@dimen/detial_mediainfo_director_margin_top"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:text="@string/director_colon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_26"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/director"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:singleLine="true"
+                android:textColor="@color/p_80_white"
+                android:textSize="@dimen/text_size_26" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actors_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/detial_mediainfo_actor_margin_top"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:text="@string/actors_colon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_26"
+                android:textStyle="bold" />
+
+            
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/area_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/detial_mediainfo_area_margin_bottom"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:text="@string/area_colon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_26"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/area"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:textColor="@color/p_80_white"
+                android:textSize="@dimen/text_size_26" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tags_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/detial_mediainfo_tags_margin_bottom"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:text="@string/tags_colon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_26"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tags"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:textColor="@color/p_80_white"
+                android:textSize="@dimen/text_size_26" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/time_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:text="@string/time_colon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_26"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="@color/p_30_black"
+                android:shadowDx="@integer/detail_title_shadow_dx"
+                android:shadowDy="@integer/detail_title_shadow_dy"
+                android:shadowRadius="@integer/detail_title_shadow_radius"
+                android:textColor="@color/p_80_white"
+                android:textSize="@dimen/text_size_26" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

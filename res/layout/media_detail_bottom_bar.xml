@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:layout_gravity="bottom" android:orientation="horizontal" android:id="@+id/lt_bottombar" android:background="@drawable/detail_bottombar" android:paddingTop="@dimen/media_bottom_bar_padding_vertical" android:paddingBottom="@dimen/media_bottom_bar_padding_vertical" android:layout_width="fill_parent" android:layout_height="@dimen/detail_bottombar_height" style="">
+        <FrameLayout android:layout_width="@dimen/detail_bottom_button_width_edge" android:layout_height="fill_parent">
+            <Button android:layout_gravity="center" android:id="@+id/btn_myfavorite" android:background="@drawable/btn_detail_left_select_source" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="@dimen/detail_bottom_button_width_center" android:layout_height="fill_parent">
+            <Button android:layout_gravity="center" android:id="@+id/btn_play" android:background="@drawable/btn_detail_center_select_source" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="@dimen/detail_bottom_button_width_edge" android:layout_height="fill_parent">
+
+            <Button
+                android:id="@+id/btn_select_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/select_source_item_default" />
+
+        </FrameLayout>
+    </LinearLayout>
+</FrameLayout>

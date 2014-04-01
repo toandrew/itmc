@@ -16,7 +16,7 @@ public class ScrollBannerAdapter extends PagerAdapter {
 
     private ArrayList<Banner> mBannerList = new ArrayList();
     private Context mContext;
-
+    private MediaView.OnMediaClickListener onMediaClickListener;
     // private MediaView.OnMediaClickListener onMediaClickListener;
     // private OnScrollBannerAdapterOberver primaryItemObserver;
     // private ArrayList<TelevisionInfo> tvList = new ArrayList();
@@ -61,7 +61,7 @@ public class ScrollBannerAdapter extends PagerAdapter {
         mediaView.setBannerMedia(mBannerList.get(position));
         mediaView.setTag(position);
         mediaView.setDefaultPoster();
-        // mediaView.setOnMediaClickListener(this.onMediaClickListener);
+         mediaView.setOnMediaClickListener(this.onMediaClickListener);
         // mediaView.setShowText(false);
         convertView.addView(mediaView);
         return mediaView;
@@ -94,5 +94,10 @@ public class ScrollBannerAdapter extends PagerAdapter {
             }
             notifyDataSetChanged();
         }
+    }
+
+    public void setOnMediaClickListener(MediaView.OnMediaClickListener paramOnMediaClickListener) {
+        // TODO Auto-generated method stub
+        this.onMediaClickListener = paramOnMediaClickListener;
     }
 }

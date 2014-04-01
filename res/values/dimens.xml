@@ -3,6 +3,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    
+    <dimen name="media_summary_height">271.0px</dimen>
 
     <dimen name="banner_height">134.66998dip</dimen>
     <dimen name="banner_indicator_margin_bottom">8.0dip</dimen>
@@ -28,4 +30,9 @@
     <dimen name="video_thumb_height">70.0px</dimen>
     <dimen name="v5_text_font_size_title">17.0sp</dimen>
     <dimen name="v5_progress_bar_size">48.0dip</dimen>
+    
+    <dimen name="variety_item_height">56.0dip</dimen>
+    <dimen name="variety_text_margin_left">6.669983dip</dimen>
+    
+    <dimen name="media_detail_bottom_bg_height">536.0px</dimen>
 </resources>

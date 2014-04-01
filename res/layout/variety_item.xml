@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="horizontal" android:id="@+id/variety_item" android:layout_width="fill_parent" android:layout_height="@dimen/variety_item_height" android:baselineAligned="false">
+        <LinearLayout android:orientation="vertical" android:paddingLeft="@dimen/variety_text_margin_left" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+            <TextView android:textSize="@dimen/text_size_34" android:textColor="@color/white" android:ellipsize="end" android:gravity="center_vertical" android:id="@+id/name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/varitey_name_margin_top" android:layout_marginBottom="@dimen/varitey_name_margin_bottom" android:singleLine="true" />
+            <TextView android:textSize="@dimen/text_size_24" android:textColor="@color/half_white" android:id="@+id/date" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+        <FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginRight="@dimen/varitey_play_icon_margin_right">
+            <ImageView android:layout_gravity="center" android:id="@+id/icon_state" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/offline_download" android:contentDescription="@string/app_name" />
+            <ProgressBar android:layout_gravity="center" android:id="@+id/loading_play" android:layout_width="wrap_content" android:layout_height="wrap_content" style="" />
+        </FrameLayout>
+    </LinearLayout>
+    <View android:id="@id/tv_thumb" android:background="@drawable/variety_line_divider" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+</LinearLayout>

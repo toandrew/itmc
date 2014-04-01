@@ -6,6 +6,7 @@
     <string name="hello_world">Hello world!</string>
     
     <string name="all">All</string>
+    <string name="director_colon">"Director: "</string>
     <string name="actors_colon">"Cast: "</string>
     <string name="area_colon">"Country: "</string>
     <string name="tags_colon">"Genre: "</string>
@@ -18,4 +19,10 @@
     <string name="filter">Filter</string>
     <string name="search_result_recommend_title">"Everyone's watching"</string>
     <string name="search_result_recommend_hint">"Couldn't find anything"</string>
+    
+    <string name="variety">综艺</string>
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+    <string name="day">Day</string>
+    <string name="update">Updated</string>
 </resources>

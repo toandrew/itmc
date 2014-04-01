@@ -31,8 +31,8 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
@@ -173,7 +173,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         mPagerView = ((PagerView) findViewById(R.id.pager_view));
         // mPagerView.setIndicatorBackgroundResource(R.drawable.channel_indicator_arrowbar);
         // mPagerView.setTabTextSize(R.dimen.text_size_32);
-        // mPagerView.setOnPageChangedListener(this);
+//         mPagerView.setOnPageChangedListener(this);
         // mPagerView.getPager().setOnTouchInterceptor(this);
         View[] views = new View[3];
         int margin = getResources().getDimensionPixelSize(R.dimen.page_margin);
@@ -248,7 +248,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     if (mBannerMediaList != null) mBannerMediaCount = mBannerMediaList.length;
                     mBannerIndicator.setIndicatorNum(mBannerMediaCount);
                     if (mBannerMediaCount > 0) listView.addHeaderView(mHeaderView);
-                    // listView.setOnTouchInterceptor(this);
+//                     listView.setOnTouchInterceptor(this);
                 }
                 PosterListAdapter posterAdapter = new PosterListAdapter(this);
                 mPosterAdapter[i] = posterAdapter;
@@ -440,11 +440,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        // TODO Auto-generated method stub
-
-    }
     
 
     private void callBack() {
@@ -511,5 +506,10 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     @Override
     public void onPageSelected(int arg0) {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
     }
 }

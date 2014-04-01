@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="all">全部</string>
+    <string name="director_colon">导演：</string>
     <string name="actors_colon">主演：</string>
     <string name="area_colon">地区：</string>
     <string name="tags_colon">类型：</string>
     <string name="time_colon">时间：</string>
     <string name="all_specials">专题</string>
+    <string name="play_length_colon">时长：</string>
+    <string name="series_colon">剧集：</string>
+    <string name="minute">分钟</string>
+    <string name="seconds">秒</string>
     <string name="channel_more">更多</string>
     <string name="find_media_searching">努力搜索中…</string>
     <string name="filter">筛选</string>
     <string name="search_result_recommend_title">大家都在看</string>
     <string name="search_result_recommend_hint">没有找到相关视频，请换个关键词试试</string>
+    <string name="variety">综艺</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="update">更新</string>
+    <string name="manage">管理</string>
+    <string name="finish">完成</string>
+    <string name="di_count_ji">第%d集</string>
+    <string name="di_count_qi">第%s期</string>
+    <string name="update_to_count_ji">更新至%d集</string>
+    <string name="update_to_count_qi">更新至%s期</string>
+    <string name="local_count_ji">本地%d集</string>
+    <string name="count_bu">%d部</string>
+    <string name="count_ji_quan">%d集全</string>
+    <string name="count_ge">%d个</string>
+    <string name="gong_count_xiang">共%d项</string>
+
 </resources>

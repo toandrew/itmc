@@ -22,6 +22,8 @@
     <dimen name="cover_text_margin_margin_top">3.0px</dimen>
     <dimen name="cover_text_margin_margin_bottom">-2.0px</dimen>
     
+    <dimen name="media_summary_height">405.0px</dimen>
+    
     <dimen name="home_banner_margin_top">20.0px</dimen>
     <dimen name="home_onlinevideo_bottombar_height">124.0px</dimen>
     <dimen name="home_specialbnt_margin_horizontal">15.0px</dimen>
@@ -40,8 +42,6 @@
     <dimen name="page_margin">10.0px</dimen>
     <dimen name="pager_title_height">60.0px</dimen>
     <dimen name="pager_title_padding_bottom">5.0px</dimen>
-    <dimen name="page_indicator_arrowbar_width">805.0px</dimen>
-    <dimen name="page_indicator_arrowbar_height">14.0px</dimen>
     <dimen name="poster_width">147.0px</dimen>
     <dimen name="poster_height">208.0px</dimen>
     <dimen name="poster_margin">1.0px</dimen>
@@ -83,4 +83,67 @@
     <dimen name="viewpager_bg_margin_top">60.0px</dimen>
     <dimen name="video_thumb_width">134.0px</dimen>
     <dimen name="video_thumb_height">92.0px</dimen>
+    
+    <dimen name="variety_item_height">83.0px</dimen>
+    <dimen name="variety_text_margin_left">20.0px</dimen>
+    <dimen name="varitey_name_margin_bottom">5.0px</dimen>
+    <dimen name="varitey_name_margin_top">16.0px</dimen>
+    <dimen name="varitey_play_icon_margin_right">19.0px</dimen>
+    
+    
+    <dimen name="media_bottom_bar_padding_vertical">0.0px</dimen>
+    <dimen name="media_bottom_bar_right_btn_margin_top">0.0px</dimen>
+    <dimen name="media_bottom_bar_right_btn_margin_bottom">0.0px</dimen>
+    
+<dimen name="detial_title_margin_top">27.0px</dimen>
+    <dimen name="single_detail_title_scroll_range">273.0px</dimen>
+    <dimen name="single_detail_title_overscroll_distance">76.0px</dimen>
+    <dimen name="multi_detail_title_scroll_range">246.0px</dimen>
+    <dimen name="multi_detail_title_overscroll_distance">40.0px</dimen>
+    <dimen name="detail_title_height">402.0px</dimen>
+    <dimen name="detail_content_height">640.0px</dimen>
+    <dimen name="detail_content_bg_height">708.0px</dimen>
+    <dimen name="detail_content_margin_top">68.0px</dimen>
+    <dimen name="detail_bottombar_width">480.0px</dimen>
+    <dimen name="detail_bottombar_height">103.0px</dimen>
+    <dimen name="detail_loadtext_offset">168.0px</dimen>
+    <dimen name="media_summary_margin_bottom">27.0px</dimen>
+    <dimen name="detail_poster_margin_left">20.0px</dimen>
+    <dimen name="detail_poster_margin_top">16.0px</dimen>
+    <dimen name="detail_bar_height">40.0px</dimen>
+    <dimen name="detail_series_shadow_height">68.0px</dimen>
+    <dimen name="detail_series_shadow_margin_horizontal">1.0px</dimen>
+    <dimen name="detial_series_bg_height">639.0px</dimen>
+    <dimen name="detial_series_content_margin_top">8.0px</dimen>
+    <dimen name="detial_series_shadow_mask_margin_top">60.0px</dimen>
+    <dimen name="detail_info_padding_horizontal">20.0px</dimen>
+    <dimen name="detail_desc_padding_top">22.0px</dimen>
+    <dimen name="detail_desc_padding_bottom">18.0px</dimen>
+    <dimen name="multi_detail_content_container_offset">20.0px</dimen>
+    <dimen name="multi_detail_content_container_extra_offset">12.0px</dimen>
+    <dimen name="single_detail_content_container_offset">72.0px</dimen>
+    <dimen name="single_detail_content_container_extra_offset">3.0px</dimen>
+    <dimen name="detail_bottom_button_width_edge">128.0px</dimen>
+    <dimen name="detail_bottom_button_width_center">225.0px</dimen>
+    <dimen name="detail_mediaview_container_padding_top">0.0px</dimen>
+    <dimen name="detail_mediaview_shadow_margin_left">-1.0px</dimen>
+    <dimen name="detail_mediaview_shadow_margin_top">0.0px</dimen>
+    <dimen name="detial_mediainfo_margin_left">188.0px</dimen>
+    <dimen name="detial_mediainfo_director_margin_top">5.0px</dimen>
+    <dimen name="detial_mediainfo_director_margin_bottom">7.0px</dimen>
+    <dimen name="detial_mediainfo_actor_margin_top">3.0px</dimen>
+    <dimen name="detial_mediainfo_area_margin_bottom">3.0px</dimen>
+    <dimen name="detial_mediainfo_tags_margin_bottom">3.0px</dimen>
+    <dimen name="series_margin_vetical">1.0px</dimen>
+    <dimen name="detail_mediasummary_margin_top">97.0px</dimen>
+    <dimen name="detail_recommend_margin_top">27.0px</dimen>
+    <dimen name="detial_series_padding">20.0px</dimen>
+    <dimen name="detial_series_separator_line_width">1.0px</dimen>
+    <dimen name="detial_series_separator_line_height">1.0px</dimen>
+    
+    <dimen name="media_detail_actorname_padding_horizontal">17.0px</dimen>
+    <dimen name="page_indicator_arrowbar_height">14.0px</dimen>
+    <dimen name="page_indicator_arrowbar_width">805.0px</dimen>
+    <dimen name="detial_page_indicator_arrowbar_width">726.0px</dimen>    
+
 </resources>

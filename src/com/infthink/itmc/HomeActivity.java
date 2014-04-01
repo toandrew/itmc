@@ -12,6 +12,7 @@ import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.type.Banner;
 import com.infthink.itmc.type.Channel;
 import com.infthink.itmc.type.LocalMediaCategoryInfo;
+import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.RecommendChannel;
 import com.infthink.itmc.type.ShowBaseInfo;
 import com.infthink.itmc.widget.BannerIndicator;
@@ -369,10 +370,13 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.channel_more) {
-            Intent intent = new Intent(HomeActivity.this, ChannelActivity.class);
+            Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
             Channel channel = (Channel) view.getTag();
-            intent.putExtra("channel", channel);
+            MediaInfo[] mediainfo = (MediaInfo[]) mRecommendationOfChannels.get(channel);
+            android.util.Log.d("XXXXXXXXXX", "mediainfo = " + mediainfo[0].actors);
+            intent.putExtra("mediaInfo", mediainfo[0]);
             startActivity(intent);
+            
 //            overridePendingTransition(R.anim.appear, R.anim.stay_same);
         }
     }

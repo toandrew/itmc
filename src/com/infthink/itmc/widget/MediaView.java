@@ -11,6 +11,8 @@ import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.PersonInfo;
 import com.infthink.itmc.util.BitmapUtil;
 import com.infthink.itmc.util.Util;
+import com.infthink.itmc.widget.MediaView.OnMediaClickListener;
+import com.infthink.libs.cache.simple.BitmapCachePool;
 import com.infthink.libs.cache.simple.ImageLoader;
 
 import android.content.Context;
@@ -32,38 +34,39 @@ import android.widget.TextView;
 public class MediaView extends LinearLayout {
     public static final int BANNER_TYPE = 1;
     public static final int COVER_TYPE = 0;
-//    public static final int TV_TYPE = 2;
+    // public static final int TV_TYPE = 2;
     private AlbumInfo mAlbumInfo;
     private ImageView mBorderImage;
-//    private View clickView;
+    // private View clickView;
     private Context mContext;
-//    private ImageManager imageManager;
+    // private ImageManager imageManager;
     private View infoView;
     private ImageView mMaskImage;
     private MediaInfo mediaInfo;
-//    private int mediaSetType;
+    // private int mediaSetType;
     private int mediaType = 0;
     private TextView nameExView;
     private TextView nameView;
-//    private OnMediaClickListener onMediaClickListener;
+    private OnMediaClickListener onMediaClickListener;
     private PersonInfo mPersonInfo;
-    private ImageView mPosterImage;
-//    private boolean showMask = true;
-//    private boolean showText = true;
+    private MediaImageView mPosterImage;
+    // private boolean showMask = true;
+    // private boolean showText = true;
     private TextView statusView;
-//    private TelevisionInfo televisionInfo;
-    
+
+    // private TelevisionInfo televisionInfo;
+
     public MediaView(Context context, int mediaType) {
         super(context);
         this.mediaType = mediaType;
         init();
     }
-    
+
     public MediaView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
-    
+
     public MediaView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
@@ -86,8 +89,10 @@ public class MediaView extends LinearLayout {
         frameLayout.setLayoutParams(new LinearLayout.LayoutParams(posterWidth, posterHeight));
 
         mPosterImage = new MediaImageView(mContext);
-//        mPosterImage.setMediaImageReadyCallback(this);
-        FrameLayout.LayoutParams lp1 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+//         mPosterImage.setMediaImageReadyCallback(this);
+        FrameLayout.LayoutParams lp1 =
+                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT);
 
         lp1.gravity = Gravity.CENTER;
         int posterMargin = mContext.getResources().getDimensionPixelSize(R.dimen.poster_margin);
@@ -99,48 +104,77 @@ public class MediaView extends LinearLayout {
         mPosterImage.setScaleType(ImageView.ScaleType.FIT_XY);
 
         mBorderImage = new ImageView(mContext);
-        FrameLayout.LayoutParams lp2 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams lp2 =
+                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT);
         lp2.gravity = 81;
         mBorderImage.setLayoutParams(lp2);
         mBorderImage.setScaleType(ImageView.ScaleType.FIT_XY);
-        
+
         mMaskImage = new ImageView(mContext);
-        FrameLayout.LayoutParams lp3 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams lp3 =
+                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT);
         lp3.gravity = Gravity.CENTER;
         mMaskImage.setScaleType(ImageView.ScaleType.FIT_XY);
         mMaskImage.setLayoutParams(lp3);
-//        setMediaType(this.mediaType);
+        // setMediaType(this.mediaType);
         frameLayout.addView(mBorderImage);
         frameLayout.addView(mMaskImage);
         frameLayout.addView(mPosterImage);
         addView(frameLayout);
 
         if ((mediaType == COVER_TYPE)) {
-            this.infoView = View.inflate(mContext, R.layout.media_item_info,
-                    null);
-            LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(
-                    posterWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
+            this.infoView = View.inflate(mContext, R.layout.media_item_info, null);
+            LinearLayout.LayoutParams localLayoutParams =
+                    new LinearLayout.LayoutParams(posterWidth,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
             this.infoView.setLayoutParams(localLayoutParams);
-            this.nameView = ((TextView) this.infoView
-                    .findViewById(R.id.media_item_name));
-            this.statusView = ((TextView) this.infoView
-                    .findViewById(R.id.media_item_status));
-            this.nameExView = ((TextView) this.infoView
-                    .findViewById(R.id.media_item_nameex));
+            this.nameView = ((TextView) this.infoView.findViewById(R.id.media_item_name));
+            this.statusView = ((TextView) this.infoView.findViewById(R.id.media_item_status));
+            this.nameExView = ((TextView) this.infoView.findViewById(R.id.media_item_nameex));
             addView(this.infoView);
         }
         setDefaultPoster();
     }
 
+    public OnMediaClickListener getOnMediaClickListener() {
+        return this.onMediaClickListener;
+    }
+
+    public void onClick(View paramView) {
+        if (this.onMediaClickListener != null) {
+            // if (this.mediaInfo == null)
+            // break label29;
+            this.onMediaClickListener.onMediaClick(this, this.mediaInfo);
+        }
+        // label29:
+        // do
+        // {
+        // return;
+        // if (this.personInfo != null)
+        // {
+        // this.onMediaClickListener.onMediaClick(this, this.personInfo);
+        // return;
+        // }
+        // if (this.albumInfo == null)
+        // continue;
+        // this.onMediaClickListener.onMediaClick(this, this.albumInfo);
+        // return;
+        // }
+        // while (this.televisionInfo == null);
+        // this.onMediaClickListener.onMediaClick(this, this.televisionInfo);
+    }
+
     public void setBannerMedia(Banner banner) {
         if (banner != null) {
-//            if (mediaType == 0) {
-                setMediaInfo(banner.mediaInfo);
-//            } else if (mediaType == 1) {
-//                setPersonInfo(banner.personInfo);
-//            } else if (mediaType == 100) {
-//                setAlbumInfo(banner.albumInfo);
-//            }
+            // if (mediaType == 0) {
+            setMediaInfo(banner.mediaInfo);
+            // } else if (mediaType == 1) {
+            // setPersonInfo(banner.personInfo);
+            // } else if (mediaType == 100) {
+            // setAlbumInfo(banner.albumInfo);
+            // }
         }
         // if (banner != null)
         // {
@@ -181,16 +215,21 @@ public class MediaView extends LinearLayout {
         }
         return sb.toString();
     }
-
+    private BitmapCachePool mBitmapCache;
     public void setMediaInfo(MediaInfo mediaInfo) {
         if (mediaInfo != null) {
             this.mediaInfo = mediaInfo;
 
             String url = Util.replaceString(mediaInfo.smallImageURL.imageUrl, "\\", "").trim();
-            ImageLoader.loadImage(((CoreActivity)mContext).getService().getBitmapCache(), mPosterImage, url);
+            android.util.Log.d("XXXXXXXXXX", "setMediaInfo url = "
+                    + url + " mPosterImage = " + mPosterImage);
+//            ((CoreActivity) mContext).getService().getBitmapCache();
+            mBitmapCache = new BitmapCachePool(20 * 1024 * 1024);//--------------临时解决方案
+            ImageLoader.loadImage(mBitmapCache,
+                    mPosterImage, url);
             if (this.infoView != null) {
-                if ((!"综艺".equals(mediaInfo.category))
-                        && (mediaInfo.setCount <= 1) && (mediaInfo.setNow <= 1)) {
+                if ((!"综艺".equals(mediaInfo.category)) && (mediaInfo.setCount <= 1)
+                        && (mediaInfo.setNow <= 1)) {
                     this.nameView.setVisibility(4);
                     this.statusView.setVisibility(4);
                     this.nameExView.setVisibility(0);
@@ -215,7 +254,8 @@ public class MediaView extends LinearLayout {
         if (albumInfo != null) {
             mAlbumInfo = albumInfo;
             String url = Util.replaceString(albumInfo.posterUrl.imageUrl, "\\", "").trim();
-            ImageLoader.loadImage(((CoreActivity)mContext).getService().getBitmapCache(), mPosterImage, url);
+            ImageLoader.loadImage(((CoreActivity) mContext).getService().getBitmapCache(),
+                    mPosterImage, url);
         }
     }
 
@@ -223,8 +263,9 @@ public class MediaView extends LinearLayout {
         if (personInfo != null) {
             mPersonInfo = personInfo;
             String url = Util.replaceString(personInfo.bigImageUrl.imageUrl, "\\", "").trim();
-            ImageLoader.loadImage(((CoreActivity)mContext).getService().getBitmapCache(), mPosterImage, url);
-//            nameView.setText(personInfo.getName());
+            ImageLoader.loadImage(((CoreActivity) mContext).getService().getBitmapCache(),
+                    mPosterImage, url);
+            // nameView.setText(personInfo.getName());
         }
     }
 
@@ -234,8 +275,8 @@ public class MediaView extends LinearLayout {
         } else {
             mPosterImage.setImageResource(R.drawable.default_cover);
         }
-        
-//        mPosterImage.setImageResource(R.drawable.a);
+
+        // mPosterImage.setImageResource(R.drawable.a);
         // ImageView localImageView;
         // if (this.mediaType == 1)
         // {
@@ -258,6 +299,20 @@ public class MediaView extends LinearLayout {
         // this.posterImage.setImageResource(2130837754);
         // break;
         // }
+    }
+
+    public static abstract interface OnMediaClickListener {
+        public abstract void onMediaClick(MediaView paramMediaView, Object paramObject);
+    }
+
+    public void setOnMediaClickListener(OnMediaClickListener paramOnMediaClickListener) {
+        // TODO Auto-generated method stub
+        this.onMediaClickListener = paramOnMediaClickListener;
+    }
+    
+    public ImageView getPosterImage()
+    {
+      return this.mPosterImage;
     }
 
 }

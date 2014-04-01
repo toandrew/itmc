@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/multiset_container" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <View android:layout_gravity="top" android:id="@+id/multiset_shadow_left" android:background="@drawable/detail_top_shadow" android:layout_width="fill_parent" android:layout_height="@dimen/detail_series_shadow_height" android:layout_marginLeft="@dimen/detail_series_shadow_margin_horizontal" />
+            <View android:layout_gravity="top" android:id="@+id/multiset_shadow_right" android:background="@drawable/detail_top_shadow" android:layout_width="fill_parent" android:layout_height="@dimen/detail_series_shadow_height" android:layout_marginRight="@dimen/detail_series_shadow_margin_horizontal" android:rotationY="180.0" />
+            <View android:layout_gravity="top" android:id="@+id/multiset_shadow_middle" android:background="@drawable/detial_top_shadow_middle" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="@dimen/detail_series_shadow_height" />
+        </FrameLayout>
+        <View android:background="@drawable/detail_scroll_bg_short" android:layout_width="fill_parent" android:layout_height="@dimen/detial_series_bg_height" />
+    </LinearLayout>
+    <com.duokan.tv.video.widget.ShadowFrameLayout android:id="@+id/shadowContainer" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="@dimen/detial_series_content_margin_top">
+        <include layout="@layout/series_detail_panel" />
+        <com.duokan.tv.video.widget.ShadowView android:layout_gravity="top" android:background="@drawable/shadow_mask" android:layout_width="fill_parent" android:layout_height="@dimen/shadow_mask_height" android:layout_marginTop="@dimen/detial_series_shadow_mask_margin_top" />
+    </com.duokan.tv.video.widget.ShadowFrameLayout>
+</FrameLayout>

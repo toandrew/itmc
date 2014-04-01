@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/detail_contentwrap"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/detail_content_bg_height" >
+        <include layout="@layout/media_detail_bottom_item" />
+        <include layout="@layout/media_summary" />
+
+            <View
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/viewpager_bg_height"
+        android:layout_marginTop="260dp"
+        android:background="@drawable/home_bottom_bg" />
+
+    <com.infthink.itmc.widget.ShadowFrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <com.infthink.itmc.widget.PagerView
+            android:id="@+id/detail_pagerview"
+            android:layout_marginTop="220dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.infthink.itmc.widget.ShadowView
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/shadow_mask_height"
+            android:layout_gravity="top"
+            android:layout_marginTop="@dimen/shadow_mask_magrin_top"
+            android:background="@drawable/shadow_mask" />
+    </com.infthink.itmc.widget.ShadowFrameLayout>
+    </FrameLayout>

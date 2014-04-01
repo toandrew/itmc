@@ -14,6 +14,8 @@
         <item name="android:displayOptions">useLogo</item>
         <!-- <item name="android:homeLayout">@layout/v5_action_bar_home</item> -->
     </style>
+    
+    
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">

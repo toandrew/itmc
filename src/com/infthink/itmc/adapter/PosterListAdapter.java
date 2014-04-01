@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 public class PosterListAdapter extends BaseGroupAdapter<Object> {
     private int margin;
-//    private MediaView.OnMediaClickListener onMediaClickListener;
+    private MediaView.OnMediaClickListener onMediaClickListener;
     private int topMargin;
     
     public PosterListAdapter(Context context) {
@@ -19,6 +19,12 @@ public class PosterListAdapter extends BaseGroupAdapter<Object> {
         margin = context.getResources().getDimensionPixelSize(R.dimen.page_margin);
         topMargin = context.getResources().getDimensionPixelSize(R.dimen.subject_posterrow_margin_top);
     }
+    
+    public MediaView.OnMediaClickListener getOnMediaClickListener()
+    {
+      return this.onMediaClickListener;
+    }
+
 
     @Override
     public int getCount() {
@@ -35,11 +41,11 @@ public class PosterListAdapter extends BaseGroupAdapter<Object> {
             holder = new ViewHolder();
             holder.mediaViews = new MediaView[3];
             holder.mediaViews[0] = ((MediaView)convertView.findViewById(R.id.left));
-//            holder.mediaViews[0].setOnMediaClickListener(this.onMediaClickListener);
+            holder.mediaViews[0].setOnMediaClickListener(this.onMediaClickListener);
             holder.mediaViews[1] = ((MediaView)convertView.findViewById(R.id.middle));
-//            holder.mediaViews[1].setOnMediaClickListener(this.onMediaClickListener);
+            holder.mediaViews[1].setOnMediaClickListener(this.onMediaClickListener);
             holder.mediaViews[2] = ((MediaView)convertView.findViewById(R.id.right));
-//            holder.mediaViews[2].setOnMediaClickListener(this.onMediaClickListener);
+            holder.mediaViews[2].setOnMediaClickListener(this.onMediaClickListener);
             convertView.setTag(holder);
         }
         Object[] objs = new Object[3];
@@ -57,5 +63,11 @@ public class PosterListAdapter extends BaseGroupAdapter<Object> {
     private static class ViewHolder {
         MediaView[] mediaViews;
     }
+    
+    public void setOnMediaClickListener(MediaView.OnMediaClickListener paramOnMediaClickListener)
+    {
+      this.onMediaClickListener = paramOnMediaClickListener;
+    }
+
 
 }

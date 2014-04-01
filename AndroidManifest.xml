@@ -44,6 +44,13 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
+         <activity
+            android:name="com.infthink.itmc.MediaDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ChannelTheme"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustNothing" >
+        </activity>
         <activity
             android:name="com.infthink.itmc.SearchActivity"
             android:screenOrientation="portrait"
