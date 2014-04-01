@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+  <TextView
+      android:id="@+id/TextView02"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:ellipsize="marquee"
+      android:gravity="center_vertical"
+      android:singleLine="false"
+      android:text=""
+       android:layout_marginLeft="@dimen/home_specialbnt_margin_horizontal"
+        android:layout_marginRight="@dimen/home_specialbnt_margin_horizontal"
+      android:layout_marginTop="@dimen/home_specialbnt_margin_horizontal"
+      android:textStyle="normal" />
+
+    </LinearLayout>

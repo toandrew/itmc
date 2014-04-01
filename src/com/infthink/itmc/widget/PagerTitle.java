@@ -79,7 +79,7 @@ public class PagerTitle extends FrameLayout implements
         mPageArrowBarHeight = resources
                 .getDimensionPixelSize(R.dimen.page_indicator_arrowbar_height);
         mIndicator = new View(mContext);
-        mIndicator.setBackgroundResource(R.drawable.page_indicator_arrowbar);
+//        mIndicator.setBackgroundResource(R.drawable.page_indicator_arrowbar);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 mPageArrowBarWidth, mPageArrowBarHeight);
         lp.gravity = Gravity.BOTTOM;
@@ -135,6 +135,9 @@ public class PagerTitle extends FrameLayout implements
         mTabs = tabs;
         initTabs();
         setCurrentTab(0);
+        if(mTabs.length > 0){
+            mIndicator.setBackgroundResource(R.drawable.page_indicator_arrowbar);
+        }
     }
 
     @Override

@@ -73,7 +73,6 @@ public class RankListAdapter extends BaseGroupAdapter<RankInfo> implements View.
         for (int j = 0; j < mRankInfoList.size(); j++){
             if(mRankInfoList.get(j).channelID == item.channelID){
                 for (int i = 0; i < 3; i++) {
-                    android.util.Log.d("XXXXXXXXXX", "jj = " + j);
                     RankInfo rankInfo = mRankInfoList.get(j);
                     mediaView[i] = holder.mediaViews[i];
                     mediaView[i].setDefaultPoster();

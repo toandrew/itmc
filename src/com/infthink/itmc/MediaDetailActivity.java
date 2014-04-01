@@ -8,9 +8,17 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
+import com.infthink.itmc.adapter.SeriesAdapter;
 import com.infthink.itmc.data.DataManager;
+import com.infthink.itmc.data.DataManager.IOnloadListener;
+import com.infthink.itmc.type.Banner;
+import com.infthink.itmc.type.MediaDetailInfo;
+import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
+import com.infthink.itmc.type.MediaSetInfo;
+import com.infthink.itmc.type.MediaSetInfoList;
 import com.infthink.itmc.util.UIUtil;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.widget.ActorsView;
@@ -33,14 +41,18 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 import android.widget.FrameLayout.LayoutParams;
@@ -64,7 +76,6 @@ public class MediaDetailActivity extends CoreActivity
 
     private boolean isBanner = false;
     private MediaInfo mediaInfo;
-
 
     private ActorsView vActorsView;
     private ImageSwitcher vBigPoster;
@@ -91,8 +102,18 @@ public class MediaDetailActivity extends CoreActivity
     private ViewGroup viewGroup;
 
     private PagerView mPagerView;
+    private SeriesAdapter seriesAdapter = new SeriesAdapter(this);
     private int[] mPageNo = new int[2];
-
+    private GridView mSeriesGridView;
+    
+    private int ci_count;
+    private MediaDetailInfo mMediaDetailInfo;
+    private MediaSetInfoList mMediaSetInfoList;
+    private MediaDetailInfo2 mMediaDetailInfo2;
+    TextView descEdit;
+    
+    public static final int MSG_UPDATE_DETAIL_INFO = 1;
+    
     private void cust(ActionBar bar) {
         try {
             Class<?> actionBarImpl = Class.forName("com.android.internal.app.ActionBarImpl");
@@ -232,25 +253,32 @@ public class MediaDetailActivity extends CoreActivity
         // // fillPersonInfo(this.personInfo);
         // // }
         mPagerView = ((PagerView) findViewById(R.id.detail_pagerview));
-        if (this.mediaInfo.setCount > 1) {
-
+        if (this.mediaInfo.setCount > 1 || this.mediaInfo.setNow > 1) {
 
             int margin = getResources().getDimensionPixelSize(R.dimen.page_margin);
             int marginTop = getResources().getDimensionPixelSize(R.dimen.home_banner_margin_top);
 
             View[] views = new View[2];
-            views[0] = View.inflate(this, R.layout.home_onlinevideo_view, null);
-            views[1] = View.inflate(this, R.layout.home_myvideo_view, null);
+            views[0] = View.inflate(this, R.layout.series_gridview, null);
+            views[1] = View.inflate(this, R.layout.detail_desc_view, null);
             mPagerView.setTabs(getResources().getStringArray(R.array.series_detail_tabs));
+            mSeriesGridView = (GridView)views[0].findViewById(R.id.series_gridview);
+            mSeriesGridView.setAdapter(seriesAdapter);
             mPagerView.setPageViews(views);
             mPagerView.setCurPage(0);
+            
+            descEdit = (TextView)views[1].findViewById(R.id.TextView02);
         } else {
-            mPagerView.setVisibility(4);
+//            descEdit = (EditText)views[1].findViewById(R.id.desc_text);
+//            mPagerView.setVisibility(4);
+            View[] views = new View[1];
+            views[0] = View.inflate(this, R.layout.detail_desc_view, null);
+            descEdit = (TextView)views[0].findViewById(R.id.TextView02);
+            mPagerView.setPageViews(views);
         }
 
         fillMediaInfo(this.mediaInfo);
     }
-
     @Override
     protected void onCreateAfterSuper(Bundle paramBundle) {
         super.onCreateAfterSuper(paramBundle);
@@ -260,7 +288,7 @@ public class MediaDetailActivity extends CoreActivity
             @Override
             public void run() {
                 mDataManager = getService().getDataManager();
-                 download();
+                download();
             }
         }, 1000);
 
@@ -320,10 +348,35 @@ public class MediaDetailActivity extends CoreActivity
         // this.vBigPosterMask.setAlpha(0.6f);
     }
     private void download() {
+        String mediaID = this.mediaInfo.mediaID + "";
+        android.util.Log.d("XXXXXXXXXX", "download mediaID = "
+                + mediaID);
+        mDataManager.loadDetail(mediaID, new IOnloadListener<MediaDetailInfo2>() {
+            
+            @Override
+            public void onLoad(MediaDetailInfo2 entity) {
+                // TODO Auto-generated method stub
+                if(entity == null) return;
+                if(entity.mediaDetailInfo == null) return;
+                if(entity.mediaSetInfoList == null) return;
+                mMediaDetailInfo = entity.mediaDetailInfo;
+                mMediaSetInfoList = entity.mediaSetInfoList;
+                mMediaDetailInfo2 = entity;
+                mHandler.sendEmptyMessage(MSG_UPDATE_DETAIL_INFO);
+            }
+        });
         
     }
-    private BitmapCachePool mBitmapCache;
-
+    
+    private void setDetailAdapter(){
+        ArrayList localArrayList = (ArrayList) this.mMediaSetInfoList.getAvailableCiList();
+       seriesAdapter.setGroup(localArrayList);
+       if(descEdit == null) return;
+       descEdit.setText(this.mMediaDetailInfo.desc);
+       
+       
+    }
+    
     private void fillMediaInfo(MediaInfo paramMediaInfo) {
         // ((RatingView)findViewById(2131165219)).setScore(paramMediaInfo.score);
         // if (paramMediaInfo.score > 0.0F)
@@ -335,8 +388,19 @@ public class MediaDetailActivity extends CoreActivity
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-
+        android.util.Log.d("XXXXXXXX", "onClick ");
     }
+    
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_UPDATE_DETAIL_INFO:
+                    setDetailAdapter();
+                    break;
+            }
+        }
+    };
 
     @Override
     public View makeView() {

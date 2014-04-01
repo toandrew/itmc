@@ -14,7 +14,11 @@ import com.infthink.itmc.ITApp;
 import com.infthink.itmc.service.CoreService;
 import com.infthink.itmc.type.Banner;
 import com.infthink.itmc.type.Channel;
+import com.infthink.itmc.type.MediaDetailInfo;
+import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
+import com.infthink.itmc.type.MediaSetInfo;
+import com.infthink.itmc.type.MediaSetInfoList;
 import com.infthink.itmc.type.RankInfo;
 import com.infthink.itmc.type.RankInfoList;
 import com.infthink.itmc.type.RecommendChannel;
@@ -38,6 +42,9 @@ public class DataManager {
     private static final String URL_GET_BANNER = "http://demo.bibifa.com/getbannermedia"; // ?channelid=33554432
     // 按更新｜rank 展示影片
     private static final String URL_GET_LIST_BY_RANK = "http://demo.bibifa.com/getmedialist";// ?channelid=33554432&pageno=1&pagesize=3&orderby=7
+
+    // 影片详情页
+    private static final String URL_GET_DETAIL = "http://demo.bibifa.com/getmediadetail";// ?mediaid=1021875
 
     private CoreService mService;
     private ConcurrentLinkedQueue<Object> mRefCollection;
@@ -163,8 +170,8 @@ public class DataManager {
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
 
-    public void loadChannelRank(final String channelId, int pageNo, int pageSize, final int orderBy,
-            final IOnloadListener<RankInfoList> listener) {
+    public void loadChannelRank(final String channelId, int pageNo, int pageSize,
+            final int orderBy, final IOnloadListener<RankInfoList> listener) {
         String textUrl =
                 URL_GET_LIST_BY_RANK + "?channelid=" + channelId + "&pageno=" + pageNo
                         + "&pagesize=" + pageSize + "&orderby=" + orderBy;
@@ -207,15 +214,14 @@ public class DataManager {
                                     } else if (orderBy == 1) {
                                         JSONArray data = (JSONArray) obj;
                                         int count = data.length();
-                                        android.util.Log.d("XXXXXXXXXX",
-                                            "loadChannelRank count = " + count);
+                                        
                                         MediaInfo[] medias = new MediaInfo[count];
                                         RankInfo rankinfo = new RankInfo();
                                         rankInfolist.ranks = new RankInfo[1];
                                         for (int i = 0; i < count; i++) {
                                             JSONObject subData = data.optJSONObject(i);
                                             medias[i] = new MediaInfo(subData.toString());
-                                            
+
                                         }
                                         rankinfo.mediaInfos = medias;
                                         rankInfolist.ranks[0] = rankinfo;
@@ -284,4 +290,67 @@ public class DataManager {
     public interface IOnloadListener<T> {
         public void onLoad(T entity);
     }
+
+    public void loadDetail(String mediaID, final IOnloadListener<MediaDetailInfo2> listener) {
+        String args = "";
+        if (!Util.isEmpty(mediaID)) {
+            args = "?mediaid=" + mediaID;
+        }
+        String textUrl = URL_GET_DETAIL + args;
+        android.util.Log.d("XXXXXXXXXX", "loadDetail textUrl = "
+                + textUrl);
+        SimpleTextLoadListener<MediaDetailInfo2> textLoadListener =
+                new SimpleTextLoadListener<MediaDetailInfo2>() {
+
+                    @Override
+                    public MediaDetailInfo2 parseText(String text) {
+                        MediaDetailInfo2 mediaDetailInfo2 = null;
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                android.util.Log.d("XXXXXXXXXX", "loadDetail status = "
+                                        + 0);
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null ) {
+                                    mediaDetailInfo2 = new MediaDetailInfo2();
+                                    String desc = ((JSONObject)obj).optString("desc");
+                                    android.util.Log.d("XXXXXXXXXX", "loadDetail desc = "
+                                            + desc);
+                                    MediaDetailInfo mdi = new MediaDetailInfo();
+                                    mdi.desc = desc;
+                                    JSONObject mediaciinfo = ((JSONObject)obj).optJSONObject("mediaciinfo");
+                                    JSONArray videos = (JSONArray) mediaciinfo.optJSONArray("videos");
+                                    int ciCount = videos.length();
+                                    MediaSetInfoList mediaSetInfoList = new MediaSetInfoList();
+                                    mediaSetInfoList.mediaSetInfos =
+                                            new MediaSetInfo[ciCount];
+                                    for(int i = 0; i < ciCount; i++){
+                                        JSONObject mediaciinfoJson = videos.optJSONObject(i);
+                                        String videoname = mediaciinfoJson.optString("videoname");
+                                        MediaSetInfo mediaSetInfo_temp = new MediaSetInfo();
+                                        mediaSetInfo_temp.szVideoName = videoname;
+                                        mediaSetInfoList.mediaSetInfos[i] = mediaSetInfo_temp;
+                                    }
+                                    mediaDetailInfo2.mediaDetailInfo = mdi;
+                                    mediaDetailInfo2.mediaSetInfoList = mediaSetInfoList;
+                                }
+                            }
+                        }
+                        android.util.Log.d("XXXXXXXXXX", "loadDetail status = "
+                                + mediaDetailInfo2.mediaSetInfoList.getAvailableCiList().get(0).szVideoName +  " count = " + mediaDetailInfo2.mediaSetInfoList.getAvailableCiList().size());
+                        return mediaDetailInfo2;
+                    }
+
+                    @Override
+                    public void onLoadResult(MediaDetailInfo2 object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
+
+                };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+
 }

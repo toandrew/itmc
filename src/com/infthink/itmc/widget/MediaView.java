@@ -221,8 +221,6 @@ public class MediaView extends LinearLayout {
             this.mediaInfo = mediaInfo;
 
             String url = Util.replaceString(mediaInfo.smallImageURL.imageUrl, "\\", "").trim();
-            android.util.Log.d("XXXXXXXXXX", "setMediaInfo url = "
-                    + url + " mPosterImage = " + mPosterImage);
 //            ((CoreActivity) mContext).getService().getBitmapCache();
             mBitmapCache = new BitmapCachePool(20 * 1024 * 1024);//--------------临时解决方案
             ImageLoader.loadImage(mBitmapCache,

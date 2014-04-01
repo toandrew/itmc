@@ -369,6 +369,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
 
     @Override
     public void onClick(View view) {
+        android.util.Log.d("XXXXXXXX", "onClick ");
         if (view.getId() == R.id.channel_more) {
             Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
             Channel channel = (Channel) view.getTag();
