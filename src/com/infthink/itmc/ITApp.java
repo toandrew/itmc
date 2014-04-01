@@ -52,7 +52,6 @@ public class ITApp extends BaseApplication {
 
         sContext = getApplicationContext();
         sResources = getResources();
-        
 
         try {
             File externalCacheDir = getExternalCacheDir();

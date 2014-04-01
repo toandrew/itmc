@@ -28,6 +28,10 @@
     <dimen name="home_onlinevideo_bottombar_height">185.0px</dimen>
     <dimen name="home_specialbnt_margin_horizontal">22.0px</dimen>
     <dimen name="home_media_padding_top">10.0px</dimen>
+    <dimen name="home_up_bg_height">180.0px</dimen>
+    <dimen name="home_tab_focus_margin_top">52.0px</dimen>
+    <dimen name="home_tab_focus_width">380.0px</dimen>
+    <dimen name="home_tab_focus_height">163.0px</dimen>
     
     <dimen name="loading_text_margin_left">13.0px</dimen>
     <dimen name="localmedia_line_divider_margin_left">210.0px</dimen>
@@ -38,7 +42,7 @@
     <dimen name="myvideo_item_height">141.0px</dimen>
     <dimen name="myvideo_iteminfo_margin_left">23.0px</dimen>
     <dimen name="myvideo_itemtitle_margin_bottom">4.0px</dimen>
-    
+
     <dimen name="page_margin">15.0px</dimen>
     <dimen name="pager_title_height">90.0px</dimen>
     <dimen name="pager_title_padding_bottom">8.0px</dimen>

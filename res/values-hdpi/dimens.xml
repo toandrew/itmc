@@ -28,6 +28,10 @@
     <dimen name="home_onlinevideo_bottombar_height">124.0px</dimen>
     <dimen name="home_specialbnt_margin_horizontal">15.0px</dimen>
     <dimen name="home_media_padding_top">7.0px</dimen>
+    <dimen name="home_up_bg_height">121.0px</dimen>
+    <dimen name="home_tab_focus_margin_top">35.0px</dimen>
+    <dimen name="home_tab_focus_width">255.0px</dimen>
+    <dimen name="home_tab_focus_height">109.0px</dimen>
 
     <dimen name="loading_text_margin_left">9.0px</dimen>
     <dimen name="localmedia_line_divider_margin_left">140.0px</dimen>

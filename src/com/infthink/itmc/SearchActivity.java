@@ -6,22 +6,15 @@ import java.util.HashMap;
 import com.infthink.itmc.adapter.PosterListAdapter;
 import com.infthink.itmc.adapter.SearchRecommendAdapter;
 import com.infthink.itmc.adapter.SearchResultAdapter;
-import com.infthink.itmc.type.Channel;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.util.SearchUtil;
-import com.infthink.itmc.util.UIUtil;
-import com.infthink.itmc.util.Util;
 import com.infthink.itmc.widget.LoadingListView;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -152,6 +145,17 @@ public class SearchActivity extends Activity {
 //        showSearchResultView();
 //        setSearchWord(mSearchKey);
 //        searchCategory(null);
+        setTitlesSearching();
+        test();
+    }
+    
+    private void test() {
+        mViewFlipper.showNext();
+    }
+    
+    private void setTitlesSearching() {
+        mResultTitleTv.setText(mSearchingHint);
+        mResultRecommendHintTv.setText(mSearchingHint);
     }
 
     public class CategoryDetailInfo {

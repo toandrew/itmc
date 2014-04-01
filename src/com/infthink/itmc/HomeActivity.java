@@ -31,6 +31,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -66,6 +67,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
     private ArrayList<Channel> mChannelList = new ArrayList<Channel>();
     private long mTimeLastBackPressed;
     private DataManager mDataManager;
+    private View mBottomItem;
 
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
@@ -84,8 +86,14 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
        
         
         setContentView(R.layout.activity_home);
-
+        mBottomItem = View.inflate(this, R.layout.home_bottom_item, null);
         mOnlineBottombar = View.inflate(this, R.layout.home_onlinevideo_bottombar, null);
+        int height = ITApp.getStatusBarHeight();
+        ViewGroup decorView = (ViewGroup)getWindow().getDecorView();
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, height, 0, 0);
+        decorView.addView(mBottomItem, 0, lp);
+//        localViewGroup.addView(this.vOnlineBottombar);
         onCreateActivate();
     }
     
@@ -106,9 +114,12 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         imageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+//                Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+//                startActivity(intent);
+//                overridePendingTransition(R.anim.appear, R.anim.stay_same);
+                Intent intent = new Intent(HomeActivity.this,
+                        WebViewActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.appear, R.anim.stay_same);
             }
         });
 

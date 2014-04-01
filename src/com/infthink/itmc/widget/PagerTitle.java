@@ -62,8 +62,9 @@ public class PagerTitle extends FrameLayout implements
     }
 
     private void init() {
+        
         mContext = getContext();
-        // mTabBgResId = R.drawable.pager_indicator_bar;
+        mTabBgResId = R.drawable.pager_indicator_bar;
         Resources resources = mContext.getResources();
         mTabTextSize = resources.getDimensionPixelSize(R.dimen.text_size_32);
         mTabNormalColor = resources.getColor(R.color.half_white);
@@ -112,7 +113,7 @@ public class PagerTitle extends FrameLayout implements
                 textView.setClickable(true);
                 textView.setOnClickListener(this);
                 // textView.setOnTouchListener(this);
-                // textView.setBackgroundResource(mTabBgResId);
+                textView.setBackgroundResource(mTabBgResId);
                 mTabViews.add(textView);
                 mTabGroup.addView(textView);
                 textView.setLayoutParams(lp);
