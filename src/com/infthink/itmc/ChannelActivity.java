@@ -103,7 +103,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         mIsManual = true;
     }
 
-    private void cust(ActionBar bar) {
+    private void layoutActionBar(ActionBar bar) {
         try {
             Class<?> actionBarImpl = Class.forName("com.android.internal.app.ActionBarImpl");
             Class<?> actionBarView = Class.forName("com.android.internal.widget.ActionBarView");
@@ -146,7 +146,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         frameLayout.addView(imageView, imageLayout);
         imageView.setImageResource(R.drawable.clickable_icon_search);
         ActionBar actionBar = getActionBar();
-        cust(actionBar);
+        layoutActionBar(actionBar);
         actionBar.setBackgroundDrawable(null);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
