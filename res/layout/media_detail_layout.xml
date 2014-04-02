@@ -2,15 +2,26 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/detail_contentwrap"
     android:layout_width="fill_parent"
-    android:layout_height="@dimen/detail_content_bg_height" >
-        <include layout="@layout/media_detail_bottom_item" />
-        <include layout="@layout/media_summary" />
+    android:layout_height="fill_parent" >
 
-            <View
+    <include layout="@layout/media_detail_bottom_item" />
+
+    <include layout="@layout/media_summary" />
+
+
+    <View
+        android:id="@+id/multiset_shadow_middle"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/viewpager_bg_height"
+        android:layout_height="@dimen/detail_series_shadow_height"
+        android:layout_gravity="top"
+        android:background="@drawable/detial_top_shadow_middle"
+        android:layout_marginTop="214dp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/detial_series_bg_height"
         android:layout_marginTop="260dp"
-        android:background="@drawable/home_bottom_bg" />
+        android:background="@drawable/detail_scroll_bg_short" />
 
     <com.infthink.itmc.widget.ShadowFrameLayout
         android:layout_width="fill_parent"
@@ -18,9 +29,9 @@
 
         <com.infthink.itmc.widget.PagerView
             android:id="@+id/detail_pagerview"
-            android:layout_marginTop="220dp"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="280dp"
+            android:layout_marginTop="220dp" />
 
         <com.infthink.itmc.widget.ShadowView
             android:layout_width="fill_parent"
@@ -29,4 +40,6 @@
             android:layout_marginTop="@dimen/shadow_mask_magrin_top"
             android:background="@drawable/shadow_mask" />
     </com.infthink.itmc.widget.ShadowFrameLayout>
-    </FrameLayout>
+
+    <include layout="@layout/media_detail_bottom_bar" />
+</FrameLayout>

@@ -113,6 +113,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         });
 
         mPagerView = ((PagerView)findViewById(R.id.home_pagerview));
+        mPagerView.setIndicatorBackgroundResource(R.drawable.page_indicator_arrowbar);
         mPagerView.setTabBackgroudResource(R.drawable.transparent);
         mPagerView.setTabs(getResources().getStringArray(R.array.home_tabs));
 //        mPagerView.setIndicatorMoveListener(this);

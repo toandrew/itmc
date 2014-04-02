@@ -115,4 +115,14 @@ public class PagerView extends LinearLayout implements OnPageChangeListener, Pag
     public void onTabClicked(int position) {
         setCurPage(position);
     }
+    
+    public void setIndicatorBackgroundResource(int paramInt)
+    {
+      this.mPagerTitle.setIndicatorBackgroundResource(paramInt);
+    }
+
+    public void setIndicatorBackgroundResource(int paramInt1, int paramInt2, int paramInt3)
+    {
+      this.mPagerTitle.setIndicatorBackgroundResource(paramInt1, paramInt2, paramInt3);
+    }
 }

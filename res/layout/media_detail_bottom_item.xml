@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageSwitcher android:layout_gravity="top" android:id="@+id/media_big_poster" android:layout_width="fill_parent" android:layout_height="@dimen/media_detail_bottom_bg_height" />
-    <View android:layout_gravity="top" android:id="@+id/media_big_poster_mask" android:background="@drawable/detail_title_bg_mask" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageSwitcher
+        android:id="@+id/media_big_poster"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/media_detail_bottom_bg_height"
+        android:layout_gravity="top" />
+
+    <View
+        android:id="@+id/media_big_poster_mask"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/detail_title_bg_mask"
+        android:visibility="invisible" />
+
 </FrameLayout>

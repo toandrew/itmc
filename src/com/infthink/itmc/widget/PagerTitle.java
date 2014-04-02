@@ -6,6 +6,7 @@ import com.infthink.itmc.R;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -79,7 +80,7 @@ public class PagerTitle extends FrameLayout implements
         mPageArrowBarHeight = resources
                 .getDimensionPixelSize(R.dimen.page_indicator_arrowbar_height);
         mIndicator = new View(mContext);
-//        mIndicator.setBackgroundResource(R.drawable.page_indicator_arrowbar);
+        mIndicator.setBackgroundResource(R.drawable.transparent);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 mPageArrowBarWidth, mPageArrowBarHeight);
         lp.gravity = Gravity.BOTTOM;
@@ -135,9 +136,9 @@ public class PagerTitle extends FrameLayout implements
         mTabs = tabs;
         initTabs();
         setCurrentTab(0);
-        if(mTabs.length > 0){
-            mIndicator.setBackgroundResource(R.drawable.page_indicator_arrowbar);
-        }
+        if(mTabs.length == 0){
+            mIndicator.setBackgroundResource(R.drawable.transparent);
+        } 
     }
 
     @Override
@@ -299,6 +300,22 @@ public class PagerTitle extends FrameLayout implements
     
     public void setOnPagerTitleListener(OnPagerTitleListener onPagerTitleListener) {
         mOnPagerTitleListener = onPagerTitleListener;
+    }
+    
+    public void setIndicatorBackgroundResource(int paramInt)
+    {
+      this.mIndicator.setBackgroundResource(paramInt);
+    }
+
+    public void setIndicatorBackgroundResource(int paramInt1, int paramInt2, int paramInt3)
+    {
+      this.mIndicator.setBackgroundResource(paramInt1);
+      this.mPageArrowBarWidth = paramInt2;
+      this.mPageArrowBarHeight = paramInt3;
+      FrameLayout.LayoutParams localLayoutParams = new FrameLayout.LayoutParams(this.mPageArrowBarWidth, this.mPageArrowBarHeight);
+      localLayoutParams.gravity = 80;
+      this.mIndicator.setLayoutParams(localLayoutParams);
+      requestLayout();
     }
 
     @Override

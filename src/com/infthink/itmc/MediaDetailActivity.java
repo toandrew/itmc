@@ -46,6 +46,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -168,7 +169,7 @@ public class MediaDetailActivity extends CoreActivity
 
     private void onActivate() {
         initActionBar();
-        getWindow().setBackgroundDrawableResource(android.R.color.background_dark);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         // ActionBar localActionBar = getActionBar();
         // localActionBar.setTitle(this.mediaInfo.mediaName.trim());
         // localActionBar.setSubtitle(UIUtil.getMediaStatus(this, this.mediaInfo));
@@ -203,8 +204,8 @@ public class MediaDetailActivity extends CoreActivity
         // this.viewGroup.addView(this.vBottomBar);
         this.vBigPoster = (ImageSwitcher) this.findViewById(R.id.media_big_poster);
         this.vBigPoster.setFactory(this);
-        // // this.vBigPoster.setInAnimation(AnimationUtils.loadAnimation(this, 17432576));
-        // // this.vBigPoster.setOutAnimation(AnimationUtils.loadAnimation(this, 17432577));
+//          this.vBigPoster.setInAnimation(AnimationUtils.loadAnimation(this, 17432576));
+//          this.vBigPoster.setOutAnimation(AnimationUtils.loadAnimation(this, 17432577));
         this.vBigPosterMask = this.findViewById(R.id.media_big_poster_mask);
         this.vBigPosterMask.setVisibility(4);
         // ActorsView.resetActorViewWidth();
@@ -261,6 +262,7 @@ public class MediaDetailActivity extends CoreActivity
             View[] views = new View[2];
             views[0] = View.inflate(this, R.layout.series_gridview, null);
             views[1] = View.inflate(this, R.layout.detail_desc_view, null);
+            mPagerView.setIndicatorBackgroundResource(R.drawable.detail_page_indicator_arrowbar, getResources().getDimensionPixelSize(R.dimen.detial_page_indicator_arrowbar_width), getResources().getDimensionPixelSize(R.dimen.page_indicator_arrowbar_height));
             mPagerView.setTabs(getResources().getStringArray(R.array.series_detail_tabs));
             mSeriesGridView = (GridView)views[0].findViewById(R.id.series_gridview);
             mSeriesGridView.setAdapter(seriesAdapter);
@@ -276,7 +278,7 @@ public class MediaDetailActivity extends CoreActivity
             descEdit = (TextView)views[0].findViewById(R.id.TextView02);
             mPagerView.setPageViews(views);
         }
-
+        this.vBottomBar = View.inflate(this, R.layout.media_detail_bottom_bar, null);
         fillMediaInfo(this.mediaInfo);
     }
     @Override
@@ -327,25 +329,6 @@ public class MediaDetailActivity extends CoreActivity
         onActivate();
 
 
-
-        // getActionBar().hide();
-        // this.vBigPoster = ((ImageSwitcher)this.findViewById(R.id.media_big_poster));
-        // this.vBigPoster.setFactory(this);
-        // // this.vBigPoster.setInAnimation(AnimationUtils.loadAnimation(this, 17432576));
-        // // this.vBigPoster.setOutAnimation(AnimationUtils.loadAnimation(this, 17432577));
-        // this.vBigPosterMask = this.findViewById(R.id.media_big_poster_mask);
-        // this.vBigPosterMask.setVisibility(4);
-        //
-        //
-        // Bitmap paramBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.a2);
-        //
-        // // Bitmap localBitmap = Bitmap.createBitmap(paramBitmap.getWidth(),
-        // paramBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        // // UIUtil.fastBlur(paramBitmap, localBitmap, 40);
-        // this.vBigPoster.setImageDrawable(new BitmapDrawable(getResources(),
-        // UIUtil.BoxBlurFilter(paramBitmap)));
-        // this.vBigPosterMask.setVisibility(0);
-        // this.vBigPosterMask.setAlpha(0.6f);
     }
     private void download() {
         String mediaID = this.mediaInfo.mediaID + "";
