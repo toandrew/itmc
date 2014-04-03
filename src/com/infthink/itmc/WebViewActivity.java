@@ -72,7 +72,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
         mSourcesMap.put(24, "http://v.ifeng.com/documentary/discovery/201205/4f31e712-9188-4ed8-9410-efc1dcaef552.shtml#_vapp_xiaomi");
         mSourcesMap.put(25, "http://m1905.cn/Index/index/__SID/2e9ad1fbdfd08ffeaf94074b53f86018");
         mSourcesMap.put(31, "http://m.bestv.com.cn/wap/xmyl/by/index.jsp?c=600003031");
-        mSource = 3;
+//        mSource = 3;
         mWebView.loadUrl(mPageUrl);
 
         mRetriever = new Html5PlayUrlRetriever(mWebView, mSource);
