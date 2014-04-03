@@ -400,6 +400,11 @@ public class MediaDetailActivity extends CoreActivity
                 Toast.makeText(this, "视频地址正在获取中",Toast.LENGTH_SHORT).show();
                 return;
             }
+            Intent intent = new Intent(MediaDetailActivity.this, WebViewActivity.class);
+            intent.putExtra("pageUrl", mMediaUrl);
+            intent.putExtra("source", mPreferenceSource);
+            intent.putExtra("ci", ci);
+            startActivity(intent);
             android.util.Log.d("XXXXXXXXXX", "mMediaUrl = " + mMediaUrl + " mPreferenceSource = " + mPreferenceSource);
         }
     }

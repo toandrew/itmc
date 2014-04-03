@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.util.Html5PlayUrlRetriever;
+import com.infthink.itmc.util.Util;
 import com.infthink.itmc.util.Html5PlayUrlRetriever.PlayUrlListener;
 
 public class WebViewActivity extends BaseWebViewActivity implements
@@ -41,11 +42,17 @@ public class WebViewActivity extends BaseWebViewActivity implements
     private ViewGroup mWebViewWrap;
     private HashMap<Integer, String> mSourcesMap;
     private Html5PlayUrlRetriever mRetriever;
-    private static String sPlayUrl;
+    private String mPlayUrl;
+    private String mPageUrl;
 
     @Override
     protected void onCreateAfterSuper(Bundle bundle) {
         super.onCreateAfterSuper(bundle);
+        
+        Intent intent = getIntent();
+        mSource = intent.getIntExtra("source", -1);
+        mPageUrl = Util.replaceString(intent.getStringExtra("pageUrl"), "\\", "").trim();
+        android.util.Log.d("XXXXXXXXX", "mSource = " + mSource);
         initWebView();
         FrameLayout contentView = new FrameLayout(this);
         
@@ -66,7 +73,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
         mSourcesMap.put(25, "http://m1905.cn/Index/index/__SID/2e9ad1fbdfd08ffeaf94074b53f86018");
         mSourcesMap.put(31, "http://m.bestv.com.cn/wap/xmyl/by/index.jsp?c=600003031");
         mSource = 3;
-        mWebView.loadUrl(mSourcesMap.get(mSource));
+        mWebView.loadUrl(mPageUrl);
 
         mRetriever = new Html5PlayUrlRetriever(mWebView, mSource);
         mRetriever.setPlayUrlListener(this);
@@ -78,11 +85,9 @@ public class WebViewActivity extends BaseWebViewActivity implements
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (playUrl != null && !playUrl.equals(sPlayUrl)) {
-                    Intent intent = new Intent(WebViewActivity.this, MediaPlayerActivity.class);
-                    intent.putExtra("path", playUrl);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(WebViewActivity.this, MediaPlayerActivity.class);
+                intent.putExtra("path", playUrl);
+                startActivity(intent);
             }
         });
     }
