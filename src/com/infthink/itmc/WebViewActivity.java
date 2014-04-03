@@ -2,21 +2,16 @@ package com.infthink.itmc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.util.Html5PlayUrlRetriever;
@@ -53,6 +48,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
         super.onCreateAfterSuper(bundle);
         initWebView();
         FrameLayout contentView = new FrameLayout(this);
+        
         contentView.addView(mWebView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         setContentView(contentView);
         
@@ -71,7 +67,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
         mSourcesMap.put(31, "http://m.bestv.com.cn/wap/xmyl/by/index.jsp?c=600003031");
         mSource = 3;
         mWebView.loadUrl(mSourcesMap.get(mSource));
-        
+
         mRetriever = new Html5PlayUrlRetriever(mWebView, mSource);
         mRetriever.setPlayUrlListener(this);
     }
@@ -98,9 +94,22 @@ public class WebViewActivity extends BaseWebViewActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mWebView.removeAllViews();
         mRetriever.release();
+        mWebView.destroy();
     }
     
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mWebView.onPause();
+    }
+    
+    protected void onResume() {
+        super.onResume();
+        mWebView.onResume();
+    }
+
 //    
 //    @Override
 //    protected void onCreateAfterSuper(Bundle bundle) {

@@ -23,6 +23,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:hardwareAccelerated="true"
         android:theme="@style/DefaultTheme" >
         <activity
             android:name="com.infthink.itmc.HomeActivity"
@@ -73,6 +74,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar" />
+        
         <service android:name="com.infthink.itmc.service.CoreService" />
     </application>
 

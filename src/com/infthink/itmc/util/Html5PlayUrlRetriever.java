@@ -41,7 +41,8 @@ public class Html5PlayUrlRetriever {
     };
     private Runnable mGetVideoUrlRunnale = new Runnable() {
         public void run() {
-            dumpLog("Html5PlayUrlRetriever", "get video url run...");
+            dumpLog("Html5PlayUrlRetriever", "get video url run...: mReleased = " + mReleased
+                    + "; mVideoReady = " + mVideoReady);
             if ((!mReleased) && (!mVideoReady)) {
                 exeJs(JS_GET_URL);
                 getVideoUrlLoop(URL_LOOP_INTERVAL);
@@ -65,6 +66,7 @@ public class Html5PlayUrlRetriever {
 
     private void exeJs(String js) {
         try {
+            dumpLog("XXXXXXXX", "js");
             mWebView.loadUrl(js);
             return;
         } catch (Exception ex) {
@@ -138,6 +140,10 @@ public class Html5PlayUrlRetriever {
         if (mSource != 20)
             mAutoPlay = true;
     }
+    
+    public synchronized void startQiyiLoop() {
+        getVideoUrlQiyiLoop(URL_LOOP_INTERVAL_QIYI);
+    }
 
     public void setAutoPlay(boolean autoPlay) {
         mAutoPlay = autoPlay;
@@ -201,7 +207,7 @@ public class Html5PlayUrlRetriever {
                     if (localPattern.matcher(localBufferedReader.readLine())
                             .find())
                         synchronized (Html5PlayUrlRetriever.this) {
-                            Html5PlayUrlRetriever.this.getVideoUrlLoop(0);
+                            getVideoUrlLoop(0);
                             return;
                         }
                     bool = isInterrupted();
