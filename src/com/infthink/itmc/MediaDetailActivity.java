@@ -258,6 +258,7 @@ public class MediaDetailActivity extends CoreActivity
         // // fillPersonInfo(this.personInfo);
         // // }
         mPagerView = ((PagerView) findViewById(R.id.detail_pagerview));
+        mPagerView.setTabBackgroudResource(R.drawable.transparent);
         if (this.mediaInfo.setCount > 1 || this.mediaInfo.setNow > 1) {
 
             int margin = getResources().getDimensionPixelSize(R.dimen.page_margin);

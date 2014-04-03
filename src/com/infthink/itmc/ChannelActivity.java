@@ -171,6 +171,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         decorView.addView(bottomView, 0, fp);
 
         mPagerView = ((PagerView) findViewById(R.id.pager_view));
+        mPagerView.setTabBackgroudResource(R.drawable.transparent);
         mPagerView.setIndicatorBackgroundResource(R.drawable.page_indicator_arrowbar);
 //         mPagerView.setIndicatorBackgroundResource(R.drawable.channel_indicator_arrowbar);
         // mPagerView.setTabTextSize(R.dimen.text_size_32);
