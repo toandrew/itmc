@@ -13,20 +13,10 @@
         android:paddingBottom="@dimen/media_bottom_bar_padding_vertical"
         android:paddingTop="@dimen/media_bottom_bar_padding_vertical" >
 
-        <FrameLayout
-            android:layout_width="@dimen/detail_bottom_button_width_edge"
-            android:layout_height="fill_parent" >
 
-            <Button
-                android:id="@+id/btn_myfavorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/btn_detail_left_select_source" />
-        </FrameLayout>
 
         <FrameLayout
-            android:layout_width="@dimen/detail_bottom_button_width_center"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
 
             <Button
@@ -34,20 +24,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:text="@string/play"
+                android:textSize="@dimen/text_size_30"
                 android:background="@drawable/btn_detail_center_select_source" />
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="@dimen/detail_bottom_button_width_edge"
-            android:layout_height="fill_parent" >
-
-            <Button
-                android:id="@+id/btn_download"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/btn_detail_right_offline" />
-        </FrameLayout>
     </LinearLayout>
 
 </FrameLayout>

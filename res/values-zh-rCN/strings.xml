@@ -33,5 +33,5 @@
     <string name="count_ji_quan">%d集全</string>
     <string name="count_ge">%d个</string>
     <string name="gong_count_xiang">共%d项</string>
-
+    <string name="play">播放</string>
 </resources>

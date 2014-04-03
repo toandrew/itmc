@@ -386,7 +386,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
             Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
             Channel channel = (Channel) view.getTag();
             MediaInfo[] mediainfo = (MediaInfo[]) mRecommendationOfChannels.get(channel);
-            android.util.Log.d("XXXXXXXXXX", "mediainfo = " + mediainfo[0].actors);
             intent.putExtra("mediaInfo", mediainfo[0]);
             startActivity(intent);
             

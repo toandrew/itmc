@@ -19,6 +19,7 @@ import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.MediaSetInfo;
 import com.infthink.itmc.type.MediaSetInfoList;
+import com.infthink.itmc.type.MediaUrlInfoList;
 import com.infthink.itmc.util.UIUtil;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.widget.ActorsView;
@@ -55,6 +56,7 @@ import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -107,11 +109,13 @@ public class MediaDetailActivity extends CoreActivity
     private int[] mPageNo = new int[2];
     private GridView mSeriesGridView;
     
-    private int ci_count;
     private MediaDetailInfo mMediaDetailInfo;
     private MediaSetInfoList mMediaSetInfoList;
     private MediaDetailInfo2 mMediaDetailInfo2;
-    TextView descEdit;
+    TextView mDescTextview;
+    
+    private int mPreferenceSource = -1;
+    private String mMediaUrl;
     
     public static final int MSG_UPDATE_DETAIL_INFO = 1;
     
@@ -269,16 +273,18 @@ public class MediaDetailActivity extends CoreActivity
             mPagerView.setPageViews(views);
             mPagerView.setCurPage(0);
             
-            descEdit = (TextView)views[1].findViewById(R.id.TextView02);
+            mDescTextview = (TextView)views[1].findViewById(R.id.TextView02);
         } else {
 //            descEdit = (EditText)views[1].findViewById(R.id.desc_text);
 //            mPagerView.setVisibility(4);
             View[] views = new View[1];
             views[0] = View.inflate(this, R.layout.detail_desc_view, null);
-            descEdit = (TextView)views[0].findViewById(R.id.TextView02);
+            mDescTextview = (TextView)views[0].findViewById(R.id.TextView02);
             mPagerView.setPageViews(views);
         }
         this.vBottomBar = View.inflate(this, R.layout.media_detail_bottom_bar, null);
+        Button btn = (Button) this.findViewById(R.id.btn_play);
+        btn.setOnClickListener(this);
         fillMediaInfo(this.mediaInfo);
     }
     @Override
@@ -348,14 +354,31 @@ public class MediaDetailActivity extends CoreActivity
                 mHandler.sendEmptyMessage(MSG_UPDATE_DETAIL_INFO);
             }
         });
-        
+       getMediaUrl();;
+    }
+    
+    private void getMediaUrl(){
+        String mediaID = this.mediaInfo.mediaID + "";
+        mDataManager.loadMediaUrl(mediaID, ci, new IOnloadListener<MediaUrlInfoList>() {
+
+            @Override
+            public void onLoad(MediaUrlInfoList entity) {
+                // TODO Auto-generated method stub
+                if(entity == null) return;
+                if(entity.urlNormal == null) return;
+                ci = 1;
+                mPreferenceSource = entity.urlNormal[ci - 1].mediaSource;
+                mMediaUrl = entity.urlNormal[ci - 1].mediaUrl;
+            }
+            
+        });
     }
     
     private void setDetailAdapter(){
         ArrayList localArrayList = (ArrayList) this.mMediaSetInfoList.getAvailableCiList();
        seriesAdapter.setGroup(localArrayList);
-       if(descEdit == null) return;
-       descEdit.setText(this.mMediaDetailInfo.desc);
+       if(mDescTextview == null) return;
+       mDescTextview.setText(this.mMediaDetailInfo.desc);
        
        
     }
@@ -371,7 +394,13 @@ public class MediaDetailActivity extends CoreActivity
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-        android.util.Log.d("XXXXXXXX", "onClick ");
+        if(v.getId() == R.id.btn_play){
+            if(mMediaUrl == null || mPreferenceSource == -1) {
+                Toast.makeText(this, "视频地址正在获取中",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            android.util.Log.d("XXXXXXXXXX", "mMediaUrl = " + mMediaUrl + " mPreferenceSource = " + mPreferenceSource);
+        }
     }
     
     private Handler mHandler = new Handler() {

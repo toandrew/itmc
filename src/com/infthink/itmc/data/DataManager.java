@@ -19,10 +19,13 @@ import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.MediaSetInfo;
 import com.infthink.itmc.type.MediaSetInfoList;
+import com.infthink.itmc.type.MediaUrlInfo;
+import com.infthink.itmc.type.MediaUrlInfoList;
 import com.infthink.itmc.type.RankInfo;
 import com.infthink.itmc.type.RankInfoList;
 import com.infthink.itmc.type.RecommendChannel;
 import com.infthink.itmc.type.ShowBaseInfo;
+import com.infthink.itmc.util.UIUtil;
 import com.infthink.itmc.util.Util;
 import com.infthink.libs.cache.simple.BitmapLoader;
 import com.infthink.libs.cache.simple.BitmapLoader.SimpleBitmapLoadListener;
@@ -45,6 +48,9 @@ public class DataManager {
 
     // 影片详情页
     private static final String URL_GET_DETAIL = "http://demo.bibifa.com/getmediadetail";// ?mediaid=1021875
+    
+    // 视频地址
+    private static final String URL_GET_MEDIA = "http://demo.bibifa.com/getmediaurl";//?mediaid=987381&ci=1
 
     private CoreService mService;
     private ConcurrentLinkedQueue<Object> mRefCollection;
@@ -344,6 +350,74 @@ public class DataManager {
 
                     @Override
                     public void onLoadResult(MediaDetailInfo2 object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
+
+                };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+    
+    public void loadMediaUrl(String mediaID,int ci, final IOnloadListener<MediaUrlInfoList> listener) {
+        String args = "";
+        if (!Util.isEmpty(mediaID)) {
+            args = "?mediaid=" + mediaID + "&ci=" + ci;
+        }
+        String textUrl = URL_GET_MEDIA + args;
+        android.util.Log.d("XXXXXXXXXX", "loadMediaUrl textUrl = "
+                + textUrl);
+        SimpleTextLoadListener<MediaUrlInfoList> textLoadListener =
+                new SimpleTextLoadListener<MediaUrlInfoList>() {
+
+                    @Override
+                    public MediaUrlInfoList parseText(String text) {
+                        MediaUrlInfoList mediaUrlInfoList = null;
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null ) {
+                                    mediaUrlInfoList = new MediaUrlInfoList();
+                                    JSONObject mediaobj = (JSONObject) obj;
+                                    mediaUrlInfoList.videoName = mediaobj.optString("videoname");
+                                    
+                                    Object normalObj = mediaobj.opt("normal");
+                                    Object highObj = mediaobj.opt("high");
+                                    Object superObj = mediaobj.opt("super");
+                                    
+                                    if (normalObj instanceof JSONArray){
+                                        android.util.Log.d("XXXXXXXXXX", "normalObj JSONArray");
+                                        JSONArray normalArray = (JSONArray) normalObj;
+                                        mediaUrlInfoList.urlNormal = new MediaUrlInfo[normalArray.length()];
+                                        for(int i = 0; i < normalArray.length(); i++){
+                                            JSONObject normaJsonObject = normalArray.optJSONObject(i);
+                                            MediaUrlInfo normalURLInfo = new MediaUrlInfo();
+                                            normalURLInfo.mediaSource = normaJsonObject.optInt("source");
+                                            normalURLInfo.mediaUrl = normaJsonObject.optString("playurl");
+                                            normalURLInfo.isHtml = normaJsonObject.optInt("isHtml");
+                                            mediaUrlInfoList.urlNormal[i] = normalURLInfo;
+                                        }
+                                    }
+                                    if (highObj instanceof JSONArray) {
+                                        MediaUrlInfo highURLInfo;
+                                        android.util.Log.d("XXXXXXXXXX", "highObj JSONArray");
+                                    }
+                                    
+                                    if (superObj instanceof JSONArray) {
+                                        MediaUrlInfo superURLInfo;
+                                        android.util.Log.d("XXXXXXXXXX", "superObj JSONArray");
+                                    }
+                                }
+                            }
+                        }
+                        android.util.Log.d("XXXXXXXXXX", "mediaUrlInfoList ＝ " + mediaUrlInfoList.urlNormal[0].mediaUrl );
+                        return mediaUrlInfoList;
+                    }
+
+                    @Override
+                    public void onLoadResult(MediaUrlInfoList object) {
                         mRefCollection.remove(this);
                         listener.onLoad(object);
                     }
