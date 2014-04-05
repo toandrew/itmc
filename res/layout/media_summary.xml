@@ -124,7 +124,16 @@
                 android:textSize="@dimen/text_size_26"
                 android:textStyle="bold" />
 
-            
+            <TextView
+                    android:id="@+id/actors"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:shadowDx="@integer/search_result_shadow_dx"
+                    android:shadowDy="@integer/search_result_shadow_dy"
+                    android:shadowRadius="@integer/search_result_shadow_radius"
+                    
+                    android:textColor="@color/p_80_white"
+                    android:textSize="@dimen/text_size_26" />
         </LinearLayout>
 
         <LinearLayout

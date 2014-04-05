@@ -9,8 +9,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.infthink.itmc.adapter.SeriesAdapter;
+import com.infthink.itmc.adapter.SourceListAdapter;
 import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.data.DataManager.IOnloadListener;
 import com.infthink.itmc.type.Banner;
@@ -19,7 +21,9 @@ import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.MediaSetInfo;
 import com.infthink.itmc.type.MediaSetInfoList;
+import com.infthink.itmc.type.MediaUrlInfo;
 import com.infthink.itmc.type.MediaUrlInfoList;
+import com.infthink.itmc.util.AlertMessage;
 import com.infthink.itmc.util.UIUtil;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.widget.ActorsView;
@@ -31,6 +35,8 @@ import com.infthink.libs.cache.simple.BitmapCachePool;
 import com.infthink.libs.cache.simple.ImageLoader;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -44,16 +50,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,81 +119,111 @@ public class MediaDetailActivity extends CoreActivity
     private SeriesAdapter seriesAdapter = new SeriesAdapter(this);
     private int[] mPageNo = new int[2];
     private GridView mSeriesGridView;
-    
+
     private MediaDetailInfo mMediaDetailInfo;
     private MediaSetInfoList mMediaSetInfoList;
     private MediaDetailInfo2 mMediaDetailInfo2;
+    private MediaUrlInfoList mMediaUrlInfoList;
     TextView mDescTextview;
-    
+
     private int mPreferenceSource = -1;
     private String mMediaUrl;
-    
+
     public static final int MSG_UPDATE_DETAIL_INFO = 1;
-    
-    private void cust(ActionBar bar) {
-        try {
-            Class<?> actionBarImpl = Class.forName("com.android.internal.app.ActionBarImpl");
-            Class<?> actionBarView = Class.forName("com.android.internal.widget.ActionBarView");
+    public static final int MSG_UPDATE_MEDIA_URL = 2;
+    private AlertDialog selectSourceDialog;
+    private SourceListAdapter sourceListAdapter;
+    private ArrayList<Integer> sourceListAdapterData = new ArrayList<Integer>();
 
-            Field actionView = actionBarImpl.getDeclaredField("mActionView");
-            actionView.setAccessible(true);
-            Object objActionView = actionView.get(bar);
+    private AdapterView.OnItemClickListener sourceListOnItemClickListener =
+            new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> paramAdapterView, View paramView,
+                        int paramInt, long paramLong) {
+                    if (MediaDetailActivity.this.sourceListAdapterData != null) {
+                        mPreferenceSource =
+                                (Integer) MediaDetailActivity.this.sourceListAdapterData.get(
+                                        paramInt).intValue();
+                        mMediaUrl = "";
+                        // MediaDetailActivity.access$1602(MediaDetailActivity.this,
+                        // ((Integer)MediaDetailActivity.this.sourceListAdapterData.get(paramInt)).intValue());
+                        if (MediaDetailActivity.this.sourceListAdapter != null) {
+                            MediaDetailActivity.this.sourceListAdapter
+                                    .setSelectedSource(MediaDetailActivity.this.mPreferenceSource);
+                            MediaDetailActivity.this.sourceListAdapter.notifyDataSetChanged();
+                        }
+                    }
 
-            Field fHomeLayout = actionBarView.getDeclaredField("mHomeLayout");
-            fHomeLayout.setAccessible(true);
-            FrameLayout objHomeLayout = (FrameLayout) fHomeLayout.get(objActionView);
-            View v = objHomeLayout.findViewById(android.R.id.home);
-            FrameLayout.LayoutParams fl = (LayoutParams) v.getLayoutParams();
-            fl.width = 0;
-            v.setLayoutParams(fl);
-            v.setVisibility(View.GONE);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+                    MediaDetailActivity.this
+                            .refreshSelectedSource(MediaDetailActivity.this.mPreferenceSource);
+                    if ((MediaDetailActivity.this.selectSourceDialog != null)
+                            && (MediaDetailActivity.this.selectSourceDialog.isShowing()))
+                        MediaDetailActivity.this.selectSourceDialog.dismiss();
+                }
+            };
+
+
+    private void refreshSelectedSource(int paramInt) {
+        this.mPreferenceSource = paramInt;
+        this.btnSelectSource.setVisibility(View.VISIBLE);
+        // MediaUrlForPlayerUtil.getInstance(this).setPrefrenceSource(paramInt);
+        if (paramInt == 8) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_qiyi);
+            return;
+        }
+        if (paramInt == 3) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_souhu);
+            return;
+        }
+        if (paramInt == 10) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_tencent);
+            return;
+        }
+        if (paramInt == 20) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_youku);
+            return;
+        }
+        if (paramInt == 24) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_fenghuang);
+            return;
+        }
+        if (paramInt == 23) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_tudou);
+            return;
+        }
+        if (paramInt == 17) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_lekan);
+            return;
+        }
+        if (paramInt == 25) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_film);
+            return;
+        }
+        if (paramInt == 32) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_letv);
+            return;
+        }
+        this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_default);
+    }
+
+    private void refreshSelectedSource(MediaUrlInfoList paramMediaUrlInfoList) {
+        // ArrayList localArrayList =
+        // MediaUrlInfoListUtil.getInstance().getSourceList(paramMediaUrlInfoList);
+        // ArrayList localArrayList = (ArrayList) mMediaSetInfoList.getAvailableCiList();
+        ArrayList localArrayList = new ArrayList();
+        if ((localArrayList != null) && (localArrayList.size() > 0)) {
+            this.mPreferenceSource = ((Integer) localArrayList.get(0)).intValue();
+            refreshSelectedSource(this.mPreferenceSource);
         }
     }
 
-    private void initActionBar() {
-        FrameLayout frameLayout = new FrameLayout(this);
-        TextView textView = new TextView(this);
-        textView.setText(this.mediaInfo.mediaName.trim());
-        // UIUtil.getMediaStatus(this, this.mediaInfo);
-        FrameLayout.LayoutParams textLayout =
-                new FrameLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP);
-        frameLayout.addView(textView, textLayout);
 
-        ActionBar actionBar = getActionBar();
-        cust(actionBar);
-        actionBar.setBackgroundDrawable(null);
-        actionBar.setDisplayShowHomeEnabled(true);
-        // actionBar.setSubtitle("WW");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        ActionBar.LayoutParams lp =
-                new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT, 21);
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setCustomView(frameLayout, lp);
-    }
 
     private void onActivate() {
-        initActionBar();
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        // ActionBar localActionBar = getActionBar();
-        // localActionBar.setTitle(this.mediaInfo.mediaName.trim());
-        // localActionBar.setSubtitle(UIUtil.getMediaStatus(this, this.mediaInfo));
-        // localActionBar.setDisplayShowCustomEnabled(true);
-
-        // ActionBarMovableLayout localActionBarMovableLayout =
-        // (ActionBarMovableLayout)findViewById(101384347);
-        // localActionBarMovableLayout.setCallback(this);
-        // localActionBarMovableLayout.setOnScrollListener(this);
+        TextView detailName = (TextView) this.findViewById(R.id.detail_name);
+        detailName.setText(this.mediaInfo.mediaName.trim());
+        TextView detailSubTitle = (TextView) this.findViewById(R.id.detail_subtitle);
+        detailSubTitle.setText(UIUtil.getMediaStatus(this, this.mediaInfo));
 
         // Resources localResources = getResources();
         // int i =
@@ -208,8 +249,8 @@ public class MediaDetailActivity extends CoreActivity
         // this.viewGroup.addView(this.vBottomBar);
         this.vBigPoster = (ImageSwitcher) this.findViewById(R.id.media_big_poster);
         this.vBigPoster.setFactory(this);
-//          this.vBigPoster.setInAnimation(AnimationUtils.loadAnimation(this, 17432576));
-//          this.vBigPoster.setOutAnimation(AnimationUtils.loadAnimation(this, 17432577));
+        // this.vBigPoster.setInAnimation(AnimationUtils.loadAnimation(this, 17432576));
+        // this.vBigPoster.setOutAnimation(AnimationUtils.loadAnimation(this, 17432577));
         this.vBigPosterMask = this.findViewById(R.id.media_big_poster_mask);
         this.vBigPosterMask.setVisibility(4);
         // ActorsView.resetActorViewWidth();
@@ -219,8 +260,9 @@ public class MediaDetailActivity extends CoreActivity
         // this.btnPlay.setOnClickListener(this);
         // this.ivPlay = ((ImageView)findViewById(R.id.ivPlay));
         // this.ivPlay.setOnClickListener(this);
-        // this.btnSelectSource = ((Button)findViewById(R.id.btn_select_source));
-        // this.btnSelectSource.setOnClickListener(this);
+        this.btnSelectSource = ((Button) findViewById(R.id.btn_select_source));
+        this.btnSelectSource.setVisibility(View.INVISIBLE);
+        this.btnSelectSource.setOnClickListener(this);
         // this.btnMyFavorite = ((Button)findViewById(R.id.btn_myfavorite));
         // this.btnMyFavorite.setOnClickListener(this);
         // // LocalMyFavoriteInfo.getInstance().registerMyFavoriteInfoChangedListenenr(this);
@@ -267,20 +309,25 @@ public class MediaDetailActivity extends CoreActivity
             View[] views = new View[2];
             views[0] = View.inflate(this, R.layout.series_gridview, null);
             views[1] = View.inflate(this, R.layout.detail_desc_view, null);
-            mPagerView.setIndicatorBackgroundResource(R.drawable.detail_page_indicator_arrowbar, getResources().getDimensionPixelSize(R.dimen.detial_page_indicator_arrowbar_width), getResources().getDimensionPixelSize(R.dimen.page_indicator_arrowbar_height));
+            mPagerView.setIndicatorBackgroundResource(
+                    R.drawable.detail_page_indicator_arrowbar,
+                    getResources().getDimensionPixelSize(
+                            R.dimen.detial_page_indicator_arrowbar_width), getResources()
+                            .getDimensionPixelSize(R.dimen.page_indicator_arrowbar_height));
             mPagerView.setTabs(getResources().getStringArray(R.array.series_detail_tabs));
-            mSeriesGridView = (GridView)views[0].findViewById(R.id.series_gridview);
+            mSeriesGridView = (GridView) views[0].findViewById(R.id.series_gridview);
             mSeriesGridView.setAdapter(seriesAdapter);
+            mSeriesGridView.setOnItemClickListener(new ItemClickListener());
             mPagerView.setPageViews(views);
             mPagerView.setCurPage(0);
-            
-            mDescTextview = (TextView)views[1].findViewById(R.id.TextView02);
+
+            mDescTextview = (TextView) views[1].findViewById(R.id.TextView02);
         } else {
-//            descEdit = (EditText)views[1].findViewById(R.id.desc_text);
-//            mPagerView.setVisibility(4);
+            // descEdit = (EditText)views[1].findViewById(R.id.desc_text);
+            // mPagerView.setVisibility(4);
             View[] views = new View[1];
             views[0] = View.inflate(this, R.layout.detail_desc_view, null);
-            mDescTextview = (TextView)views[0].findViewById(R.id.TextView02);
+            mDescTextview = (TextView) views[0].findViewById(R.id.TextView02);
             mPagerView.setPageViews(views);
         }
         this.vBottomBar = View.inflate(this, R.layout.media_detail_bottom_bar, null);
@@ -288,9 +335,11 @@ public class MediaDetailActivity extends CoreActivity
         btn.setOnClickListener(this);
         fillMediaInfo(this.mediaInfo);
     }
+
     @Override
     protected void onCreateAfterSuper(Bundle paramBundle) {
         super.onCreateAfterSuper(paramBundle);
+        getActionBar().hide();
         setContentView(R.layout.media_detail_layout);
         Handler h = new Handler();
         h.postDelayed(new Runnable() {
@@ -337,53 +386,74 @@ public class MediaDetailActivity extends CoreActivity
 
 
     }
+
     private void download() {
         String mediaID = this.mediaInfo.mediaID + "";
-        android.util.Log.d("XXXXXXXXXX", "download mediaID = "
-                + mediaID);
+        android.util.Log.d("XXXXXXXXXX", "download mediaID = " + mediaID);
         mDataManager.loadDetail(mediaID, new IOnloadListener<MediaDetailInfo2>() {
-            
+
             @Override
             public void onLoad(MediaDetailInfo2 entity) {
                 // TODO Auto-generated method stub
-                if(entity == null) return;
-                if(entity.mediaDetailInfo == null) return;
-                if(entity.mediaSetInfoList == null) return;
+                if (entity == null) return;
+                if (entity.mediaDetailInfo == null) return;
+                if (entity.mediaSetInfoList == null) return;
                 mMediaDetailInfo = entity.mediaDetailInfo;
                 mMediaSetInfoList = entity.mediaSetInfoList;
                 mMediaDetailInfo2 = entity;
                 mHandler.sendEmptyMessage(MSG_UPDATE_DETAIL_INFO);
             }
         });
-       getMediaUrl();;
+        getMediaUrl();;
     }
-    
-    private void getMediaUrl(){
+
+    private void getMediaUrl() {
         String mediaID = this.mediaInfo.mediaID + "";
         mDataManager.loadMediaUrl(mediaID, ci, new IOnloadListener<MediaUrlInfoList>() {
 
             @Override
             public void onLoad(MediaUrlInfoList entity) {
                 // TODO Auto-generated method stub
-                if(entity == null) return;
-                if(entity.urlNormal == null) return;
+                if (entity == null) return;
+                if (entity.urlNormal == null) return;
                 ci = 1;
-                mPreferenceSource = entity.urlNormal[ci - 1].mediaSource;
-                mMediaUrl = entity.urlNormal[ci - 1].mediaUrl;
+                mPreferenceSource = entity.urlNormal[0].mediaSource;
+                mMediaUrl = entity.urlNormal[0].mediaUrl;
+                mMediaUrlInfoList = entity;
+                mHandler.sendEmptyMessage(MSG_UPDATE_MEDIA_URL);
             }
-            
+
         });
     }
-    
-    private void setDetailAdapter(){
-        ArrayList localArrayList = (ArrayList) this.mMediaSetInfoList.getAvailableCiList();
-       seriesAdapter.setGroup(localArrayList);
-       if(mDescTextview == null) return;
-       mDescTextview.setText(this.mMediaDetailInfo.desc);
-       
-       
+
+    private int getSourceIDPos(int sourceId) {
+        int pos = 0;
+        for (int i = 0; i < sourceListAdapterData.size(); i++) {
+            int temp = sourceListAdapterData.get(i);
+            if (temp == sourceId) {
+                pos = i;
+                return pos;
+            }
+        }
+        return pos;
     }
-    
+
+    private void setDetailAdapter() {
+        ArrayList localArrayList = (ArrayList) this.mMediaSetInfoList.getAvailableCiList();
+        seriesAdapter.setGroup(localArrayList);
+        if (mDescTextview == null) return;
+        mDescTextview.setText(this.mMediaDetailInfo.desc);
+    }
+
+    private void setMediaURL() {
+        MediaUrlInfoList mMediaUrlInfoList2 = this.mMediaUrlInfoList;
+        for (int i = 0; i < mMediaUrlInfoList2.urlNormal.length; i++) {
+            MediaUrlInfo normal = mMediaUrlInfoList2.urlNormal[i];
+            this.sourceListAdapterData.add(normal.mediaSource);
+        }
+        refreshSelectedSource(sourceListAdapterData.get(0).intValue());
+    }
+
     private void fillMediaInfo(MediaInfo paramMediaInfo) {
         // ((RatingView)findViewById(2131165219)).setScore(paramMediaInfo.score);
         // if (paramMediaInfo.score > 0.0F)
@@ -395,26 +465,36 @@ public class MediaDetailActivity extends CoreActivity
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-        if(v.getId() == R.id.btn_play){
-            if(mMediaUrl == null || mPreferenceSource == -1) {
-                Toast.makeText(this, "视频地址正在获取中",Toast.LENGTH_SHORT).show();
+        if (v.getId() == R.id.btn_play) {
+            if (mMediaUrl == null || mPreferenceSource == -1) {
+                Toast.makeText(this, "视频地址正在获取中", Toast.LENGTH_SHORT).show();
                 return;
+            }
+            if (mMediaUrl == "") {
+                mMediaUrl = mMediaUrlInfoList.urlNormal[getSourceIDPos(mPreferenceSource)].mediaUrl;
             }
             Intent intent = new Intent(MediaDetailActivity.this, WebViewActivity.class);
             intent.putExtra("pageUrl", mMediaUrl);
             intent.putExtra("source", mPreferenceSource);
             intent.putExtra("ci", ci);
             startActivity(intent);
-            android.util.Log.d("XXXXXXXXXX", "mMediaUrl = " + mMediaUrl + " mPreferenceSource = " + mPreferenceSource);
+            android.util.Log.d("XXXXXXXXXX", "mMediaUrl = " + mMediaUrl + " mPreferenceSource = "
+                    + mPreferenceSource);
+        }
+        if (v.getId() == R.id.btn_select_source) {
+            showSelectSourceDialog();
         }
     }
-    
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_UPDATE_DETAIL_INFO:
                     setDetailAdapter();
+                    break;
+                case MSG_UPDATE_MEDIA_URL:
+                    setMediaURL();
                     break;
             }
         }
@@ -437,4 +517,72 @@ public class MediaDetailActivity extends CoreActivity
         this.vBigPosterMask.setAlpha(0.6f);
     }
 
+    private void showSelectSourceDialog() {
+        View localView = LayoutInflater.from(this).inflate(R.layout.common_list_dialog, null);
+        ListView localListView = (ListView) localView.findViewById(R.id.common_dialog_listview);
+        if (this.sourceListAdapter == null) {
+            this.sourceListAdapter = new SourceListAdapter(this);
+        }
+
+        // this.sourceListAdapterData =
+        // MediaUrlInfoListUtil.getInstance().getSourceList(this.mediaUrlInfoList);
+        // ArrayList<Integer> temp = new ArrayList<Integer>();
+        // temp.add(3);
+        // temp.add(8);
+        // temp.add(23);
+        // this.sourceListAdapterData = temp;
+        if (this.sourceListAdapterData.size() == 0) {
+            AlertMessage.show(this, R.string.hint_can_not_get_source_info);
+            // getMediaUrlInfoList(this.mediaInfo.mediaID, this.ci, -1);
+            return;
+        }
+        this.sourceListAdapter.setGroup(this.sourceListAdapterData);
+        this.sourceListAdapter.setSelectedSource(this.mPreferenceSource);
+        localListView.setAdapter(this.sourceListAdapter);
+        localListView.setOnItemClickListener(this.sourceListOnItemClickListener);
+        this.selectSourceDialog =
+                new AlertDialog.Builder(this).setTitle(R.string.select_media_source)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                MediaDetailActivity.this.selectSourceDialog.dismiss();
+                            }
+                        }).setView(localView).create();
+        this.selectSourceDialog.show();
+    }
+
+    class ItemClickListener implements OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> view, View arg1, final int arg2, long arg3) {
+            // TODO Auto-generated method stub
+            String mediaID = mediaInfo.mediaID + "";
+            ci = arg2 + 1;
+            btnPlay = ((Button) findViewById(R.id.btn_play));
+            btnPlay.setText("视频地址正在获取中");
+            mDataManager.loadMediaUrl(mediaID, ci, new IOnloadListener<MediaUrlInfoList>() {
+
+                @Override
+                public void onLoad(MediaUrlInfoList entity) {
+                    // TODO Auto-generated method stub
+                    if (entity == null) return;
+                    if (entity.urlNormal == null) return;
+                    // mPreferenceSource = entity.urlNormal[0].mediaSource;
+                    mMediaUrl = entity.urlNormal[getSourceIDPos(mPreferenceSource)].mediaUrl;
+                    if (mMediaUrl == null || mPreferenceSource == -1) {
+                        Toast.makeText(MediaDetailActivity.this, "视频地址正在获取中", Toast.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+                    btnPlay.setText("播放");
+                    Intent intent = new Intent(MediaDetailActivity.this, WebViewActivity.class);
+                    intent.putExtra("pageUrl", mMediaUrl);
+                    intent.putExtra("source", mPreferenceSource);
+                    intent.putExtra("ci", ci);
+                    startActivity(intent);
+                }
+
+            });
+        }
+
+    }
 }

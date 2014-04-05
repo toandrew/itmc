@@ -122,7 +122,7 @@
     <dimen name="single_detail_content_container_extra_offset">5.0px</dimen>
     <dimen name="detail_bottom_button_width_edge">192.0px</dimen>
     <dimen name="detail_bottom_button_width_center">336.0px</dimen>
-    <dimen name="detail_mediaview_container_padding_top">25.0px</dimen>
+    <dimen name="detail_mediaview_container_padding_top">0.0px</dimen>
     <dimen name="detail_mediaview_shadow_margin_left">-2.0px</dimen>
     <dimen name="detail_mediaview_shadow_margin_top">3.0px</dimen>
     <dimen name="detial_mediainfo_margin_left">280.0px</dimen>
@@ -142,4 +142,7 @@
     <dimen name="page_indicator_arrowbar_height">21.0px</dimen>
     <dimen name="page_indicator_arrowbar_width">1202.0px</dimen>
     <dimen name="detial_page_indicator_arrowbar_width">1084.0px</dimen>
+    
+    <dimen name="common_dialog_item_height">128.0px</dimen>
+    <dimen name="common_dialog_item_bar_width">16.0px</dimen>
 </resources>

@@ -6,21 +6,28 @@
 
     <include layout="@layout/media_detail_bottom_item" />
 
-    <include layout="@layout/media_summary" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
+        <include layout="@layout/rewrite_v5_detail_title_bar" />
+
+        <include layout="@layout/media_summary" />
+    </LinearLayout>
 
     <View
         android:id="@+id/multiset_shadow_middle"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/detail_series_shadow_height"
         android:layout_gravity="top"
-        android:background="@drawable/detial_top_shadow_middle"
-        android:layout_marginTop="214dp" />
+        android:layout_marginTop="224dp"
+        android:background="@drawable/detial_top_shadow_middle" />
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="@dimen/detial_series_bg_height"
-        android:layout_marginTop="260dp"
+        android:layout_marginTop="270dp"
         android:background="@drawable/detail_scroll_bg_short" />
 
     <com.infthink.itmc.widget.ShadowFrameLayout
@@ -31,7 +38,7 @@
             android:id="@+id/detail_pagerview"
             android:layout_width="fill_parent"
             android:layout_height="280dp"
-            android:layout_marginTop="220dp" />
+            android:layout_marginTop="230dp" />
 
         <com.infthink.itmc.widget.ShadowView
             android:layout_width="fill_parent"
@@ -42,4 +49,5 @@
     </com.infthink.itmc.widget.ShadowFrameLayout>
 
     <include layout="@layout/media_detail_bottom_bar" />
+
 </FrameLayout>

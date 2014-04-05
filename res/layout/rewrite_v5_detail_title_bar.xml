@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/v5_search_panel"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:orientation="horizontal" >
+
+    <ImageButton
+        android:id="@+id/return_detail_back"
+        style="@style/DetailBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/app_name" />
+
+    <LinearLayout
+        android:id="@+id/actors_panel"
+        android:layout_width="@dimen/detail_title_width_1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/detail_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/detial_series_content_margin_top"
+            android:shadowColor="@color/p_30_black"
+            android:shadowDx="@integer/detail_title_shadow_dx"
+            android:shadowDy="@integer/detail_title_shadow_dy"
+            android:shadowRadius="@integer/detail_title_shadow_radius"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_40"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/detail_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/detial_series_content_margin_top"
+            android:shadowColor="@color/p_30_black"
+            android:shadowDx="@integer/detail_title_shadow_dx"
+            android:shadowDy="@integer/detail_title_shadow_dy"
+            android:shadowRadius="@integer/detail_title_shadow_radius"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_26"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent" >
+
+        <Button
+            android:id="@+id/btn_select_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="left|center"
+            android:minHeight="0.0dip"
+            android:minWidth="0.0dip"
+            android:background="@drawable/select_source_item_default"
+            />
+    </FrameLayout>
+
+</LinearLayout>

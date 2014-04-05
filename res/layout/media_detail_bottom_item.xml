@@ -14,7 +14,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@drawable/detail_title_bg_mask"
-        android:visibility="invisible" />
+         android:visibility="invisible" />
+        <!--  android:background="@drawable/detail_title_bg_mask"-->
+       
 
 </FrameLayout>

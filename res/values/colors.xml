@@ -10,12 +10,17 @@
     <color name="transparent">#00ffffff</color>
     <color name="white">#ffffffff</color>
     <color name="p_30_black">#4c000000</color>
+    <color name="p_80_black">#4c000000</color>
     <color name="p_50_white">#7fffffff</color>
     <color name="p_60_white">#99ffffff</color>
     <color name="p_80_white">#ccffffff</color>
+    
     <color name="half_white">#7fffffff</color>
     <color name="text_shadow_color">#5e000000</color>
     <color name="list_divider">#ff3e3e3e</color>
     <color name="search_recommend_red">#ffdd2200</color>
+    
+     <color name="select_source_yellow">#ffff6100</color>
+    <color name="select_source_gray">#ff919191</color>
     
 </resources>

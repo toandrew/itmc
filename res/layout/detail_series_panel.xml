@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.duokan.tv.video.widget.ScrollViewEx android:id="@+id/scroll_wrap" android:layout_width="fill_parent" android:layout_height="fill_parent"
+<com.infthink.itmc.widget.ScrollViewEx android:id="@+id/scroll_wrap" android:layout_width="fill_parent" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout android:orientation="vertical" android:id="@+id/series_detail_wrap" android:paddingLeft="30.0px" android:paddingRight="30.0px" android:layout_width="fill_parent" android:layout_height="fill_parent">
         <View android:layout_width="fill_parent" android:layout_height="30.0px" />
     </LinearLayout>
-</com.duokan.tv.video.widget.ScrollViewEx>
+</com.infthink.itmc.widget.ScrollViewEx>

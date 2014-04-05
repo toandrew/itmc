@@ -140,7 +140,7 @@
     <dimen name="single_detail_content_container_extra_offset">8.0px</dimen>
     <dimen name="detail_bottom_button_width_edge">288.0px</dimen>
     <dimen name="detail_bottom_button_width_center">504.0px</dimen>
-    <dimen name="detail_mediaview_container_padding_top">38.0px</dimen>
+    <dimen name="detail_mediaview_container_padding_top">0.0px</dimen>
     <dimen name="detail_mediaview_shadow_margin_left">0.0px</dimen>
     <dimen name="detail_mediaview_shadow_margin_top">2.0px</dimen>
     <dimen name="detial_mediainfo_margin_left">420.0px</dimen>
@@ -261,4 +261,6 @@
     <dimen name="player_radiobutton_marginTop_2">11.5dip</dimen>
     <dimen name="player_drawablePadding">-8.0dip</dimen>
     <dimen name="player_popuptop_marginTop">2.0dip</dimen>
+    
+    <dimen name="detail_title_width_1">770.0px</dimen>
 </resources>

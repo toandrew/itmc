@@ -26,4 +26,29 @@
     <string name="day">Day</string>
     <string name="update">Updated</string>
     <string name="play">Play</string>
+    
+     <string name="select_media_source">Select video source</string>
+    <string name="qiyi">iQiyi</string>
+    <string name="souhu">Souhu</string>
+    <string name="tencent">Tencent</string>
+    <string name="youku">Youku</string>
+    <string name="netease">NetEase</string>
+    <string name="yinyuetai">YinYueTai</string>
+    <string name="wasu">Wasu</string>
+    <string name="sina">Sina</string>
+    <string name="pptv">PPTV</string>
+    <string name="pps">PPS</string>
+    <string name="funshion">Funshion</string>
+    <string name="bestv">Bestv</string>
+    <string name="icntv">iCNTV</string>
+    <string name="fenghuang">iFeng</string>
+    <string name="tudou">Tudou</string>
+    <string name="lekan">Lekan</string>
+    <string name="dianyingwang">M1905</string>
+    <string name="letv">Letv</string>
+    <string name="unknown_source">Unknown source</string>
+    <string name="hint_can_not_get_source_info">"Can't find video source's info"</string>
+    <string name="hint_without_selected_set">No source selected, finding source automatically…</string>
+    
+    <string name="cancel">Cancel</string>
 </resources>

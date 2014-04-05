@@ -22,7 +22,7 @@
     <dimen name="cover_text_margin_margin_top">3.0px</dimen>
     <dimen name="cover_text_margin_margin_bottom">-2.0px</dimen>
     
-    <dimen name="media_summary_height">405.0px</dimen>
+    <dimen name="media_summary_height">271.0px</dimen>
     
     <dimen name="home_banner_margin_top">20.0px</dimen>
     <dimen name="home_onlinevideo_bottombar_height">124.0px</dimen>
@@ -79,6 +79,9 @@
     <dimen name="text_size_32">21.439972px</dimen>
     <dimen name="text_size_34">22.779999px</dimen>
     <dimen name="text_size_36">24.119995px</dimen>
+    <dimen name="text_size_38">25.459991px</dimen>
+    <dimen name="text_size_40">26.799988px</dimen>
+    
     <dimen name="thumb_area_width">136.0px</dimen>
     <dimen name="thumb_area_height">94.0px</dimen>
     <dimen name="thumb_content_margin">1.0px</dimen>
@@ -149,5 +152,9 @@
     <dimen name="page_indicator_arrowbar_height">14.0px</dimen>
     <dimen name="page_indicator_arrowbar_width">805.0px</dimen>
     <dimen name="detial_page_indicator_arrowbar_width">726.0px</dimen>    
+    
+    <dimen name="detail_title_width_1">400.0px</dimen>
+    <dimen name="common_dialog_item_height">86.0px</dimen>
+    <dimen name="common_dialog_item_bar_width">11.0px</dimen>
 
 </resources>
