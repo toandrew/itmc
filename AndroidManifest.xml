@@ -17,13 +17,14 @@
     <uses-permission android:name="android.permission.RAISED_THREAD_PRIORITY" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name="com.infthink.itmc.ITApp"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:hardwareAccelerated="true"
         android:theme="@style/DefaultTheme" >
         <activity
             android:name="com.infthink.itmc.HomeActivity"
@@ -45,7 +46,7 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
-         <activity
+        <activity
             android:name="com.infthink.itmc.MediaDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ChannelTheme"
@@ -57,25 +58,31 @@
             android:screenOrientation="portrait"
             android:theme="@style/SearchTheme"
             android:windowSoftInputMode="adjustNothing|stateVisible" />
-
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity 
+        <activity
             android:name="com.infthink.itmc.WebViewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/HomeTheme" />
-        <activity 
+        <activity
             android:name="com.infthink.itmc.MediaPlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar" />
-        
+
         <service android:name="com.infthink.itmc.service.CoreService" />
+
+        <meta-data
+            android:name="upgrade_url"
+            android:value="http://www.baidu.com" />
+        <meta-data
+            android:name="PLATFORM_ID"
+            android:value="\ 0001000100010001" />
     </application>
 
 </manifest>

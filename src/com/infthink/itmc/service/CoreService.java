@@ -8,14 +8,15 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.content.Context;
-import android.util.DisplayMetrics;
-import android.util.Log;
-
 import com.infthink.itmc.base.BaseService;
 import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.data.NetcastManager;
 import com.infthink.libs.common.utils.SystemUtils;
+
+import android.content.Context;
+import android.util.DisplayMetrics;
+import android.util.Log;
+
 
 public class CoreService extends BaseService {
 
