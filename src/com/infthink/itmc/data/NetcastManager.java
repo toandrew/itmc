@@ -51,7 +51,9 @@ public class NetcastManager {
     private Thread mThread;
     private QueryRunnable mRunnable;
     private boolean mIsSessionEstablished;
-
+    private int mCurVolume;
+    private int mLastVolume;
+    
     public NetcastManager(Context context) {
         mApplication = ITApp.getInstance();
         mCastContext = new CastContext(context);
@@ -197,6 +199,43 @@ public class NetcastManager {
         return mIsSessionEstablished;
     }
 
+    public void setVolumeDown() {
+        if (!mRampStream.hasAttached() || mLastVolume == mCurVolume) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mRampStream.hasAttached()) {
+                    if (mCurVolume > 0) {
+                        mRampStream.setVolume(-1);
+                        mLastVolume = mCurVolume;
+                        mRampStream.getPlayerState();
+                    }
+                }
+            }
+        });
+    }
+    
+    public void setVolumeUp() {
+        if (!mRampStream.hasAttached() || mLastVolume == mCurVolume) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mRampStream.hasAttached()) {
+                    if (mCurVolume < 100) {
+                        mRampStream.setVolume(1);
+                        mLastVolume = mCurVolume;
+                        mRampStream.getPlayerState();
+                    }
+                }
+            }
+        });
+
+    }
+
     private IOnSearchResultListener mSearchListener = new ServerSearcher.IOnSearchResultListener() {
 
         @Override
@@ -303,6 +342,7 @@ public class NetcastManager {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    mCurVolume = status.getVolume();
                     if (mCastStatusUpdateListener != null) {
                         mCastStatusUpdateListener.updateStatus(status);
                     }

@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -42,7 +43,9 @@ public class MediaPlayerActivity extends CoreActivity implements
     private String mMediaTitle;
     private int mCastPosition = 0;
     private CastMediaController mCastMediaController;
-
+    private int mCastSeekPosition = -1;
+    private boolean mIsPlayToCast;
+    
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
@@ -129,6 +132,25 @@ public class MediaPlayerActivity extends CoreActivity implements
 
         }, 20000);
     }
+    
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getKeyCode()) {
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            if (mIsPlayToCast) {
+                ITApp.getNetcastManager().setVolumeDown();
+                return true;
+            }
+        case KeyEvent.KEYCODE_VOLUME_UP:
+            if (mIsPlayToCast) {
+                ITApp.getNetcastManager().setVolumeUp();
+                return true;
+            }
+        default:
+            break;
+        }
+        return super.dispatchKeyEvent(event);
+    }
 
     // TODO: 需要抽象到MediaUrlForPlayerUtil类中
     private void loadNextUrl() {
@@ -186,9 +208,10 @@ public class MediaPlayerActivity extends CoreActivity implements
             Toast.makeText(getContext(), "next ok", Toast.LENGTH_LONG).show();
         }
     }
-    private int mCastSeekPosition = -1;
+
     private void playToCast(String url, String title, long millisecond) {
-        mCastMediaController.setPlayMode(true);
+        mIsPlayToCast = true;
+        mCastMediaController.setPlayMode(mIsPlayToCast);
         ITApp.getNetcastManager().setCastStatusUpdateListener(this);
         ITApp.getNetcastManager().playVideo(url,
                 title);
@@ -200,7 +223,8 @@ public class MediaPlayerActivity extends CoreActivity implements
     }
     
     private void play() {
-        mCastMediaController.setPlayMode(false);
+        mIsPlayToCast = false;
+        mCastMediaController.setPlayMode(mIsPlayToCast);
         ITApp.getNetcastManager().setCastStatusUpdateListener(null);
         long time = mCastPosition * 1000;
         if (time > 0 && Math.abs(time - mVideoView.getCurrentPosition()) > 1000) {
