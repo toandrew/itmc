@@ -23,20 +23,14 @@ public class CoreService extends BaseService {
     private static final String TAG = CoreService.class.getSimpleName();
     private CommonArgs mCommonArgs;
     private DataManager mDataManager;
-    private NetcastManager mNetcastManager;
 //    private SearchHistory mSearchHistory;
 //    private NetTest mNetTest;
-
-//    public NetTest getNetTest() {
-//        return mNetTest;
-//    }
 
     @Override
     protected void onInit() {
         super.onInit();
         mCommonArgs = new CommonArgs(this);
         mDataManager = new DataManager(this);
-        mNetcastManager = new NetcastManager(this);
 //        mSearchHistory = new SearchHistory(this);
 //        mNetTest = new NetTest(this);
 
@@ -81,10 +75,6 @@ public class CoreService extends BaseService {
         }
     }
     
-    public NetcastManager getNetcastManager() {
-        return mNetcastManager;
-    }
-
     public DataManager getDataManager() {
         return mDataManager;
     }

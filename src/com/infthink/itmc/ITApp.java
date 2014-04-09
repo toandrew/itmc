@@ -6,9 +6,12 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.HashMap;
 
+import com.infthink.itmc.data.NetcastManager;
 import com.infthink.libs.base.BaseApplication;
 import com.infthink.libs.cache.simple.BitmapCachePool;
 import com.infthink.libs.common.message.MessageManager;
+import com.infthink.netcast.sdk.ApplicationSession;
+import com.infthink.netcast.sdk.CastDevice;
 
 import android.app.Application;
 import android.content.Context;
@@ -23,11 +26,19 @@ public class ITApp extends BaseApplication {
     private static String sInternalCachePath;
     private static String sExternalCachePath;
     private static HashMap<Integer, String> sChannelMap;
-
+    private ApplicationSession mSession;
+    private CastDevice mDevice;
+    private String mCastAppName;
+    private static NetcastManager sNetcastManager;
+    
     public ITApp() {
         sInstance = this;
     }
 
+    public static ITApp getInstance() {
+        return sInstance;
+    }
+    
     public static final Context context() {
         return sContext;
     }
@@ -45,6 +56,10 @@ public class ITApp extends BaseApplication {
             sChannelMap = map;
         }
     }
+    
+    public static NetcastManager getNetcastManager() {
+        return sNetcastManager;
+    }
 
     @Override
     public void onCreate() {
@@ -52,6 +67,7 @@ public class ITApp extends BaseApplication {
 
         sContext = getApplicationContext();
         sResources = getResources();
+        sNetcastManager = new NetcastManager(sContext);
 
         try {
             File externalCacheDir = getExternalCacheDir();
@@ -89,6 +105,8 @@ public class ITApp extends BaseApplication {
             cache.flush();
         }
         MessageManager.close();
+        
+        sNetcastManager.destroy();
     }
     
     public static String getInternalFilesDir() {
@@ -118,5 +136,29 @@ public class ITApp extends BaseApplication {
         } catch (Exception localException) {
         }
         return 0;
+    }
+
+    public ApplicationSession getCastSession() {
+        return mSession;
+    }
+
+    public void setCastSession(ApplicationSession session) {
+        mSession = session;
+    }
+
+    public CastDevice getCastDevice() {
+        return mDevice;
+    }
+
+    public void setCastDevice(CastDevice device) {
+        mDevice = device;
+    }
+
+    public String getCastAppName() {
+        return mCastAppName;
+    }
+
+    public void setCastAppName(String appname) {
+        mCastAppName = appname;
     }
 }

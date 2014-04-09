@@ -45,7 +45,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class HomeActivity extends CoreActivity implements OnPageChangeListener, OnClickListener {
+public class HomeActivity extends CoreActivity implements OnPageChangeListener,
+        OnClickListener {
     private static final int MSG_UPDATE_HOME_CHANNEL = 0;
     private static final int MSG_UPDATE_HOME_BANNER = 1;
 
@@ -72,6 +73,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
     private long mTimeLastBackPressed;
     private DataManager mDataManager;
     private View mBottomItem;
+    private ImageView mCastView;
 
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
@@ -94,50 +96,55 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
 
         setContentView(R.layout.activity_home);
         mBottomItem = View.inflate(this, R.layout.home_bottom_item, null);
-        mOnlineBottombar = View.inflate(this, R.layout.home_onlinevideo_bottombar, null);
+        mOnlineBottombar = View.inflate(this,
+                R.layout.home_onlinevideo_bottombar, null);
         int height = ITApp.getStatusBarHeight();
         ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
-        FrameLayout.LayoutParams lp =
-                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                        FrameLayout.LayoutParams.WRAP_CONTENT);
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+
         lp.setMargins(0, height, 0, 0);
         decorView.addView(mBottomItem, 0, lp);
         // localViewGroup.addView(this.vOnlineBottombar);
         onCreateActivate();
     }
 
-
     private void onCreateActivate() {
-        // Upgrade upgrade = getService().getUpgrade();
-        // upgrade.prepareUpgradeView(this);
-        // MessageManager.sendMessage(new AppUpdateEvent(false), 1, true);
+        LinearLayout layout = new LinearLayout(this);
+        mCastView = getCastView();
+
         ImageView imageView = new ImageView(this);
         imageView.setImageResource(R.drawable.clickable_icon_search);
-        ActionBar actionBar = getActionBar();
-
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setBackgroundDrawable(null);
-        actionBar.setDisplayShowHomeEnabled(false);
-
-        ActionBar.LayoutParams lp =
-                new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER);
-
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setCustomView(imageView, lp);
         imageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                // Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
-                // startActivity(intent);
-                // overridePendingTransition(R.anim.appear, R.anim.stay_same);
-                Intent intent = new Intent(HomeActivity.this, WebViewActivity.class);
-                startActivity(intent);
+                 Intent intent = new Intent(HomeActivity.this,
+                 SearchActivity.class);
+                 startActivity(intent);
+                 overridePendingTransition(R.anim.appear, R.anim.stay_same);
             }
         });
+        layout.addView(imageView);
+        layout.addView(mCastView);
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setBackgroundDrawable(null);
+        actionBar.setDisplayShowHomeEnabled(false);
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+                        | Gravity.CENTER);
+
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(layout, lp);
 
         mPagerView = ((PagerView) findViewById(R.id.home_pagerview));
-        mPagerView.setIndicatorBackgroundResource(R.drawable.page_indicator_arrowbar);
+        mPagerView
+                .setIndicatorBackgroundResource(R.drawable.page_indicator_arrowbar);
+
         mPagerView.setTabBackgroudResource(R.drawable.transparent);
         mPagerView.setTabs(getResources().getStringArray(R.array.home_tabs));
         // mPagerView.setIndicatorMoveListener(this);
@@ -154,7 +161,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
 
         mHeaderView = View.inflate(this, R.layout.banner_view, null);
         int marginH = getResources().getDimensionPixelSize(R.dimen.page_margin);
-        int marginTop = getResources().getDimensionPixelSize(R.dimen.home_banner_margin_top);
+        int marginTop = getResources().getDimensionPixelSize(
+                R.dimen.home_banner_margin_top);
         mHeaderView.setPadding(marginH, marginTop, marginH, 0);
 
         mBannerView = (ScrollViewPager) mHeaderView.findViewById(R.id.banner);
@@ -163,7 +171,9 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         // mBannerAdapter.setOnMediaClickListener(this);
         mBannerView.setAdapter(mBannerAdapter);
 
+
         mBannerIndicator = ((BannerIndicator) mHeaderView.findViewById(R.id.bannerIndicator));
+
         mBannerCountChanged = false;
         mBannerMediaCount = 0;
         mBannerViewIndex = -1;
@@ -175,6 +185,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         // mBtnSpecials.setOnClickListener(this);
 
         mChannelLoadingListView.setLoadingView(View.inflate(this, R.layout.load_view, null));
+
         // RetryLoadingView localRetryLoadingView = new RetryLoadingView(this);
         // 2 local2 = new RetryLoadingView.OnRetryLoadListener()
         // {
@@ -193,6 +204,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         mHomeChannelListView.addHeaderView(mHeaderView);
         mHomeChannelListView.addFooterView(mFooterView);
 
+
         mMediaStoreLoadingListView.setLoadingView(View.inflate(this, R.layout.load_view, null));
         mHomeMediaStoreListView = mMediaStoreLoadingListView.getListView();
         View headerView = new View(this);
@@ -202,6 +214,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         mHomeMediaStoreListView.addHeaderView(headerView, null, false);
         mHomeMediaStoreListView.setSelectionAfterHeaderView();
         mHomeMediaStoreListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
         // mHomeMediaStoreListView.setMultiChoiceModeListener(this.mMultiChoiceController);
         mHomeMediaStoreListView.setSelector(R.drawable.clickable_item_bg_part);
         mHomeMediaStoreAdapter = new HomeMediaStoreAdapter(this);
@@ -223,14 +236,21 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         startBannerScrollTimer();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCastBtnState();
+    }
+
     private void getChannelMap() {
-        mDataManager.loadChannelMap(new DataManager.IOnloadListener<HashMap<Integer, String>>() {
-            @Override
-            public void onLoad(HashMap<Integer, String> channelMap) {
-                ITApp.setChannelMap(channelMap);
-                download();
-            }
-        });
+        mDataManager
+                .loadChannelMap(new DataManager.IOnloadListener<HashMap<Integer, String>>() {
+                    @Override
+                    public void onLoad(HashMap<Integer, String> channelMap) {
+                        ITApp.setChannelMap(channelMap);
+                        download();
+                    }
+                });
     }
 
     private void download() {
@@ -243,14 +263,15 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
                         mHandler.sendEmptyMessage(MSG_UPDATE_HOME_CHANNEL);
                     }
                 });
+
         mDataManager.loadBanner(null, new DataManager.IOnloadListener<Banner[]>() {
 
-            @Override
-            public void onLoad(Banner[] entity) {
-                mBannerMediaList = entity;
-                mHandler.sendEmptyMessage(MSG_UPDATE_HOME_BANNER);
-            }
-        });
+                    @Override
+                    public void onLoad(Banner[] entity) {
+                        mBannerMediaList = entity;
+                        mHandler.sendEmptyMessage(MSG_UPDATE_HOME_BANNER);
+                    }
+                });
     }
 
     private void setHomeChannelAdapter() {
@@ -261,7 +282,9 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
             // this.mHomeChannelAdapter.setOnMoreClickListener(this);
 
         }
+
         mHomeChannelAdapter.setRecommendationOfChannels(mRecommendationOfChannels);
+
         mHomeChannelAdapter.setOnMoreClickListener(this);
         mHomeChannelListView.setAdapter(mHomeChannelAdapter);
         mHomeChannelAdapter.setGroup(mChannelList);
@@ -337,7 +360,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
         mHandler.removeCallbacks(mRunnable);
     }
 
-
     public void startBannerScrollTimer() {
         stopBannerScrollTimer();
         callBack();
@@ -396,11 +418,12 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener, 
 
     @Override
     public void onClick(View view) {
-        android.util.Log.d("XXXXXXXX", "onClick ");
         if (view.getId() == R.id.channel_more) {
-            Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
+            Intent intent = new Intent(HomeActivity.this,
+                    MediaDetailActivity.class);
             Channel channel = (Channel) view.getTag();
-            MediaInfo[] mediainfo = (MediaInfo[]) mRecommendationOfChannels.get(channel);
+            MediaInfo[] mediainfo = (MediaInfo[]) mRecommendationOfChannels
+                    .get(channel);
             intent.putExtra("mediaInfo", mediainfo[0]);
             startActivity(intent);
 

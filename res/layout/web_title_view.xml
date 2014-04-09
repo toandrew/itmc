@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- android:id="@id/title_root"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:actionBarSize"
+    android:background="@miui:drawable/v5_title_bar_bg_light"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:homeAsUpIndicator" />
+
+    <LinearLayout
+        android:id="@id/top_bar"
+        android:layout_width="0.0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:clickable="true"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@id/title"
+            style="@miui:style/V5.TextAppearance.Title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@id/sub_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textSize="@dimen/text_size_28"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <Button
+        android:id="@id/full_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fullscreen_to_play_land"
+        android:visibility="gone" />
+ -->
+</LinearLayout>

@@ -440,6 +440,7 @@ public class MediaDetailActivity extends CoreActivity
 
     private void setDetailAdapter() {
         ArrayList localArrayList = (ArrayList) this.mMediaSetInfoList.getAvailableCiList();
+
         seriesAdapter.setGroup(localArrayList);
         if (mDescTextview == null) return;
         mDescTextview.setText(this.mMediaDetailInfo.desc);
@@ -476,7 +477,9 @@ public class MediaDetailActivity extends CoreActivity
             Intent intent = new Intent(MediaDetailActivity.this, WebViewActivity.class);
             intent.putExtra("pageUrl", mMediaUrl);
             intent.putExtra("source", mPreferenceSource);
-            intent.putExtra("ci", ci);
+            intent.putExtra("meidaTitle", mediaInfo.mediaName.trim());
+            intent.putExtra("available_episode_count", mediaInfo.setCount);
+            intent.putExtra("current_episode", ci);
             startActivity(intent);
             android.util.Log.d("XXXXXXXXXX", "mMediaUrl = " + mMediaUrl + " mPreferenceSource = "
                     + mPreferenceSource);

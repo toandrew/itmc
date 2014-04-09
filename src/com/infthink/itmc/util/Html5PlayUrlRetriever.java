@@ -66,7 +66,6 @@ public class Html5PlayUrlRetriever {
 
     private void exeJs(String js) {
         try {
-            dumpLog("XXXXXXXX", "js");
             mWebView.loadUrl(js);
             return;
         } catch (Exception ex) {
@@ -104,7 +103,6 @@ public class Html5PlayUrlRetriever {
 
     private synchronized void setYoukuPlayLoop(int delay) {
         if (!mReleased) {
-            dumpLog("XXXXXXXX", "get video url");
             mHandler.removeCallbacks(mYoukuAutoPlayRunnale);
             mHandler.postDelayed(mYoukuAutoPlayRunnale, delay);
         }

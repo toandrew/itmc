@@ -9,6 +9,29 @@ public final class Util {
     public static boolean isEmpty(String str) {
         return (str == null || str.length() == 0);
     }
+    
+
+    public static String secondTimeToString(int time) {
+        if (time <= 0) {
+            return "";
+        }
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
+        minute = time / 60;
+        if (minute < 60) {
+            second = time % 60;
+            String str = "00:" + ((minute >= 10) ? minute : ("0" + minute)) + ":" + ((second >= 10) ? second : ("0" + second));
+            return str;
+        } else {
+            hour = minute / 60;
+            minute = minute % 60;
+            second = time - hour * 3600 - minute * 60;
+            String str = "" + ((hour >= 10) ? hour : ("0" + hour)) + ":" + ((minute >= 10) ? minute : ("0" + minute)) + ":" + ((second >= 10) ? second : ("0" + second));
+            return str;
+        }
+    }
+
 
     public static String formatScore(double score) {
         // boolean bool = paramDouble < 0.0D;
