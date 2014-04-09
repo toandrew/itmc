@@ -18,7 +18,9 @@ import com.infthink.itmc.type.RecommendChannel;
 import com.infthink.itmc.type.ShowBaseInfo;
 import com.infthink.itmc.widget.BannerIndicator;
 import com.infthink.itmc.widget.LoadingListView;
+import com.infthink.itmc.widget.MediaView;
 import com.infthink.itmc.widget.PagerView;
+import com.infthink.itmc.widget.MediaView.OnMediaClickListener;
 
 import android.app.ActionBar;
 import android.content.Intent;
@@ -49,7 +51,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     public static final int MSG_UPDATE_CHANNEL_RANK = 2;
     public static final int MSG_UPDATE_CHANNEL = 3;
     public static final int MSG_UPDATE_CHANNEL_NEW = 4;
-    
+
 
     private PagerView mPagerView;
     private int[] mPageNo = new int[3];
@@ -73,6 +75,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     private ArrayList<Channel> mChannelList = new ArrayList<Channel>();
     private ArrayList<RankInfo> mNewInfoList = new ArrayList<RankInfo>();
     private HashMap<Channel, ShowBaseInfo[]> mRecommendationOfChannels = new HashMap();
+
     @Override
     protected void onCreateAfterSuper(Bundle paramBundle) {
         super.onCreateAfterSuper(paramBundle);
@@ -173,9 +176,9 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         mPagerView = ((PagerView) findViewById(R.id.pager_view));
         mPagerView.setTabBackgroudResource(R.drawable.transparent);
         mPagerView.setIndicatorBackgroundResource(R.drawable.page_indicator_arrowbar);
-//         mPagerView.setIndicatorBackgroundResource(R.drawable.channel_indicator_arrowbar);
+        // mPagerView.setIndicatorBackgroundResource(R.drawable.channel_indicator_arrowbar);
         // mPagerView.setTabTextSize(R.dimen.text_size_32);
-//         mPagerView.setOnPageChangedListener(this);
+        // mPagerView.setOnPageChangedListener(this);
         // mPagerView.getPager().setOnTouchInterceptor(this);
         View[] views = new View[3];
         int margin = getResources().getDimensionPixelSize(R.dimen.page_margin);
@@ -250,7 +253,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     if (mBannerMediaList != null) mBannerMediaCount = mBannerMediaList.length;
                     mBannerIndicator.setIndicatorNum(mBannerMediaCount);
                     if (mBannerMediaCount > 0) listView.addHeaderView(mHeaderView);
-//                     listView.setOnTouchInterceptor(this);
+                    // listView.setOnTouchInterceptor(this);
                 }
                 PosterListAdapter posterAdapter = new PosterListAdapter(this);
                 mPosterAdapter[i] = posterAdapter;
@@ -290,19 +293,19 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         // }
         // mRankAdapter.setGroup(localArrayList);
 
-//        ArrayList a = new ArrayList();
-//        for (int i = 0; i < 20; i++) {
-//            Object c = new Object();
-//            a.add(c);
-//        }
-//        mPosterAdapter[0].setGroup(a);
+        // ArrayList a = new ArrayList();
+        // for (int i = 0; i < 20; i++) {
+        // Object c = new Object();
+        // a.add(c);
+        // }
+        // mPosterAdapter[0].setGroup(a);
 
-//        ArrayList b = new ArrayList();
-//        for (int i = 0; i < 50; i++) {
-//            Object c = new Object();
-//            b.add(c);
-//        }
-//        mPosterAdapter[2].setGroup(b);
+        // ArrayList b = new ArrayList();
+        // for (int i = 0; i < 50; i++) {
+        // Object c = new Object();
+        // b.add(c);
+        // }
+        // mPosterAdapter[2].setGroup(b);
     }
 
     private void setBannerAdapter() {
@@ -312,27 +315,71 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         mBannerIndicator.setIndicatorNum(mBannerMediaCount);
         mBannerIndicator.setCurIndicator(0);
         startBannerScrollTimer();
+        mBannerAdapter.setOnMediaClickListener(new OnMediaClickListener() {
+
+            @Override
+            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(ChannelActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                intent.putExtra("mediaInfo", mediaInfo);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setRankAdapter() {
         mRankAdapter.setmRankInfoList(mRankInfoList);
         mRankAdapter.setGroup(mRankInfoList);
+        mRankAdapter.setOnMediaClickListener(new OnMediaClickListener() {
+
+            @Override
+            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(ChannelActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                intent.putExtra("mediaInfo", mediaInfo);
+                startActivity(intent);
+            }
+        });
     }
-    
-    private void setRecommendAdapter(){
+
+    private void setRecommendAdapter() {
         MediaInfo[] medias = (MediaInfo[]) mRecommendationOfChannels.get(mChannelList.get(0));
         mPosterAdapter[0].setGroup(medias);
-//        mRankAdapter.setmRankInfoList(mRankInfoList);
-//        mRankAdapter.setGroup(mRankInfoList);
+        mPosterAdapter[0].setOnMediaClickListener(new OnMediaClickListener() {
+
+            @Override
+            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(ChannelActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                intent.putExtra("mediaInfo", mediaInfo);
+                startActivity(intent);
+            }
+        });
+        // mRankAdapter.setmRankInfoList(mRankInfoList);
+        // mRankAdapter.setGroup(mRankInfoList);
     }
-    
-    private void setNewChannelAdapter(){
-//        for (int i = 0; i < mNewInfoList.size(); i++){
-            RankInfo rankInfo = mNewInfoList.get(0);
-            MediaInfo[] medias = rankInfo.mediaInfos;
-            mPosterAdapter[2].setGroup(medias);
-//        }
-        
+
+    private void setNewChannelAdapter() {
+        // for (int i = 0; i < mNewInfoList.size(); i++){
+        RankInfo rankInfo = mNewInfoList.get(0);
+        MediaInfo[] medias = rankInfo.mediaInfos;
+        mPosterAdapter[2].setGroup(medias);
+        mPosterAdapter[2].setOnMediaClickListener(new OnMediaClickListener() {
+
+            @Override
+            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(ChannelActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                intent.putExtra("mediaInfo", mediaInfo);
+                startActivity(intent);
+            }
+        });
+        // }
+
     }
 
     // private void getChannelMapByChannelId() {
@@ -355,53 +402,56 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                 mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL_BANNER);
             }
         });
-        
-        mDataManager.loadRecommendChannel(channelId, new DataManager.IOnloadListener<RecommendChannel>() {
-            @Override
-            public void onLoad(RecommendChannel entity) {
-                mChannelList = (ArrayList<Channel>) entity.channelList;
-                mRecommendationOfChannels = entity.recommend;
-                mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL);
-            }
-        });
 
-        mDataManager.loadChannelRank(channelId, 1,3,7,new DataManager.IOnloadListener<RankInfoList>() {
-
-            @Override
-            public void onLoad(RankInfoList entity) {
-                // TODO Auto-generated method stub
-                android.util.Log.d("XXXXXXXXXX", "download loadChannelRank = "
-                        + entity.ranks[0].mediaInfos[0].mediaName);
-                RankInfo[] ranks = entity.ranks;
-                ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
-                if (ranks != null) {
-                    for (int i = 0; i < ranks.length; i++) {
-                        localArrayList.add(ranks[i]);
+        mDataManager.loadRecommendChannel(channelId,
+                new DataManager.IOnloadListener<RecommendChannel>() {
+                    @Override
+                    public void onLoad(RecommendChannel entity) {
+                        mChannelList = (ArrayList<Channel>) entity.channelList;
+                        mRecommendationOfChannels = entity.recommend;
+                        mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL);
                     }
-                }
-                mRankInfoList = localArrayList;
-                mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL_RANK);
-            };
+                });
 
-        });
-        
-        mDataManager.loadChannelRank(channelId, 1,60,1,new DataManager.IOnloadListener<RankInfoList>() {
+        mDataManager.loadChannelRank(channelId, 1, 3, 7,
+                new DataManager.IOnloadListener<RankInfoList>() {
 
-            @Override
-            public void onLoad(RankInfoList entity) {
-                // TODO Auto-generated method stub
-                RankInfo[] ranks = entity.ranks;
-                ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
-                if (ranks != null) {
-                    for (int i = 0; i < ranks.length; i++) {
-                        localArrayList.add(ranks[i]);
-                    }
-                }
-                mNewInfoList = localArrayList;
-                mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL_NEW);
-            };
+                    @Override
+                    public void onLoad(RankInfoList entity) {
+                        // TODO Auto-generated method stub
+                        android.util.Log.d("XXXXXXXXXX", "download loadChannelRank = "
+                                + entity.ranks[0].mediaInfos[0].mediaName);
+                        RankInfo[] ranks = entity.ranks;
+                        ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
+                        if (ranks != null) {
+                            for (int i = 0; i < ranks.length; i++) {
+                                localArrayList.add(ranks[i]);
+                            }
+                        }
+                        mRankInfoList = localArrayList;
+                        mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL_RANK);
+                    };
 
-        });
+                });
+
+        mDataManager.loadChannelRank(channelId, 1, 60, 1,
+                new DataManager.IOnloadListener<RankInfoList>() {
+
+                    @Override
+                    public void onLoad(RankInfoList entity) {
+                        // TODO Auto-generated method stub
+                        RankInfo[] ranks = entity.ranks;
+                        ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
+                        if (ranks != null) {
+                            for (int i = 0; i < ranks.length; i++) {
+                                localArrayList.add(ranks[i]);
+                            }
+                        }
+                        mNewInfoList = localArrayList;
+                        mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL_NEW);
+                    };
+
+                });
 
     }
 
@@ -442,7 +492,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         }
     }
 
-    
+
 
     private void callBack() {
         mHandler.postDelayed(mRunnable, 5000);

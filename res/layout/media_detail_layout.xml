@@ -37,7 +37,7 @@
         <com.infthink.itmc.widget.PagerView
             android:id="@+id/detail_pagerview"
             android:layout_width="fill_parent"
-            android:layout_height="280dp"
+            android:layout_height="300dp"
             android:layout_marginTop="230dp" />
 
         <com.infthink.itmc.widget.ShadowView

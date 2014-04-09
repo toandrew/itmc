@@ -19,6 +19,8 @@ import com.infthink.itmc.type.ShowBaseInfo;
 import com.infthink.itmc.upgrade.Upgrade;
 import com.infthink.itmc.widget.BannerIndicator;
 import com.infthink.itmc.widget.LoadingListView;
+import com.infthink.itmc.widget.MediaView;
+import com.infthink.itmc.widget.MediaView.OnMediaClickListener;
 import com.infthink.itmc.widget.PagerView;
 import com.infthink.itmc.widget.ScrollViewPager;
 import com.infthink.libs.common.message.MessageManager;
@@ -91,7 +93,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                 upgrade.prepareUpgradeView(HomeActivity.this);
                 MessageManager.sendMessage(new AppUpdateEvent(false), 1, true);
             }
-        }, 3000);
+        }, 1000);
 
 
         setContentView(R.layout.activity_home);
@@ -233,6 +235,17 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         mBannerMediaCount = mBannerMediaList.length;
         mBannerIndicator.setIndicatorNum(mBannerMediaCount);
         mBannerIndicator.setCurIndicator(0);
+        mBannerAdapter.setOnMediaClickListener(new OnMediaClickListener() {
+            
+            @Override
+            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                intent.putExtra("mediaInfo", mediaInfo);
+                startActivity(intent);
+            }
+        });
         startBannerScrollTimer();
     }
 
@@ -286,6 +299,17 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         mHomeChannelAdapter.setRecommendationOfChannels(mRecommendationOfChannels);
 
         mHomeChannelAdapter.setOnMoreClickListener(this);
+        mHomeChannelAdapter.setOnMediaClickListenenr(new OnMediaClickListener() {
+            
+            @Override
+            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo2 = paramMediaView.getMediaInfo();
+                intent.putExtra("mediaInfo", mediaInfo2);
+                startActivity(intent);
+            }
+        });
         mHomeChannelListView.setAdapter(mHomeChannelAdapter);
         mHomeChannelAdapter.setGroup(mChannelList);
     }
@@ -419,12 +443,9 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.channel_more) {
-            Intent intent = new Intent(HomeActivity.this,
-                    MediaDetailActivity.class);
+            Intent intent = new Intent(HomeActivity.this, ChannelActivity.class);
             Channel channel = (Channel) view.getTag();
-            MediaInfo[] mediainfo = (MediaInfo[]) mRecommendationOfChannels
-                    .get(channel);
-            intent.putExtra("mediaInfo", mediainfo[0]);
+            intent.putExtra("channel", channel);
             startActivity(intent);
 
             // overridePendingTransition(R.anim.appear, R.anim.stay_same);

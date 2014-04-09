@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 public class HomeChannelAdapter extends BaseGroupAdapter<Channel> {
     private int margin;
-//    private MediaView.OnMediaClickListener onMediaClickListener;
+    private MediaView.OnMediaClickListener onMediaClickListener;
     private View.OnClickListener onMoreClickListener;
     private HashMap<Channel, ShowBaseInfo[]> recommendationOfChannels;
     
@@ -50,11 +50,11 @@ public class HomeChannelAdapter extends BaseGroupAdapter<Channel> {
         if (viewHolder.mediaPosters == null) {
             viewHolder.mediaPosters = ((ViewStub) convertView.findViewById(R.id.media_stub)).inflate();
             viewHolder.mediaView_0 = ((MediaView)viewHolder.mediaPosters.findViewById(R.id.left));
-//            viewHolder.mediaView_0.setOnMediaClickListener(this.onMediaClickListener);
+            viewHolder.mediaView_0.setOnMediaClickListener(this.onMediaClickListener);
             viewHolder.mediaView_1 = ((MediaView)viewHolder.mediaPosters.findViewById(R.id.middle));
-//            viewHolder.mediaView_1.setOnMediaClickListener(this.onMediaClickListener);
+            viewHolder.mediaView_1.setOnMediaClickListener(this.onMediaClickListener);
             viewHolder.mediaView_2 = ((MediaView)viewHolder.mediaPosters.findViewById(R.id.right));
-//            viewHolder.mediaView_2.setOnMediaClickListener(this.onMediaClickListener);
+            viewHolder.mediaView_2.setOnMediaClickListener(this.onMediaClickListener);
         }
         mediaView = new MediaView[3];
         mediaView[0] = viewHolder.mediaView_0;
@@ -92,4 +92,10 @@ public class HomeChannelAdapter extends BaseGroupAdapter<Channel> {
         private ViewHolder() {
         }
     }
+    
+    public void setOnMediaClickListenenr(MediaView.OnMediaClickListener paramOnMediaClickListener)
+    {
+      this.onMediaClickListener = paramOnMediaClickListener;
+    }
+
 }

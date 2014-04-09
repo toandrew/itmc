@@ -31,18 +31,21 @@ import android.widget.LinearLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 
-public class MediaView extends LinearLayout {
+public class MediaView extends LinearLayout implements View.OnClickListener {
     public static final int BANNER_TYPE = 1;
     public static final int COVER_TYPE = 0;
     // public static final int TV_TYPE = 2;
     private AlbumInfo mAlbumInfo;
     private ImageView mBorderImage;
-    // private View clickView;
+     private View mClickView;
     private Context mContext;
     // private ImageManager imageManager;
     private View infoView;
     private ImageView mMaskImage;
     private MediaInfo mediaInfo;
+    public MediaInfo getMediaInfo() {
+        return mediaInfo;
+    }
     // private int mediaSetType;
     private int mediaType = 0;
     private TextView nameExView;
@@ -122,6 +125,13 @@ public class MediaView extends LinearLayout {
         frameLayout.addView(mBorderImage);
         frameLayout.addView(mMaskImage);
         frameLayout.addView(mPosterImage);
+        this.mClickView = new View(this.mContext);
+        this.mClickView.setClickable(true);
+        this.mClickView.setBackgroundResource(R.drawable.poster_item_bg_corner);
+        FrameLayout.LayoutParams localLayoutParams4 = new FrameLayout.LayoutParams(-1, -1);
+        this.mClickView.setLayoutParams(localLayoutParams4);
+        this.mClickView.setOnClickListener(this);
+        frameLayout.addView(this.mClickView);
         addView(frameLayout);
 
         if ((mediaType == COVER_TYPE)) {
@@ -146,6 +156,7 @@ public class MediaView extends LinearLayout {
         if (this.onMediaClickListener != null) {
             // if (this.mediaInfo == null)
             // break label29;
+            
             this.onMediaClickListener.onMediaClick(this, this.mediaInfo);
         }
         // label29:
@@ -265,6 +276,17 @@ public class MediaView extends LinearLayout {
                     mPosterImage, url);
             // nameView.setText(personInfo.getName());
         }
+    }
+    
+    public void setClickable(boolean paramBoolean)
+    {
+      this.mClickView.setClickable(paramBoolean);
+      if (this.mediaType == 2)
+      {
+        this.mClickView.setBackgroundResource(2130837681);
+        return;
+      }
+      this.mClickView.setBackgroundResource(2130837557);
     }
 
     public void setDefaultPoster() {
