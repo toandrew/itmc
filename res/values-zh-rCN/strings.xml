@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="no_playhistory">播放记录为空</string>
+    <string name="today">今天</string>
+    
     <string name="all">全部</string>
     <string name="director_colon">导演：</string>
     <string name="actors_colon">主演：</string>
@@ -36,7 +38,7 @@
     <string name="play">播放</string>
     
     
-     <string name="qiyi">奇艺</string>
+    <string name="qiyi">奇艺</string>
     <string name="souhu">搜狐</string>
     <string name="tencent">腾讯</string>
     <string name="youku">优酷</string>

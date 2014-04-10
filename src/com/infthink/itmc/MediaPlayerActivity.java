@@ -88,6 +88,9 @@ public class MediaPlayerActivity extends CoreActivity implements
              * Alternatively,for streaming media you can use
              * mVideoView.setVideoURI(Uri.parse(URLstring));
              */
+            if (ITApp.getNetcastManager().isConnectedDevice()) {
+                playToCast(mPlayUrl, mMediaTitle, mVideoView.getCurrentPosition());
+            }
             mVideoView.setVideoPath(mPlayUrl);
             mCastMediaController = new CastMediaController(
                     this);
@@ -107,9 +110,8 @@ public class MediaPlayerActivity extends CoreActivity implements
                             // optional need Vitamio 4.0
                             mediaPlayer.setPlaybackSpeed(1.0f);
                             mTextView.setVisibility(View.GONE);
-                            if (ITApp.getNetcastManager().isConnectedDevice()) {
-                                playToCast(mPlayUrl, mMediaTitle, mVideoView.getCurrentPosition());
-                            }
+                            if (mIsPlayToCast) mVideoView.pause();
+                            
                         }
                     });
             mVideoView.setOnCompletionListener(new OnCompletionListener() {

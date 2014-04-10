@@ -40,6 +40,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -316,20 +318,22 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
     private void setMediaAdapter() {
         ArrayList localArrayList = new ArrayList();
-        for (int i = 0; i < 3; i++) {
-            LocalMediaCategoryInfo c = new LocalMediaCategoryInfo();
-            localArrayList.add(c);
-        }
+        LocalMediaCategoryInfo c = new LocalMediaCategoryInfo();
+        localArrayList.add(c);
         if (mHomeMediaStoreAdapter == null) {
             mHomeMediaStoreAdapter = new HomeMediaStoreAdapter(this);
-            // this.mHomeChannelAdapter.setRecommendationOfChannels(this.recommendationOfChannels);
-            // this.mHomeChannelAdapter.setOnMediaClickListenenr(this);
-            // this.mHomeChannelAdapter.setOnMoreClickListener(this);
             mHomeMediaStoreListView.setAdapter(mHomeMediaStoreAdapter);
-            mHomeMediaStoreAdapter.setGroup(localArrayList);
-        } else {
-            mHomeMediaStoreAdapter.setGroup(localArrayList);
         }
+        mHomeMediaStoreAdapter.setGroup(localArrayList);
+        mHomeMediaStoreListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                    long arg3) {
+                Intent intent = new Intent(HomeActivity.this, RecentPlayHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
