@@ -1,6 +1,10 @@
 package com.infthink.itmc;
 
+import java.util.Calendar;
+
+import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
 import com.infthink.itmc.data.NetcastManager.CastStatusUpdateListener;
+import com.infthink.itmc.type.LocalPlayHistory;
 import com.infthink.itmc.util.Html5PlayUrlRetriever;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.util.Html5PlayUrlRetriever.PlayUrlListener;
@@ -45,6 +49,19 @@ public class MediaPlayerActivity extends CoreActivity implements
     private CastMediaController mCastMediaController;
     private int mCastSeekPosition = -1;
     private boolean mIsPlayToCast;
+    private int mMediaId;
+    private String mPageUrl;
+    private long mPlayCurrentTime;
+    
+    private void recordMedia() {
+        long playTime;
+        if (mIsPlayToCast) {
+            playTime = mPlayCurrentTime;
+        } else {
+            playTime = mVideoView.getCurrentPosition();
+        }
+        LocalPlayHistoryInfoManager.getInstance(this).saveHistory(this, mMediaId, mCi, String.valueOf(playTime), String.valueOf(Calendar.getInstance().getTimeInMillis()), mSource, mMediaTitle, mPlayUrl, mPageUrl, "none");
+    }
     
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
@@ -58,12 +75,20 @@ public class MediaPlayerActivity extends CoreActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Intent intent = getIntent();
+        mMediaId = intent.getIntExtra("media_id", -1);
         mPlayUrl = intent.getStringExtra("path");
         mMediaTitle = intent.getStringExtra("meidaTitle");
-        mMediaCount = intent.getIntExtra("available_episode_count", 0);
-        mCi = intent.getIntExtra("current_episode", 0);
+        mMediaCount = intent.getIntExtra("available_episode_count", -1);
+        mCi = intent.getIntExtra("current_episode", -1);
         mSource = intent.getIntExtra("source", -1);
-
+        mPageUrl = intent.getStringExtra("pageUrl");
+        
+        long seekTo = 0;
+        LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
+        if (history != null && history.mediaCi == mCi) {
+            seekTo = Integer.valueOf(history.playSeconds);
+        }
+        
         final FrameLayout contentView = new FrameLayout(this);
         mVideoView = new VideoView(this);
         mTextView = new TextView(this);
@@ -89,7 +114,7 @@ public class MediaPlayerActivity extends CoreActivity implements
              * mVideoView.setVideoURI(Uri.parse(URLstring));
              */
             if (ITApp.getNetcastManager().isConnectedDevice()) {
-                playToCast(mPlayUrl, mMediaTitle, mVideoView.getCurrentPosition());
+                playToCast(mPlayUrl, mMediaTitle, seekTo);
             }
             mVideoView.setVideoPath(mPlayUrl);
             mCastMediaController = new CastMediaController(
@@ -103,6 +128,8 @@ public class MediaPlayerActivity extends CoreActivity implements
                         }
                     });
             mVideoView.requestFocus();
+            
+            final long position = seekTo;
             mVideoView
                     .setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -110,7 +137,11 @@ public class MediaPlayerActivity extends CoreActivity implements
                             // optional need Vitamio 4.0
                             mediaPlayer.setPlaybackSpeed(1.0f);
                             mTextView.setVisibility(View.GONE);
-                            if (mIsPlayToCast) mVideoView.pause();
+                            if (mIsPlayToCast) {
+                                mVideoView.pause();
+                            } else {
+                                mVideoView.seekTo(position);
+                            }
                             
                         }
                     });
@@ -135,6 +166,14 @@ public class MediaPlayerActivity extends CoreActivity implements
         }, 20000);
     }
     
+    
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        recordMedia();
+    }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         switch (event.getKeyCode()) {
@@ -260,10 +299,11 @@ public class MediaPlayerActivity extends CoreActivity implements
 
     @Override
     public void updateStatus(MediaStatus status) {
-        mCastMediaController.setCastDuration(status.getDuration() * 1000);
-        mCastMediaController.setCastCurrentPosition(status.getCurrentTime() * 1000);
         if (status.getState() == RampConstants.PLAYER_STATUS_PLAYING) {
             mCastMediaController.setCastIsPlaying(true);
+            mCastMediaController.setCastDuration(status.getDuration() * 1000);
+            mPlayCurrentTime = status.getCurrentTime() * 1000;
+            mCastMediaController.setCastCurrentPosition(mPlayCurrentTime);
         } else {
             mCastMediaController.setCastIsPlaying(false);
         }

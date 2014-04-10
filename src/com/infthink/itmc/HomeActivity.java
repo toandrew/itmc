@@ -2,6 +2,7 @@ package com.infthink.itmc;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import com.infthink.itmc.adapter.HomeChannelAdapter;
 import com.infthink.itmc.adapter.HomeMediaStoreAdapter;
 import com.infthink.itmc.adapter.ScrollBannerAdapter;
 import com.infthink.itmc.data.DataManager;
+import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
 import com.infthink.itmc.service.CoreService;
 import com.infthink.itmc.type.Banner;
 import com.infthink.itmc.type.Channel;
@@ -96,7 +98,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                 MessageManager.sendMessage(new AppUpdateEvent(false), 1, true);
             }
         }, 1000);
-
 
         setContentView(R.layout.activity_home);
         mBottomItem = View.inflate(this, R.layout.home_bottom_item, null);

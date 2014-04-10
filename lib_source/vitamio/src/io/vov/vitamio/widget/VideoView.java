@@ -433,7 +433,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   }
 
   public void setMediaController(MediaController controller) {
-      android.util.Log.d("XXXXXXXXX", "setMediaController");
     if (mMediaController != null)
       mMediaController.hide();
     mMediaController = controller;
@@ -447,9 +446,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   }
 
   private void attachMediaController() {
-      android.util.Log.d("XXXXXXXXX", "attachMediaController");
     if (mMediaPlayer != null && mMediaController != null) {
-        android.util.Log.d("XXXXXXXXX", "111111111111");
       mMediaController.setMediaPlayer(this);
       View anchorView = this.getParent() instanceof View ? (View) this.getParent() : this;
       mMediaController.setAnchorView(anchorView);
@@ -461,7 +458,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         mMediaController.setFileName(name);
       }
     }
-    android.util.Log.d("XXXXXXXXX", "end");
   }
 
   public void setOnPreparedListener(OnPreparedListener l) {

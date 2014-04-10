@@ -475,6 +475,7 @@ public class MediaDetailActivity extends CoreActivity
                 mMediaUrl = mMediaUrlInfoList.urlNormal[getSourceIDPos(mPreferenceSource)].mediaUrl;
             }
             Intent intent = new Intent(MediaDetailActivity.this, WebViewActivity.class);
+            intent.putExtra("media_id", mediaInfo.mediaID);
             intent.putExtra("pageUrl", mMediaUrl);
             intent.putExtra("source", mPreferenceSource);
             intent.putExtra("meidaTitle", mediaInfo.mediaName.trim());
@@ -578,8 +579,12 @@ public class MediaDetailActivity extends CoreActivity
                     }
                     btnPlay.setText("播放");
                     Intent intent = new Intent(MediaDetailActivity.this, WebViewActivity.class);
+                    intent.putExtra("media_id", mediaInfo.mediaID);
                     intent.putExtra("pageUrl", mMediaUrl);
                     intent.putExtra("source", mPreferenceSource);
+                    intent.putExtra("meidaTitle", mediaInfo.mediaName.trim());
+                    intent.putExtra("available_episode_count", mediaInfo.setCount);
+                    intent.putExtra("current_episode", ci);
                     intent.putExtra("ci", ci);
                     startActivity(intent);
                 }

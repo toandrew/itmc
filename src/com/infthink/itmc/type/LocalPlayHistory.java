@@ -36,4 +36,10 @@ public class LocalPlayHistory extends BaseLocalPlayHistory {
         this.imageUrl = imageUrl;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if ((obj != null) && ((obj instanceof LocalPlayHistory)))
+            return ((LocalPlayHistory) obj).mediaId == this.mediaId;
+        return super.equals(obj);
+    }
 }

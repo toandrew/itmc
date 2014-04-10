@@ -12,8 +12,8 @@ import com.infthink.itmc.type.LocalPlayHistory;
 
 public class SharedPreferencesUtil {
     private static final String HISTORY_NAME = "history";
-    private static final String VIDEO_SPLIT = "\\";
-    private static final String HISTORY_SPLIT = ";";
+    private static final String VIDEO_SPLIT = "＃";
+    private static final String HISTORY_SPLIT = "；";
 
     // value: mediaId, meidaCi, playSeconds, playDate, mediaSource, videoName, mediaUrl, html5Page
     public static String createHistoryValue(int mediaId, int meidaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
@@ -21,19 +21,22 @@ public class SharedPreferencesUtil {
     }
 
     // value: mediaId, meidaCi, playSeconds, playDate, mediaSource, videoName, mediaUrl, html5Page
-    public static void recordHistory(Context context, String mediaId, String value) {
+    public static void recordHistory(Context context, int mediaId, String value) {
         SharedPreferences sp = context.getSharedPreferences(HISTORY_NAME, Context.MODE_PRIVATE);
         Editor editor = sp.edit();
         String history = getHistory(context);
+
         StringBuilder sb = new StringBuilder(history);
-        String[] strs = sb.toString().split(HISTORY_SPLIT);
-        for(int i = 0; i < strs.length; i++) {
-            String video = strs[i];
-            String[] obj = video.split(VIDEO_SPLIT);
-            if (mediaId.equals(obj[0])) {
-                String newValue = history.replace(video + HISTORY_SPLIT, "");
-                sb.replace(0, sb.length(), newValue);
-                break;
+        if (history.length() > 0) {
+            String[] strs = sb.toString().split(HISTORY_SPLIT);
+            for(int i = 0; i < strs.length; i++) {
+                String video = strs[i];
+                String[] obj = video.split(VIDEO_SPLIT);
+                if (mediaId == Integer.valueOf(obj[0])) {
+                    String newValue = history.replace(video + HISTORY_SPLIT, "");
+                    sb.replace(0, sb.length(), newValue);
+                    break;
+                }
             }
         }
 

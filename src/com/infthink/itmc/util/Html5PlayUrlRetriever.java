@@ -120,8 +120,8 @@ public class Html5PlayUrlRetriever {
         mHandler.removeCallbacks(mGetVideoUrlQiyiRunnale);
         mHandler.removeCallbacks(mGetVideoUrlRunnale);
         mHandler.removeCallbacks(mYoukuAutoPlayRunnale);
-        if (mSource == 8)
-            mLogCat.interrupt();
+//        if (mSource == 8)
+//            mLogCat.interrupt();
 
     }
 

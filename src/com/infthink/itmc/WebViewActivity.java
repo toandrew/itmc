@@ -54,12 +54,15 @@ public class WebViewActivity extends BaseWebViewActivity implements
     private String mPageUrl;
     private String mMediaTitle;
     private int mMediaCount;
+    private int mMediaId;
 
     @Override
     protected void onCreateAfterSuper(Bundle bundle) {
         super.onCreateAfterSuper(bundle);
 
         Intent intent = getIntent();
+        
+        mMediaId = intent.getIntExtra("media_id", -1);
         mMediaTitle = intent.getStringExtra("meidaTitle");
         mMediaCount = intent.getIntExtra("available_episode_count", 0);
         mCi = intent.getIntExtra("current_episode", 0);
@@ -161,6 +164,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
                         MediaPlayerActivity.class);
                 intent.putExtras(getIntent());
                 intent.putExtra("path", mPlayUrl);
+                intent.putExtra("pageUrl", mPageUrl);
                 startActivity(intent);
             }
         });
