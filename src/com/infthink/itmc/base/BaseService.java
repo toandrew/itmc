@@ -7,13 +7,13 @@ import org.json.JSONArray;
 
 import android.util.Log;
 
-import com.infthink.itmc.upgrade.Upgrade;
-import com.infthink.itmc.upgrade.Upgrade.IInfoParser;
-import com.infthink.itmc.upgrade.Upgrade.Info;
 import com.infthink.libs.cache.simple.BitmapCachePool;
 import com.infthink.libs.cache.simple.TextCachePool;
 import com.infthink.libs.common.utils.IOUtils;
 import com.infthink.libs.common.utils.JSONUtils;
+import com.infthink.libs.upgrade.Upgrade;
+import com.infthink.libs.upgrade.Upgrade.IInfoParser;
+import com.infthink.libs.upgrade.Upgrade.Info;
 
 /**
  * 基本服务
@@ -49,8 +49,7 @@ public abstract class BaseService extends com.infthink.libs.base.BaseService {
                             break;
                         case 1:
                             String string = jsonUtils.opt("code", "0").toString();
-                            float fStr = Float.parseFloat(string);
-                            versionCode = (int) fStr;
+                            versionCode = Integer.parseInt(string);
                             upgradeApkUrl = jsonUtils.opt("url", upgradeApkUrl).toString();
                             break;
                         default:

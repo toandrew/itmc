@@ -79,7 +79,7 @@
 
         <meta-data
             android:name="upgrade_url"
-            android:value="http://www.baidu.com" />
+            android:value="http://ota.infthink.com/check" />
         <meta-data
             android:name="PLATFORM_ID"
             android:value="\ 0001000100010001" />

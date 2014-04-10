@@ -16,7 +16,6 @@ import com.infthink.itmc.type.LocalMediaCategoryInfo;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.RecommendChannel;
 import com.infthink.itmc.type.ShowBaseInfo;
-import com.infthink.itmc.upgrade.Upgrade;
 import com.infthink.itmc.widget.BannerIndicator;
 import com.infthink.itmc.widget.LoadingListView;
 import com.infthink.itmc.widget.MediaView;
@@ -25,6 +24,7 @@ import com.infthink.itmc.widget.PagerView;
 import com.infthink.itmc.widget.ScrollViewPager;
 import com.infthink.libs.common.message.MessageManager;
 import com.infthink.libs.common.message.MessageResponse;
+import com.infthink.libs.upgrade.Upgrade;
 
 import android.os.Bundle;
 import android.os.Handler;
