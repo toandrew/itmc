@@ -113,12 +113,13 @@ public class MediaPlayerActivity extends CoreActivity implements
              * Alternatively,for streaming media you can use
              * mVideoView.setVideoURI(Uri.parse(URLstring));
              */
+            mCastMediaController = new CastMediaController(
+                    this);
             if (ITApp.getNetcastManager().isConnectedDevice()) {
                 playToCast(mPlayUrl, mMediaTitle, seekTo);
             }
             mVideoView.setVideoPath(mPlayUrl);
-            mCastMediaController = new CastMediaController(
-                    this);
+            updateCastBtnState();
             mVideoView.setMediaController(mCastMediaController);
             mCastMediaController
                     .setCastButtonClickListener(new OnCastButtonClickListener() {
@@ -128,7 +129,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                         }
                     });
             mVideoView.requestFocus();
-            
+
             final long position = seekTo;
             mVideoView
                     .setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -138,11 +139,18 @@ public class MediaPlayerActivity extends CoreActivity implements
                             mediaPlayer.setPlaybackSpeed(1.0f);
                             mTextView.setVisibility(View.GONE);
                             if (mIsPlayToCast) {
-                                mVideoView.pause();
+                                Handler h = new Handler();
+                                h.postDelayed(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        mVideoView.pause();
+                                    }
+                                }, 1000);
+                                
                             } else {
                                 mVideoView.seekTo(position);
                             }
-                            
                         }
                     });
             mVideoView.setOnCompletionListener(new OnCompletionListener() {
@@ -166,7 +174,9 @@ public class MediaPlayerActivity extends CoreActivity implements
         }, 20000);
     }
     
-    
+    protected void updateCastBtnState() {
+        mCastMediaController.updateCastBtnState(isSessionEstablished());
+    }
     
     @Override
     protected void onPause() {

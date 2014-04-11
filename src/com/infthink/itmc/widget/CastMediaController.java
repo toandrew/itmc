@@ -3,6 +3,7 @@ package com.infthink.itmc.widget;
 import java.lang.reflect.Method;
 
 import com.infthink.itmc.ITApp;
+import com.infthink.itmc.R;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -225,11 +226,28 @@ public class CastMediaController extends MediaController {
                 getResources().getIdentifier("mediacontroller", "layout",
                         mContext.getPackageName()), this);
     }
+    
+    public void updateCastBtnState(boolean connected) {
+        mIsConnected = connected;
+        if (mCastButton == null) return;
+        if (connected) {
+            mCastButton.setImageResource(R.drawable.img_cast_pressed);
+        } else {
+            mCastButton.setImageResource(R.drawable.img_cast_normal);
+        }
+    }
+
+    private boolean mIsConnected = false;
 
     private void initControllerView(View v) {
         mCastButton = (ImageButton) v.findViewById(getResources()
                 .getIdentifier("mediacontroller_cast", "id",
                         mContext.getPackageName()));
+        if (mIsConnected) {
+            mCastButton.setImageResource(R.drawable.img_cast_pressed);
+        } else {
+            mCastButton.setImageResource(R.drawable.img_cast_normal);
+        }
         mCastButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
