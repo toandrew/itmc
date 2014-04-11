@@ -63,10 +63,10 @@ public class CastDeviceAdapter extends BaseAdapter {
         }
 
         viewHolder.name.setText(mCastDeviceList.get(position).getFriendlyName());
-        viewHolder.status.setText("" + mCastDeviceList.get(position).isAp());
+        viewHolder.status.setText(mCastDeviceList.get(position).isAp() ? "需要设置" : "准备投射");
         return convertView;
     }
-    
+
     private class ViewHolder {
         public TextView name;
         public TextView status;

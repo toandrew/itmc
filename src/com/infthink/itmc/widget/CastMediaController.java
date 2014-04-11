@@ -38,7 +38,7 @@ public class CastMediaController extends MediaController {
     private OnCastButtonClickListener mOnCastButtonClickListener;
     private ImageButton mCastButton;
 
-    private static final int sDefaultTimeout = 3000;
+    private static final int sDefaultTimeout = 5000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
     private MediaPlayerControl mPlayer;
