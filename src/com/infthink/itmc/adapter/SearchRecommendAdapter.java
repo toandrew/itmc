@@ -27,7 +27,6 @@ public class SearchRecommendAdapter extends BaseGroupAdapter<String> {
         }
         
         holder.searchRecommendTv.setText(getItem(position));
-        android.util.Log.d("XXXXXXXX", "getItem(position) = " + getItem(position));
         if (position >= 3) {
             holder.searchRecommendTv.setTextColor(mContext.getResources().getColor(R.color.p_80_white));
         } else {

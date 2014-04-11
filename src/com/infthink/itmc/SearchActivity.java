@@ -6,19 +6,24 @@ import java.util.HashMap;
 import com.infthink.itmc.adapter.PosterListAdapter;
 import com.infthink.itmc.adapter.SearchRecommendAdapter;
 import com.infthink.itmc.adapter.SearchResultAdapter;
+import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.util.SearchUtil;
+import com.infthink.itmc.util.Util;
 import com.infthink.itmc.widget.LoadingListView;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewFlipper;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends CoreActivity implements OnEditorActionListener {
 
     private ArrayList<String> mRecommendList;
     private ArrayList<String> mMapKeys = new ArrayList<String>();
@@ -29,41 +34,50 @@ public class SearchActivity extends Activity {
     private String mSearchingHint;
     private String mResultRecommendHint;
     private String mSearchKey;
-    
+
     private SearchRecommendAdapter mRecommendAdapter;
     private ListView mRecommendListView;
     private LoadingListView mRecommendLoadingListView;
-    
+
     private ViewFlipper mViewFlipper;
     private View mSearchRecommendView;
     private View mSearchResultRecommendView;
     private View mSearchResultView;
     private View mLoadingView;
-    
+
     private ListView mResultListView;
     private LoadingListView mResultLoadingListView;
     private PosterListAdapter mResultRecommendAdapter;
-    
+
     private LoadingListView mResultRecommendLoadingListView;
     private ListView mResultRecommendListView;
-    
+
     private SearchResultAdapter mResultAdapter;
     private TextView mResultTitleTv;
     private TextView mResultRecommendHintTv;
     private TextView mResultRecommendTitleTv;
     private Button mResultTitleBtn;
-    
+    private EditText mEditSearch;
+
     @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
+    protected void onCreateAfterSuper(Bundle bundle) {
+        super.onCreateAfterSuper(bundle);
         getActionBar().hide();
         setContentView(R.layout.search_activity);
         onActive();
     }
 
     private void onActive() {
+        mEditSearch = (EditText) findViewById(R.id.input);
+        // mEditSearch.setTextColor(localResources.getColor(2131230732));
+        // mEditSearch.setTextSize(0,
+        // localResources.getDimensionPixelSize(2131296410));
+        mEditSearch.requestFocus();
+        // mEditSearch.addTextChangedListener(this);
+        mEditSearch.setOnEditorActionListener(this);
+
         mRecommendList = new ArrayList<String>();
-        //TODO: 测试
+        // TODO: 测试
         String[] strs = new String[6];
         strs[0] = "测试1";
         strs[1] = "测试2";
@@ -72,13 +86,16 @@ public class SearchActivity extends Activity {
         strs[4] = "测试5";
         strs[5] = "测试6";
         SearchUtil.sSearchRecommend = strs;
-        if (SearchUtil.sSearchRecommend != null && SearchUtil.sSearchRecommend.length > 0) {
-            for(String searchRecommend : SearchUtil.sSearchRecommend) {
+        if (SearchUtil.sSearchRecommend != null
+                && SearchUtil.sSearchRecommend.length > 0) {
+            for (String searchRecommend : SearchUtil.sSearchRecommend) {
                 mRecommendList.add(searchRecommend);
             }
         }
-        mSearchingHint = getResources().getString(R.string.find_media_searching);
-        mResultRecommendHint = getResources().getString(R.string.search_result_recommend_hint);
+        mSearchingHint = getResources()
+                .getString(R.string.find_media_searching);
+        mResultRecommendHint = getResources().getString(
+                R.string.search_result_recommend_hint);
         mCategoryAll = getResources().getString(R.string.all);
         mCurrentCategory = mCategoryAll;
         CategoryDetailInfo info = new CategoryDetailInfo();
@@ -93,66 +110,63 @@ public class SearchActivity extends Activity {
         mRecommendAdapter = new SearchRecommendAdapter(this);
         mRecommendAdapter.setGroup(mRecommendList);
         mRecommendListView.setAdapter(mRecommendAdapter);
-//        this.mRecommendListView.setOnItemClickListener(this.recommendListOnItemClickListener);
+        // this.mRecommendListView.setOnItemClickListener(this.recommendListOnItemClickListener);
         mLoadingView = View.inflate(this, R.layout.load_view, null);
-        mResultLoadingListView = ((LoadingListView)findViewById(R.id.search_result_loading_list_view));
+        mResultLoadingListView = ((LoadingListView) findViewById(R.id.search_result_loading_list_view));
         mResultLoadingListView.setLoadingView(mLoadingView);
         mResultLoadingListView.setShowLoading(true);
-//        this.mRetryLoadingView = new RetryLoadingView(this);
-//        this.mRetryLoadingView.setOnRetryLoadListener(new RetryLoadingView.OnRetryLoadListener()
-//        {
-//          public void OnRetryLoad(View paramView)
-//          {
-//            SearchActivity.this.mResultLoadingListView.setShowLoadingResult(false);
-//            SearchActivity.this.mResultLoadingListView.setShowLoading(true);
-//            SearchActivity.this.searchCategory(null);
-//          }
-//        });
-//        this.mResultLoadingListView.setLoadingResultView(this.mRetryLoadingView);
+        // this.mRetryLoadingView = new RetryLoadingView(this);
+        // this.mRetryLoadingView.setOnRetryLoadListener(new
+        // RetryLoadingView.OnRetryLoadListener()
+        // {
+        // public void OnRetryLoad(View paramView)
+        // {
+        // SearchActivity.this.mResultLoadingListView.setShowLoadingResult(false);
+        // SearchActivity.this.mResultLoadingListView.setShowLoading(true);
+        // SearchActivity.this.searchCategory(null);
+        // }
+        // });
+        // this.mResultLoadingListView.setLoadingResultView(this.mRetryLoadingView);
         mResultListView = mResultLoadingListView.getListView();
         mResultListView.setVerticalScrollBarEnabled(false);
-//        this.mResultListView.setOnItemClickListener(this.resultListOnItemClickListener);
-//        mResultListView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
-//        this.mResultListView.setLoadMorePhaseFinished(true);
-//        this.mResultListView.setCanLoadMore(true);
-//        this.mResultListView.setOnLoadMoreListener(this);
+        // this.mResultListView.setOnItemClickListener(this.resultListOnItemClickListener);
+        // mResultListView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
+        // this.mResultListView.setLoadMorePhaseFinished(true);
+        // this.mResultListView.setCanLoadMore(true);
+        // this.mResultListView.setOnLoadMoreListener(this);
         mResultAdapter = new SearchResultAdapter(this);
-//        this.mResultAdapter.setOnClickListener(this);
+        // this.mResultAdapter.setOnClickListener(this);
         mResultListView.setAdapter(mResultAdapter);
-        mResultTitleTv = ((TextView)findViewById(R.id.search_result_title_tv));
-        mResultTitleBtn = ((Button)findViewById(R.id.search_result_title_btn));
-//        mResultTitleBtn.setOnClickListener(this.resultTitleBtnOnClickListener);
-        mResultRecommendLoadingListView = ((LoadingListView)findViewById(R.id.search_result_recommend_loading_listview));
-        mResultRecommendHintTv = ((TextView)findViewById(R.id.search_result_recommend_hint));
-        mResultRecommendTitleTv = ((TextView)findViewById(R.id.search_result_recommend_title));
-        
-        // TODO: not use
-        mResultRecommendListView = mResultRecommendLoadingListView.getListView();
+        mResultTitleTv = ((TextView) findViewById(R.id.search_result_title_tv));
+        mResultTitleBtn = ((Button) findViewById(R.id.search_result_title_btn));
+        // mResultTitleBtn.setOnClickListener(this.resultTitleBtnOnClickListener);
+        mResultRecommendLoadingListView = ((LoadingListView) findViewById(R.id.search_result_recommend_loading_listview));
+        mResultRecommendHintTv = ((TextView) findViewById(R.id.search_result_recommend_hint));
+        mResultRecommendTitleTv = ((TextView) findViewById(R.id.search_result_recommend_title));
+
+        // TODO: 无相关视频时的推荐
+        mResultRecommendListView = mResultRecommendLoadingListView
+                .getListView();
         mResultRecommendAdapter = new PosterListAdapter(this);
-//        this.mResultRecommendAdapter.setOnMediaClickListener(this);
+        // this.mResultRecommendAdapter.setOnMediaClickListener(this);
         mResultRecommendListView.setAdapter(mResultRecommendAdapter);
 
-//        mSearchKey = getIntent().getStringExtra(KEY_SEARCHKEY);
-        
-//        if (Util.isEmpty(mSearchKey)) {
-//            if (mRecommendList.size() > 0)
-//                mSearchKey = ((String) mRecommendList.get(0));
-//            setSearchHint(mSearchKey);
-//            showSearchRecommendView();
-//            return;
-//        }
-//        getWindow().setSoftInputMode(50);
-//        showSearchResultView();
-//        setSearchWord(mSearchKey);
-//        searchCategory(null);
+        // mSearchKey = getIntent().getStringExtra(KEY_SEARCHKEY);
+
+        // if (Util.isEmpty(mSearchKey)) {
+        // if (mRecommendList.size() > 0)
+        // mSearchKey = ((String) mRecommendList.get(0));
+        // setSearchHint(mSearchKey);
+        // showSearchRecommendView();
+        // return;
+        // }
+        // getWindow().setSoftInputMode(50);
+        // showSearchResultView();
+        // setSearchWord(mSearchKey);
+        // searchCategory(null);
         setTitlesSearching();
-        test();
     }
-    
-    private void test() {
-        mViewFlipper.showNext();
-    }
-    
+
     private void setTitlesSearching() {
         mResultTitleTv.setText(mSearchingHint);
         mResultRecommendHintTv.setText(mSearchingHint);
@@ -167,5 +181,71 @@ public class SearchActivity extends Activity {
 
         public CategoryDetailInfo() {
         }
+    }
+
+    @Override
+    public boolean onEditorAction(TextView textView, int actionId,
+            KeyEvent event) {
+        if ((event == null) || (event.getAction() == KeyEvent.ACTION_DOWN)) {
+            // search
+            performSearch();
+        }
+        return true;
+    }
+
+    protected String getSearchBoxText() {
+        String str = mEditSearch.getText().toString().trim();
+        if (Util.isEmpty(str)) {
+            CharSequence localCharSequence = mEditSearch.getHint();
+            if (localCharSequence != null)
+                str = localCharSequence.toString();
+        }
+        return str;
+    }
+
+    protected void performSearch() {
+        // if (isSearchHintViewShowing())
+        // dismissSearchHintView();
+        String str = getSearchBoxText();
+        if (!(Util.isEmpty(str))) {
+            // addToHistory(str);
+            // saveHistory();
+            onPerformSearch(str);
+        }
+    }
+    
+    private void searchResult(MediaInfo[] medias) {
+        if (mViewFlipper.getCurrentView() != mSearchResultRecommendView) {
+            mViewFlipper.showNext();
+        }
+        mResultAdapter.setGroup(medias);
+        if (mResultAdapter.getGroup().size() > 0) {
+            mResultLoadingListView.setShowLoading(false);
+        } else {
+            mResultLoadingListView.setShowLoading(true);
+        }
+    }
+
+    public void onPerformSearch(String keyword) {
+        mSearchKey = keyword;
+        mCurrentCategory = mCategoryAll;
+        this.getService().getDataManager().searchMedia("83886080", keyword, 1, 10, 1, new DataManager.IOnloadListener<MediaInfo[]>() {
+            @Override
+            public void onLoad(MediaInfo[] medias) {
+                searchResult(medias);
+            }
+        });
+//        clearData();
+//        mResultListView.setCanLoadMore(true);
+//        CategoryDetailInfo localCategoryDetailInfo = new CategoryDetailInfo(
+//                this);
+//        this.mCategoryDetailInfoMap.put(this.CATEGORY_All,
+//                localCategoryDetailInfo);
+//        this.mMapKeys.add(this.CATEGORY_All);
+//        searchCategory(paramSearchStatisticInfo);
+//        if (this.mViewFlipper.getCurrentView() == this.mSearchRecommendView)
+//            showSearchResultView();
+//        setTitlesSearching();
+//            
     }
 }

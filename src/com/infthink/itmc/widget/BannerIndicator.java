@@ -55,9 +55,6 @@ public class BannerIndicator extends LinearLayout {
     public void setCurIndicator(int position) {
         if (mIndicators == null || position < 0 || position >= mIndicatorNum)
             return;
-        android.util.Log.d("XXXXXXXX", "mCurIndicatorIndex = " + mCurIndicatorIndex);
-        android.util.Log.d("XXXXXXXX", "position = " + position);
-        android.util.Log.d("XXXXXXXX", "mIndicators = " + mIndicators.length);
         if (mCurIndicatorIndex != position) {
             mIndicators[mCurIndicatorIndex]
                     .setBackgroundResource(R.drawable.banner_indicator_normal);
@@ -69,7 +66,6 @@ public class BannerIndicator extends LinearLayout {
     }
 
     public void setIndicatorNum(int size) {
-        android.util.Log.d("XXXXXXXX", "size = " + size);
         mIndicatorNum = size;
         init();
     }

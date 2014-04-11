@@ -51,6 +51,9 @@ public class DataManager {
     
     // 视频地址
     private static final String URL_GET_MEDIA = "http://demo.bibifa.com/getmediaurl";//?mediaid=987381&ci=1
+    
+    // 搜索
+    private static final String URL_SEARCH_MEIDA = "http://demo.bibifa.com/searchmedia"; //?channelid=83886080&pageno=1&pagesize=1&orderby=1&keyword=test
 
     private CoreService mService;
     private ConcurrentLinkedQueue<Object> mRefCollection;
@@ -427,4 +430,59 @@ public class DataManager {
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
 
+    public void searchMedia(String channelId, String keyword, int pageNo, int pageSize, int orderby, final IOnloadListener<MediaInfo[]> listener) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("?");
+        if (!Util.isEmpty(channelId)) {
+            sb.append("channelid=" + channelId);
+        }
+        sb.append("&keyword=");
+        sb.append(keyword);
+        sb.append("&pageno=");
+        sb.append(pageNo);
+        sb.append("&pagesize=");
+        sb.append(pageSize);
+        sb.append("&orderby=");
+        sb.append(orderby);
+        String textUrl = URL_SEARCH_MEIDA + sb.toString();
+        android.util.Log.d("XXXXXXXXX", "textUrl = " + textUrl);
+        SimpleTextLoadListener<MediaInfo[]> textLoadListener =
+                new SimpleTextLoadListener<MediaInfo[]>() {
+
+                    @Override
+                    public MediaInfo[] parseText(String text) {
+                        MediaInfo[] medias = null;
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null) {
+                                    JSONObject mediaobj = (JSONObject) obj;
+                                    Object infos = mediaobj.opt("mediainfo");
+                                    if (infos != null && infos instanceof JSONArray) {
+                                        JSONArray mediaArray = (JSONArray) infos;
+                                        int count = mediaArray.length();
+                                        medias = new MediaInfo[count];
+                                        for (int i = 0; i < count; i++) {
+                                            JSONObject media = mediaArray.optJSONObject(i);
+                                            medias[i] = new MediaInfo(media.toString());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return medias;
+                    }
+
+                    @Override
+                    public void onLoadResult(MediaInfo[] object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
+
+                };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
 }
