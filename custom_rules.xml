@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="custom_rules">
+    <property name="data.dir" value="data" />
+
+    <target name="-pre-build">
+        <exec executable="bash" outputproperty="cust.version.code" failonerror="true">
+            <arg value="make_version_code.sh" />
+        </exec>
+
+        <exec executable="bash" outputproperty="cust.version.name" failonerror="true">
+            <arg value="make_version_name.sh" />
+        </exec>
+
+        <echo>Version Code : ${cust.version.code}</echo>
+        <echo>Version Name : ${cust.version.name}</echo>
+
+        <replaceregexp file="AndroidManifest.xml" match='android:versionCode="([^".]*)(\.[^"]*)?"'
+            replace='android:versionCode="${cust.version.code}"' />
+        <replaceregexp file="AndroidManifest.xml" match='android:versionName="([^".]*)(\.[^"]*)?"'
+            replace='android:versionName="${cust.version.name}"' />
+
+       <!--   <exec executable="${ndk.dir}/ndk-build" failonerror="true">
+            <arg value="-j32"/>
+        </exec>-->
+
+    </target>
+
+    <target name="-post-build">
+        <copy file="${out.final.file}" tofile="${out.absolute.dir}/${ant.project.name}-${cust.version.name}.apk" />
+    </target>
+
+    <target name="clean" depends="android_rules.clean">
+      <!--    <exec executable="${ndk.dir}/ndk-build" failonerror="true">
+            <arg value="clean"/>
+        </exec>-->
+    </target>
+
+</project>
