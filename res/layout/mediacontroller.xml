@@ -2,7 +2,23 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/mediacontroller_bg"
+        android:layout_gravity="top"
+        android:gravity="right" >
+        <ImageButton
+                android:id="@+id/mediacontroller_cast"
+                
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/mediacontroller_button"
+                android:contentDescription="@string/mediacontroller_play_pause"
+                android:src="@drawable/img_cast_normal" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="74dp"
@@ -69,16 +85,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:singleLine="true" />
-
-            <ImageButton
-                android:id="@+id/mediacontroller_cast"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:background="@drawable/mediacontroller_button"
-                android:contentDescription="@string/mediacontroller_play_pause"
-                android:src="@drawable/img_cast_normal" />
         </LinearLayout>
     </LinearLayout>
 
