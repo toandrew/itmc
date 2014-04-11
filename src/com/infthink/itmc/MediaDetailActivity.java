@@ -16,6 +16,8 @@ import com.infthink.itmc.adapter.SourceListAdapter;
 import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.data.DataManager.IOnloadListener;
 import com.infthink.itmc.type.Banner;
+import com.infthink.itmc.type.LocalMyFavoriteInfo;
+import com.infthink.itmc.type.LocalMyFavoriteItemInfo;
 import com.infthink.itmc.type.MediaDetailInfo;
 import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
@@ -135,6 +137,8 @@ public class MediaDetailActivity extends CoreActivity
     private SourceListAdapter sourceListAdapter;
     private ArrayList<Integer> sourceListAdapterData = new ArrayList<Integer>();
 
+    LocalMyFavoriteInfo mLocalLocalMyFavoriteInfo;
+    
     private AdapterView.OnItemClickListener sourceListOnItemClickListener =
             new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> paramAdapterView, View paramView,
@@ -346,6 +350,7 @@ public class MediaDetailActivity extends CoreActivity
             @Override
             public void run() {
                 mDataManager = getService().getDataManager();
+                mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfo.getInstance(MediaDetailActivity.this);
                 download();
             }
         }, 1000);
@@ -488,6 +493,11 @@ public class MediaDetailActivity extends CoreActivity
         if (v.getId() == R.id.btn_select_source) {
             showSelectSourceDialog();
         }
+        
+//        LocalMyFavoriteItemInfo paramLocalMyFavoriteItemInfo = new LocalMyFavoriteItemInfo();
+//        paramLocalMyFavoriteItemInfo.mediaInfo = this.mediaInfo;
+//        paramLocalMyFavoriteItemInfo.mediaID = mediaInfo.mediaID;
+//        mLocalLocalMyFavoriteInfo.saveMyFavoriteInfo(this, paramLocalMyFavoriteItemInfo);
     }
 
     private Handler mHandler = new Handler() {

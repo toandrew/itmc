@@ -230,7 +230,6 @@ public class DataManager {
                                         for (int i = 0; i < count; i++) {
                                             JSONObject subData = data.optJSONObject(i);
                                             medias[i] = new MediaInfo(subData.toString());
-
                                         }
                                         rankinfo.mediaInfos = medias;
                                         rankInfolist.ranks[0] = rankinfo;
