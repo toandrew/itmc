@@ -52,7 +52,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     public static final int MSG_UPDATE_CHANNEL = 3;
     public static final int MSG_UPDATE_CHANNEL_NEW = 4;
 
-
     private PagerView mPagerView;
     private int[] mPageNo = new int[3];
     private ArrayList<int[]> mFilterChoices = new ArrayList();

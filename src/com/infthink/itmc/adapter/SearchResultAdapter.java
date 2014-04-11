@@ -1,10 +1,14 @@
 package com.infthink.itmc.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.infthink.itmc.HomeActivity;
+import com.infthink.itmc.MediaDetailActivity;
 import com.infthink.itmc.R;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.util.UIUtil;
@@ -28,7 +32,7 @@ public class SearchResultAdapter extends BaseGroupAdapter<MediaInfo> {
         UIUtil.fillMediaSummary(convertView, data);
         TextView scoreView;
         if (data instanceof MediaInfo) {
-            MediaInfo info = (MediaInfo) data;
+            final MediaInfo info = (MediaInfo) data;
             // ((RatingView)convertView.findViewById(R.id.rating)).setScore(info.score);
             scoreView = (TextView) convertView.findViewById(R.id.score);
             if (info.score > 0) {
@@ -40,7 +44,18 @@ public class SearchResultAdapter extends BaseGroupAdapter<MediaInfo> {
             MediaView mediaView = (MediaView) convertView
                     .findViewById(R.id.media_view);
             mediaView.setTag(Integer.valueOf(position));
-            // mediaView.setOnMediaClickListener(this);
+            convertView.setTag(info);
+//            mediaView.setOnClickListener(new OnClickListener() {
+//
+//                @Override
+//                public void onClick(View arg0) {
+//                    Intent intent = new Intent(mContext, MediaDetailActivity.class);
+//                    intent.putExtra("mediaInfo", info);
+//                    mContext.startActivity(intent);
+//                }
+//            });
+
+//             mediaView.setOnMediaClickListener(this);
         }
         return convertView;
     }

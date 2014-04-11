@@ -1,5 +1,6 @@
 package com.infthink.itmc;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,9 +14,13 @@ import com.infthink.itmc.util.Util;
 import com.infthink.itmc.widget.LoadingListView;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -58,6 +63,29 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
     private TextView mResultRecommendTitleTv;
     private Button mResultTitleBtn;
     private EditText mEditSearch;
+
+    private OnItemClickListener mResultListOnItemClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                long arg3) {
+//            dismissSearchHintView();
+//            dismissInputMethod();
+            if (arg1.getTag() != null) {
+                Intent intent = new Intent(SearchActivity.this, MediaDetailActivity.class);
+                MediaInfo mediaInfo = (MediaInfo) arg1.getTag();
+                intent.putExtra("mediaInfo", mediaInfo);
+                startActivity(intent);
+            }
+        }
+    };
+    
+    protected void dismissInputMethod() {
+        InputMethodManager localInputMethodManager = (InputMethodManager) getApplicationContext()
+                .getSystemService("input_method");
+        if (localInputMethodManager != null)
+            localInputMethodManager.toggleSoftInput(0, 2);
+    }
 
     @Override
     protected void onCreateAfterSuper(Bundle bundle) {
@@ -129,7 +157,8 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
         // this.mResultLoadingListView.setLoadingResultView(this.mRetryLoadingView);
         mResultListView = mResultLoadingListView.getListView();
         mResultListView.setVerticalScrollBarEnabled(false);
-        // this.mResultListView.setOnItemClickListener(this.resultListOnItemClickListener);
+        mResultListView.setOnItemClickListener(mResultListOnItemClickListener);
+
         // mResultListView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
         // this.mResultListView.setLoadMorePhaseFinished(true);
         // this.mResultListView.setCanLoadMore(true);
@@ -214,11 +243,79 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
         }
     }
     
+    private void showSearchRecommendView()
+    {
+        if (mViewFlipper.getCurrentView() != mSearchRecommendView) {
+            if (mViewFlipper.getCurrentView() == this.mSearchResultView) {
+                mViewFlipper.showPrevious();
+            }
+        } else {
+            if (mViewFlipper.getCurrentView() != mSearchResultRecommendView) {
+                mViewFlipper.showPrevious();
+                mViewFlipper.showPrevious();
+            }
+        }
+    }
+
+//    private void showSearchResultRecommendView()
+//    {
+//        
+//        
+//      this.mResultRecommendHintTv.setText(this.mResultRecommendHint);
+//      this.mResultRecommendAdapter.setGroup(this.mResultRecommendMediaInfos);
+//      if ((this.mResultRecommendMediaInfos == null) || (this.mResultRecommendMediaInfos.length == 0))
+//      {
+//        this.mResultRecommendTitleTv.setVisibility(4);
+//        if (this.mViewFlipper.getCurrentView() != this.mSearchResultRecommendView)
+//        {
+//          if (this.mViewFlipper.getCurrentView() != this.mSearchRecommendView)
+//            break label99;
+//          this.mViewFlipper.showNext();
+//          this.mViewFlipper.showNext();
+//        }
+//      }
+//      label99: 
+//      do
+//        while (true)
+//        {
+//          return;
+//          this.mResultRecommendTitleTv.setVisibility(0);
+//        }
+//      while (this.mViewFlipper.getCurrentView() != this.mSearchResultView;
+//      this.mViewFlipper.showNext();
+//    }
+//
+//    private void showSearchResultView()
+//    {
+//      CategoryDetailInfo localCategoryDetailInfo = (CategoryDetailInfo)this.mCategoryDetailInfoMap.get(this.mCurrentCategory);
+//      if (localCategoryDetailInfo != null)
+//      {
+//        String str1 = getResources().getString(2131427527);
+//        Object[] arrayOfObject = new Object[1];
+//        arrayOfObject[0] = Integer.valueOf(localCategoryDetailInfo.mediaCount);
+//        String str2 = String.format(str1, arrayOfObject);
+//        this.mResultTitleTv.setText(str2);
+//        this.mResultAdapter.setGroup(localCategoryDetailInfo.mediaInfoList);
+//      }
+//      if (this.mViewFlipper.getCurrentView() != this.mSearchResultView)
+//      {
+//        if (this.mViewFlipper.getCurrentView() != this.mSearchRecommendView)
+//          break label108;
+//        this.mViewFlipper.showNext();
+//      }
+//      label108: 
+//      do
+//        return;
+//      while (this.mViewFlipper.getCurrentView() != this.mSearchResultRecommendView;
+//      this.mViewFlipper.showPrevious();
+//    }
+    
     private void searchResult(MediaInfo[] medias) {
-        if (mViewFlipper.getCurrentView() != mSearchResultRecommendView) {
+        mResultAdapter.setGroup(medias);
+        while(mViewFlipper.getCurrentView() != this.mSearchResultView) {
             mViewFlipper.showNext();
         }
-        mResultAdapter.setGroup(medias);
+
         if (mResultAdapter.getGroup().size() > 0) {
             mResultLoadingListView.setShowLoading(false);
         } else {
@@ -229,7 +326,10 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
     public void onPerformSearch(String keyword) {
         mSearchKey = keyword;
         mCurrentCategory = mCategoryAll;
-        this.getService().getDataManager().searchMedia("83886080", keyword, 1, 10, 1, new DataManager.IOnloadListener<MediaInfo[]>() {
+
+        dismissInputMethod();
+        getService().getDataManager().searchMedia("83886080", URLEncoder.encode(keyword), 1, 10, 1, new DataManager.IOnloadListener<MediaInfo[]>() {
+
             @Override
             public void onLoad(MediaInfo[] medias) {
                 searchResult(medias);

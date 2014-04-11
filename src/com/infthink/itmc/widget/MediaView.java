@@ -230,7 +230,7 @@ public class MediaView extends LinearLayout implements View.OnClickListener {
     public void setMediaInfo(MediaInfo mediaInfo) {
         if (mediaInfo != null) {
             this.mediaInfo = mediaInfo;
-
+            setDefaultPoster();
             String url = Util.replaceString(mediaInfo.smallImageURL.imageUrl, "\\", "").trim();
 //            ((CoreActivity) mContext).getService().getBitmapCache();
             mBitmapCache = new BitmapCachePool(20 * 1024 * 1024);//--------------临时解决方案
