@@ -328,50 +328,82 @@ public class UIUtil {
 
 
     public static String getMediaStatus(Context paramContext, MediaInfo paramMediaInfo) {
-        StringBuilder localStringBuilder = new StringBuilder();
-        if (paramContext.getResources().getString(R.string.variety).equals(paramMediaInfo.category))
+        // StringBuilder localStringBuilder = new StringBuilder();
+        // if
+        // (paramContext.getResources().getString(R.string.variety).equals(paramMediaInfo.category))
+        // if (!Util.isEmpty(paramMediaInfo.lastIssueDate)) {
+        // String[] arrayOfString = paramMediaInfo.lastIssueDate.split("-");
+        // if (arrayOfString.length >= 3) {
+        // localStringBuilder.append(arrayOfString[1]
+        // + paramContext.getResources().getString(R.string.month));
+        // localStringBuilder.append(arrayOfString[2]
+        // + paramContext.getResources().getString(R.string.day));
+        // localStringBuilder.append(paramContext.getResources().getString(R.string.update));
+        // }
+        // }
+        //
+        // if ((paramMediaInfo.setCount > 1) || (paramMediaInfo.setNow > 1)) {
+        // if (paramMediaInfo.setNow == paramMediaInfo.setCount) {
+        // String str2 = paramContext.getResources().getString(R.string.count_ji_quan);
+        // Object[] arrayOfObject2 = new Object[1];
+        // arrayOfObject2[0] = Integer.valueOf(paramMediaInfo.setNow);
+        // localStringBuilder.append(String.format(str2, arrayOfObject2));
+        // } else {
+        // String str1 = paramContext.getResources().getString(R.string.update_to_count_ji);
+        // Object[] arrayOfObject1 = new Object[1];
+        // arrayOfObject1[0] = Integer.valueOf(paramMediaInfo.setNow);
+        // localStringBuilder.append(String.format(str1, arrayOfObject1));
+        // }
+        //
+        // }
+        // if (paramMediaInfo.playLength <= 0) {
+        //
+        // } else {
+        // int i = paramMediaInfo.playLength / 60;
+        // int j = paramMediaInfo.playLength % 60;
+        // if (i > 0) {
+        // localStringBuilder.append(paramMediaInfo.playLength / 60);
+        // localStringBuilder.append(paramContext.getResources().getString(R.string.minute));
+        // } else {
+        // localStringBuilder.append(j);
+        // localStringBuilder.append(paramContext.getResources().getString(R.string.seconds));
+        // }
+        //
+        // }
+        //
+        // return localStringBuilder.toString();
+
+        StringBuilder sb = new StringBuilder();
+        if ("综艺".equals(paramMediaInfo.category)) {
             if (!Util.isEmpty(paramMediaInfo.lastIssueDate)) {
                 String[] arrayOfString = paramMediaInfo.lastIssueDate.split("-");
                 if (arrayOfString.length >= 3) {
-                    localStringBuilder.append(arrayOfString[1]
-                            + paramContext.getResources().getString(R.string.month));
-                    localStringBuilder.append(arrayOfString[2]
-                            + paramContext.getResources().getString(R.string.day));
-                    localStringBuilder.append(paramContext.getResources().getString(R.string.update));
+                    sb.append(arrayOfString[1] + "月");
+                    sb.append(arrayOfString[2] + "日");
+                    sb.append("更新");
                 }
             }
-
-        if ((paramMediaInfo.setCount > 1) || (paramMediaInfo.setNow > 1)) {
+        } else if ((paramMediaInfo.setCount > 1) || (paramMediaInfo.setNow > 1)) {
             if (paramMediaInfo.setNow == paramMediaInfo.setCount) {
-                String str2 = paramContext.getResources().getString(R.string.count_ji_quan);
-                Object[] arrayOfObject2 = new Object[1];
-                arrayOfObject2[0] = Integer.valueOf(paramMediaInfo.setNow);
-                localStringBuilder.append(String.format(str2, arrayOfObject2));
+                sb.append(paramMediaInfo.setCount + "集全");
+            } else {
+                sb.append("更新至" + paramMediaInfo.setNow + "集");
             }
-            String str1 = paramContext.getResources().getString(R.string.update_to_count_ji);
-            Object[] arrayOfObject1 = new Object[1];
-            arrayOfObject1[0] = Integer.valueOf(paramMediaInfo.setNow);
-            localStringBuilder.append(String.format(str1, arrayOfObject1));
-        }
-        if (paramMediaInfo.playLength <= 0) {
-
         } else {
             int i = paramMediaInfo.playLength / 60;
             int j = paramMediaInfo.playLength % 60;
             if (i > 0) {
-                localStringBuilder.append(paramMediaInfo.playLength / 60);
-                localStringBuilder.append(paramContext.getResources().getString(R.string.minute));
+                sb.append(paramMediaInfo.playLength / 60);
+                sb.append(paramContext.getResources().getString(R.string.minute));
             } else {
-                localStringBuilder.append(j);
-                localStringBuilder.append(paramContext.getResources().getString(R.string.seconds));
+                sb.append(j);
+                sb.append(paramContext.getResources().getString(R.string.seconds));
             }
-
         }
-
-        return localStringBuilder.toString();
+        return sb.toString();
         // }
     }
-    
-    
-    
+
+
+
 }

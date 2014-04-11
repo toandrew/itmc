@@ -147,6 +147,15 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                         ActionBar.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER);
         frameLayout.addView(imageView, imageLayout);
         imageView.setImageResource(R.drawable.clickable_icon_search);
+        imageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                 Intent intent = new Intent(ChannelActivity.this,
+                 SearchActivity.class);
+                 startActivity(intent);
+                 overridePendingTransition(R.anim.appear, R.anim.stay_same);
+            }
+        });
         ActionBar actionBar = getActionBar();
         layoutActionBar(actionBar);
         actionBar.setBackgroundDrawable(null);

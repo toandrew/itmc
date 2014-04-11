@@ -95,7 +95,6 @@ public class SourceListAdapter extends BaseGroupAdapter<Integer> {
                             .setBackgroundResource(R.drawable.select_source_item_letv);
                     localViewHolder.sourceItemTv.setText(R.string.letv);
                     break;
-
                 default:
                     localViewHolder.sourceItemIv
                             .setBackgroundResource(R.drawable.select_source_item_default);

@@ -145,4 +145,6 @@
     
     <dimen name="common_dialog_item_height">128.0px</dimen>
     <dimen name="common_dialog_item_bar_width">16.0px</dimen>
+    
+    <dimen name="detail_title_width_1">530.0px</dimen>
 </resources>

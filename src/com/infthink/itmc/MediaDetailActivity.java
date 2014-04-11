@@ -64,6 +64,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -168,6 +169,7 @@ public class MediaDetailActivity extends CoreActivity
 
     private void refreshSelectedSource(int paramInt) {
         this.mPreferenceSource = paramInt;
+        this.btnSelectSource.setOnClickListener(this);
         this.btnSelectSource.setVisibility(View.VISIBLE);
         // MediaUrlForPlayerUtil.getInstance(this).setPrefrenceSource(paramInt);
         if (paramInt == 8) {
@@ -223,12 +225,15 @@ public class MediaDetailActivity extends CoreActivity
 
 
     private void onActivate() {
+
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         TextView detailName = (TextView) this.findViewById(R.id.detail_name);
         detailName.setText(this.mediaInfo.mediaName.trim());
         TextView detailSubTitle = (TextView) this.findViewById(R.id.detail_subtitle);
         detailSubTitle.setText(UIUtil.getMediaStatus(this, this.mediaInfo));
-
+        
+        ImageButton back = (ImageButton) this.findViewById(R.id.return_detail_back);
+        back.setOnClickListener(this);
         // Resources localResources = getResources();
         // int i =
         // localResources.getDimensionPixelSize(com.infthink.itmc.R.dimen.multi_detail_title_overscroll_distance);
@@ -265,8 +270,8 @@ public class MediaDetailActivity extends CoreActivity
         // this.ivPlay = ((ImageView)findViewById(R.id.ivPlay));
         // this.ivPlay.setOnClickListener(this);
         this.btnSelectSource = ((Button) findViewById(R.id.btn_select_source));
-        this.btnSelectSource.setVisibility(View.INVISIBLE);
-        this.btnSelectSource.setOnClickListener(this);
+//        this.btnSelectSource.setVisibility(View.INVISIBLE);
+        
         // this.btnMyFavorite = ((Button)findViewById(R.id.btn_myfavorite));
         // this.btnMyFavorite.setOnClickListener(this);
         // // LocalMyFavoriteInfo.getInstance().registerMyFavoriteInfoChangedListenenr(this);
@@ -471,6 +476,9 @@ public class MediaDetailActivity extends CoreActivity
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
+        if(v.getId() == R.id.return_detail_back){
+            this.finish();
+        }
         if (v.getId() == R.id.btn_play) {
             if (mMediaUrl == null || mPreferenceSource == -1) {
                 Toast.makeText(this, "视频地址正在获取中", Toast.LENGTH_SHORT).show();
