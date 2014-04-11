@@ -233,23 +233,25 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     }
 
     private void setBannerAdapter() {
-        mBannerAdapter.setBannerList(mBannerMediaList);
-        mBannerView.setCurrentItem(1);
-        mBannerMediaCount = mBannerMediaList.length;
-        mBannerIndicator.setIndicatorNum(mBannerMediaCount);
-        mBannerIndicator.setCurIndicator(0);
-        mBannerAdapter.setOnMediaClickListener(new OnMediaClickListener() {
-            
-            @Override
-            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
-                // TODO Auto-generated method stub
-                Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
-                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
-                intent.putExtra("mediaInfo", mediaInfo);
-                startActivity(intent);
-            }
-        });
-        startBannerScrollTimer();
+        if (mBannerMediaList != null && mBannerMediaList.length > 0) {
+            mBannerAdapter.setBannerList(mBannerMediaList);
+            mBannerView.setCurrentItem(1);
+            mBannerMediaCount = mBannerMediaList.length;
+            mBannerIndicator.setIndicatorNum(mBannerMediaCount);
+            mBannerIndicator.setCurIndicator(0);
+            mBannerAdapter.setOnMediaClickListener(new OnMediaClickListener() {
+                
+                @Override
+                public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                    // TODO Auto-generated method stub
+                    Intent intent = new Intent(HomeActivity.this, MediaDetailActivity.class);
+                    MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                    intent.putExtra("mediaInfo", mediaInfo);
+                    startActivity(intent);
+                }
+            });
+            startBannerScrollTimer();
+        }
     }
 
     @Override
@@ -274,6 +276,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                 new DataManager.IOnloadListener<RecommendChannel>() {
                     @Override
                     public void onLoad(RecommendChannel entity) {
+                        if (entity == null) return;
                         mChannelList = (ArrayList<Channel>) entity.channelList;
                         mRecommendationOfChannels = entity.recommend;
                         mHandler.sendEmptyMessage(MSG_UPDATE_HOME_CHANNEL);
