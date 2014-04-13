@@ -9,14 +9,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 
 import com.infthink.itmc.adapter.SeriesAdapter;
 import com.infthink.itmc.adapter.SourceListAdapter;
 import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.data.DataManager.IOnloadListener;
+import com.infthink.itmc.data.LocalMyFavoriteInfoManager;
 import com.infthink.itmc.type.Banner;
-import com.infthink.itmc.type.LocalMyFavoriteInfo;
 import com.infthink.itmc.type.LocalMyFavoriteItemInfo;
 import com.infthink.itmc.type.MediaDetailInfo;
 import com.infthink.itmc.type.MediaDetailInfo2;
@@ -138,8 +139,10 @@ public class MediaDetailActivity extends CoreActivity
     private SourceListAdapter sourceListAdapter;
     private ArrayList<Integer> sourceListAdapterData = new ArrayList<Integer>();
 
-    LocalMyFavoriteInfo mLocalLocalMyFavoriteInfo;
-    
+    private boolean isFavorite = false;
+
+    LocalMyFavoriteInfoManager mLocalLocalMyFavoriteInfo;
+
     private AdapterView.OnItemClickListener sourceListOnItemClickListener =
             new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> paramAdapterView, View paramView,
@@ -225,13 +228,12 @@ public class MediaDetailActivity extends CoreActivity
 
 
     private void onActivate() {
-
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         TextView detailName = (TextView) this.findViewById(R.id.detail_name);
         detailName.setText(this.mediaInfo.mediaName.trim());
         TextView detailSubTitle = (TextView) this.findViewById(R.id.detail_subtitle);
         detailSubTitle.setText(UIUtil.getMediaStatus(this, this.mediaInfo));
-        
+
         ImageButton back = (ImageButton) this.findViewById(R.id.return_detail_back);
         back.setOnClickListener(this);
         // Resources localResources = getResources();
@@ -270,8 +272,8 @@ public class MediaDetailActivity extends CoreActivity
         // this.ivPlay = ((ImageView)findViewById(R.id.ivPlay));
         // this.ivPlay.setOnClickListener(this);
         this.btnSelectSource = ((Button) findViewById(R.id.btn_select_source));
-//        this.btnSelectSource.setVisibility(View.INVISIBLE);
-        
+        // this.btnSelectSource.setVisibility(View.INVISIBLE);
+
         // this.btnMyFavorite = ((Button)findViewById(R.id.btn_myfavorite));
         // this.btnMyFavorite.setOnClickListener(this);
         // // LocalMyFavoriteInfo.getInstance().registerMyFavoriteInfoChangedListenenr(this);
@@ -342,7 +344,11 @@ public class MediaDetailActivity extends CoreActivity
         this.vBottomBar = View.inflate(this, R.layout.media_detail_bottom_bar, null);
         Button btn = (Button) this.findViewById(R.id.btn_play);
         btn.setOnClickListener(this);
+        this.btnMyFavorite = ((Button) findViewById(R.id.btn_myfavorite));
+        this.btnMyFavorite.setVisibility(View.INVISIBLE);
+        this.btnMyFavorite.setOnClickListener(this);
         fillMediaInfo(this.mediaInfo);
+
     }
 
     @Override
@@ -355,7 +361,12 @@ public class MediaDetailActivity extends CoreActivity
             @Override
             public void run() {
                 mDataManager = getService().getDataManager();
-                mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfo.getInstance(MediaDetailActivity.this);
+                mLocalLocalMyFavoriteInfo =
+                        LocalMyFavoriteInfoManager.getInstance(MediaDetailActivity.this);
+                isFavorite =
+                        mLocalLocalMyFavoriteInfo.checkIsFavorite(MediaDetailActivity.this,
+                                mediaInfo.mediaID);
+                refreshMyFavorite();
                 download();
             }
         }, 1000);
@@ -473,10 +484,12 @@ public class MediaDetailActivity extends CoreActivity
         this.mediaView = ((MediaView) findViewById(R.id.media_view));
     }
 
+
+
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-        if(v.getId() == R.id.return_detail_back){
+        if (v.getId() == R.id.return_detail_back) {
             this.finish();
         }
         if (v.getId() == R.id.btn_play) {
@@ -501,11 +514,31 @@ public class MediaDetailActivity extends CoreActivity
         if (v.getId() == R.id.btn_select_source) {
             showSelectSourceDialog();
         }
-        
-//        LocalMyFavoriteItemInfo paramLocalMyFavoriteItemInfo = new LocalMyFavoriteItemInfo();
-//        paramLocalMyFavoriteItemInfo.mediaInfo = this.mediaInfo;
-//        paramLocalMyFavoriteItemInfo.mediaID = mediaInfo.mediaID;
-//        mLocalLocalMyFavoriteInfo.saveMyFavoriteInfo(this, paramLocalMyFavoriteItemInfo);
+        if (v.getId() == R.id.btn_myfavorite) {
+            String addDate = String.valueOf(Calendar.getInstance().getTimeInMillis());
+            LocalMyFavoriteItemInfo paramLocalMyFavoriteItemInfo =
+                    new LocalMyFavoriteItemInfo(mediaInfo.mediaID, this.mediaInfo, addDate);
+            if (isFavorite) {
+                mLocalLocalMyFavoriteInfo.deleteMyFavoriteInfo(this, paramLocalMyFavoriteItemInfo);
+                Toast.makeText(this, "取消收藏成功", Toast.LENGTH_LONG).show();
+                isFavorite = false;
+            } else {
+                mLocalLocalMyFavoriteInfo.addMyFavoriteInfo(this, paramLocalMyFavoriteItemInfo);
+                isFavorite = true;
+                Toast.makeText(this, "收藏成功", Toast.LENGTH_LONG).show();
+            }
+            refreshMyFavorite();
+        }
+    }
+
+    private void refreshMyFavorite() {
+        this.btnMyFavorite.setVisibility(View.VISIBLE);
+        if (this.isFavorite) {
+            this.btnMyFavorite.setSelected(true);
+            return;
+        }
+        this.btnMyFavorite.setSelected(false);
+
     }
 
     private Handler mHandler = new Handler() {

@@ -1,7 +1,9 @@
 package com.infthink.itmc.data;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.json.JSONArray;
@@ -14,6 +16,7 @@ import com.infthink.itmc.ITApp;
 import com.infthink.itmc.service.CoreService;
 import com.infthink.itmc.type.Banner;
 import com.infthink.itmc.type.Channel;
+import com.infthink.itmc.type.LocalMyFavoriteItemInfo;
 import com.infthink.itmc.type.MediaDetailInfo;
 import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.type.MediaInfo;
@@ -48,12 +51,21 @@ public class DataManager {
 
     // 影片详情页
     private static final String URL_GET_DETAIL = "http://demo.bibifa.com/getmediadetail";// ?mediaid=1021875
-    
+
     // 视频地址
-    private static final String URL_GET_MEDIA = "http://demo.bibifa.com/getmediaurl";//?mediaid=987381&ci=1
-    
+    private static final String URL_GET_MEDIA = "http://demo.bibifa.com/getmediaurl";// ?mediaid=987381&ci=1
+
     // 搜索
-    private static final String URL_SEARCH_MEIDA = "http://demo.bibifa.com/searchmedia"; //?channelid=83886080&pageno=1&pagesize=1&orderby=1&keyword=test
+    private static final String URL_SEARCH_MEIDA = "http://demo.bibifa.com/searchmedia"; // ?channelid=83886080&pageno=1&pagesize=1&orderby=1&keyword=test
+
+    // 收藏
+    private static final String URL_ADD_FAVORITE = "http://demo.bibifa.com/setbookmark"; // ?deviceid=00:16:6d:e0:2a:6c&mediaid=768160
+
+    // 取消
+    private static final String URL_DELETE_FAVORITE = "http://demo.bibifa.com/deletebookmark"; // ?deviceid=00:16:6d:e0:2a:6c&mediaid=768160
+
+    // 获得收藏
+    private static final String URL_GET_FAVORITE = "http://demo.bibifa.com/getbookmark"; // ?deviceid=00:16:6d:e0:2a:6c
 
     private CoreService mService;
     private ConcurrentLinkedQueue<Object> mRefCollection;
@@ -223,7 +235,7 @@ public class DataManager {
                                     } else if (orderBy == 1) {
                                         JSONArray data = (JSONArray) obj;
                                         int count = data.length();
-                                        
+
                                         MediaInfo[] medias = new MediaInfo[count];
                                         RankInfo rankinfo = new RankInfo();
                                         rankInfolist.ranks = new RankInfo[1];
@@ -305,8 +317,7 @@ public class DataManager {
             args = "?mediaid=" + mediaID;
         }
         String textUrl = URL_GET_DETAIL + args;
-        android.util.Log.d("XXXXXXXXXX", "loadDetail textUrl = "
-                + textUrl);
+        android.util.Log.d("XXXXXXXXXX", "loadDetail textUrl = " + textUrl);
         SimpleTextLoadListener<MediaDetailInfo2> textLoadListener =
                 new SimpleTextLoadListener<MediaDetailInfo2>() {
 
@@ -317,23 +328,22 @@ public class DataManager {
                             JSONUtils jsonUtil = JSONUtils.parse(text);
                             int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
                             if (status == 0) {
-                                android.util.Log.d("XXXXXXXXXX", "loadDetail status = "
-                                        + 0);
+                                android.util.Log.d("XXXXXXXXXX", "loadDetail status = " + 0);
                                 Object obj = jsonUtil.opt("data", null);
-                                if (obj != null ) {
+                                if (obj != null) {
                                     mediaDetailInfo2 = new MediaDetailInfo2();
-                                    String desc = ((JSONObject)obj).optString("desc");
-                                    android.util.Log.d("XXXXXXXXXX", "loadDetail desc = "
-                                            + desc);
+                                    String desc = ((JSONObject) obj).optString("desc");
+                                    android.util.Log.d("XXXXXXXXXX", "loadDetail desc = " + desc);
                                     MediaDetailInfo mdi = new MediaDetailInfo();
                                     mdi.desc = desc;
-                                    JSONObject mediaciinfo = ((JSONObject)obj).optJSONObject("mediaciinfo");
-                                    JSONArray videos = (JSONArray) mediaciinfo.optJSONArray("videos");
+                                    JSONObject mediaciinfo =
+                                            ((JSONObject) obj).optJSONObject("mediaciinfo");
+                                    JSONArray videos =
+                                            (JSONArray) mediaciinfo.optJSONArray("videos");
                                     int ciCount = videos.length();
                                     MediaSetInfoList mediaSetInfoList = new MediaSetInfoList();
-                                    mediaSetInfoList.mediaSetInfos =
-                                            new MediaSetInfo[ciCount];
-                                    for(int i = 0; i < ciCount; i++){
+                                    mediaSetInfoList.mediaSetInfos = new MediaSetInfo[ciCount];
+                                    for (int i = 0; i < ciCount; i++) {
                                         JSONObject mediaciinfoJson = videos.optJSONObject(i);
                                         String videoname = mediaciinfoJson.optString("videoname");
                                         MediaSetInfo mediaSetInfo_temp = new MediaSetInfo();
@@ -345,8 +355,13 @@ public class DataManager {
                                 }
                             }
                         }
-                        android.util.Log.d("XXXXXXXXXX", "loadDetail status = "
-                                + mediaDetailInfo2.mediaSetInfoList.getAvailableCiList().get(0).szVideoName +  " count = " + mediaDetailInfo2.mediaSetInfoList.getAvailableCiList().size());
+                        android.util.Log.d("XXXXXXXXXX",
+                                "loadDetail status = "
+                                        + mediaDetailInfo2.mediaSetInfoList.getAvailableCiList()
+                                                .get(0).szVideoName
+                                        + " count = "
+                                        + mediaDetailInfo2.mediaSetInfoList.getAvailableCiList()
+                                                .size());
                         return mediaDetailInfo2;
                     }
 
@@ -360,15 +375,15 @@ public class DataManager {
         mRefCollection.add(textLoadListener);
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
-    
-    public void loadMediaUrl(String mediaID,int ci, final IOnloadListener<MediaUrlInfoList> listener) {
+
+    public void loadMediaUrl(String mediaID, int ci,
+            final IOnloadListener<MediaUrlInfoList> listener) {
         String args = "";
         if (!Util.isEmpty(mediaID)) {
             args = "?mediaid=" + mediaID + "&ci=" + ci;
         }
         String textUrl = URL_GET_MEDIA + args;
-        android.util.Log.d("XXXXXXXXXX", "loadMediaUrl textUrl = "
-                + textUrl);
+        android.util.Log.d("XXXXXXXXXX", "loadMediaUrl textUrl = " + textUrl);
         SimpleTextLoadListener<MediaUrlInfoList> textLoadListener =
                 new SimpleTextLoadListener<MediaUrlInfoList>() {
 
@@ -380,24 +395,28 @@ public class DataManager {
                             int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
                             if (status == 0) {
                                 Object obj = jsonUtil.opt("data", null);
-                                if (obj != null ) {
+                                if (obj != null) {
                                     mediaUrlInfoList = new MediaUrlInfoList();
                                     JSONObject mediaobj = (JSONObject) obj;
                                     mediaUrlInfoList.videoName = mediaobj.optString("videoname");
-                                    
+
                                     Object normalObj = mediaobj.opt("normal");
                                     Object highObj = mediaobj.opt("high");
                                     Object superObj = mediaobj.opt("super");
-                                    
-                                    if (normalObj instanceof JSONArray){
+
+                                    if (normalObj instanceof JSONArray) {
                                         android.util.Log.d("XXXXXXXXXX", "normalObj JSONArray");
                                         JSONArray normalArray = (JSONArray) normalObj;
-                                        mediaUrlInfoList.urlNormal = new MediaUrlInfo[normalArray.length()];
-                                        for(int i = 0; i < normalArray.length(); i++){
-                                            JSONObject normaJsonObject = normalArray.optJSONObject(i);
+                                        mediaUrlInfoList.urlNormal =
+                                                new MediaUrlInfo[normalArray.length()];
+                                        for (int i = 0; i < normalArray.length(); i++) {
+                                            JSONObject normaJsonObject =
+                                                    normalArray.optJSONObject(i);
                                             MediaUrlInfo normalURLInfo = new MediaUrlInfo();
-                                            normalURLInfo.mediaSource = normaJsonObject.optInt("source");
-                                            normalURLInfo.mediaUrl = normaJsonObject.optString("playurl");
+                                            normalURLInfo.mediaSource =
+                                                    normaJsonObject.optInt("source");
+                                            normalURLInfo.mediaUrl =
+                                                    normaJsonObject.optString("playurl");
                                             normalURLInfo.isHtml = normaJsonObject.optInt("isHtml");
                                             mediaUrlInfoList.urlNormal[i] = normalURLInfo;
                                         }
@@ -406,7 +425,7 @@ public class DataManager {
                                         MediaUrlInfo highURLInfo;
                                         android.util.Log.d("XXXXXXXXXX", "highObj JSONArray");
                                     }
-                                    
+
                                     if (superObj instanceof JSONArray) {
                                         MediaUrlInfo superURLInfo;
                                         android.util.Log.d("XXXXXXXXXX", "superObj JSONArray");
@@ -414,7 +433,8 @@ public class DataManager {
                                 }
                             }
                         }
-                        android.util.Log.d("XXXXXXXXXX", "mediaUrlInfoList ＝ " + mediaUrlInfoList.urlNormal[0].mediaUrl );
+                        android.util.Log.d("XXXXXXXXXX", "mediaUrlInfoList ＝ "
+                                + mediaUrlInfoList.urlNormal[0].mediaUrl);
                         return mediaUrlInfoList;
                     }
 
@@ -429,7 +449,8 @@ public class DataManager {
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
 
-    public void searchMedia(String channelId, String keyword, int pageNo, int pageSize, int orderby, final IOnloadListener<MediaInfo[]> listener) {
+    public void searchMedia(String channelId, String keyword, int pageNo, int pageSize,
+            int orderby, final IOnloadListener<MediaInfo[]> listener) {
         StringBuffer sb = new StringBuffer();
         sb.append("?");
         if (!Util.isEmpty(channelId)) {
@@ -476,6 +497,122 @@ public class DataManager {
 
                     @Override
                     public void onLoadResult(MediaInfo[] object) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(object);
+                    }
+
+                };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+
+    public void uploadFavorite(String deviceId, int mediaId, final IOnloadListener<Integer> listener) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("?");
+        if (!Util.isEmpty(deviceId)) {
+            sb.append("deviceid=" + deviceId);
+        }
+        if (mediaId != 0) {
+            sb.append("&mediaid=" + mediaId);
+        }
+        String textUrl = URL_ADD_FAVORITE + sb.toString();
+        android.util.Log.d("XXXXXXXXX", "textUrl = " + textUrl);
+        SimpleTextLoadListener<Integer> textLoadListener = new SimpleTextLoadListener<Integer>() {
+
+            @Override
+            public Integer parseText(String text) {
+                JSONUtils jsonUtil = JSONUtils.parse(text);
+                int status = Integer.valueOf(jsonUtil.opt("status", "-1").toString());
+                android.util.Log.d("XXXXXXXXX", "status = " + status);
+                return status;
+            }
+
+            @Override
+            public void onLoadResult(Integer object) {
+                mRefCollection.remove(this);
+                listener.onLoad(object);
+            }
+
+        };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+
+    public void deleteFavorite(String deviceId, int mediaId, final IOnloadListener<Integer> listener) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("?");
+        if (!Util.isEmpty(deviceId)) {
+            sb.append("deviceid=" + deviceId);
+        }
+        if (mediaId != 0) {
+            sb.append("&mediaid=" + mediaId);
+        }
+        String textUrl = URL_DELETE_FAVORITE + sb.toString();
+        android.util.Log.d("XXXXXXXXX", "textUrl = " + textUrl);
+        SimpleTextLoadListener<Integer> textLoadListener = new SimpleTextLoadListener<Integer>() {
+
+            @Override
+            public Integer parseText(String text) {
+                JSONUtils jsonUtil = JSONUtils.parse(text);
+                int status = Integer.valueOf(jsonUtil.opt("status", "-1").toString());
+                android.util.Log.d("XXXXXXXXX", "status = " + status);
+                return status;
+            }
+
+            @Override
+            public void onLoadResult(Integer object) {
+                mRefCollection.remove(this);
+                listener.onLoad(object);
+            }
+
+        };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+
+    public void loadFav(final String deviceId,
+            final IOnloadListener<List<LocalMyFavoriteItemInfo>> listener) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("?");
+        sb.append("deviceid=");
+        sb.append(deviceId);
+        String textUrl = URL_GET_FAVORITE + sb.toString();
+        android.util.Log.d("XXXXXXXXX", "textUrl = " + textUrl);
+        SimpleTextLoadListener<List<LocalMyFavoriteItemInfo>> textLoadListener =
+                new SimpleTextLoadListener<List<LocalMyFavoriteItemInfo>>() {
+
+                    @Override
+                    public List<LocalMyFavoriteItemInfo> parseText(String text) {
+                        List<LocalMyFavoriteItemInfo> localMyFavoriteItemInfos = new ArrayList<LocalMyFavoriteItemInfo>();
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                Object obj = jsonUtil.opt("data", null);
+                                if (obj != null  && obj instanceof JSONArray) {
+                                    JSONArray data = (JSONArray) obj;
+                                    int count = data.length();
+                                    for (int i = 0; i < count; i++) {
+                                        JSONObject mediaObj = data.optJSONObject(i);
+                                        LocalMyFavoriteItemInfo myFavoriteItemInfo = new LocalMyFavoriteItemInfo();
+                                        myFavoriteItemInfo.deviceid = deviceId;
+                                        myFavoriteItemInfo.mediaId = Integer.parseInt(mediaObj.opt("mediaid").toString());
+                                        myFavoriteItemInfo.mediaInfo = new MediaInfo(mediaObj.toString());
+                                        myFavoriteItemInfo.id = mediaObj.opt("id").toString();
+                                        if(mediaObj.opt("updateTime").toString() == null){
+                                            myFavoriteItemInfo.addDate = String.valueOf(Calendar.getInstance().getTimeInMillis());
+                                        }
+                                        android.util.Log.d("XXXXXXXXX", "mediaInfo mediaName = " + myFavoriteItemInfo.mediaInfo.mediaName);
+                                        localMyFavoriteItemInfos.add(myFavoriteItemInfo);
+                                    }
+                                }
+                            }
+                        }
+                        return localMyFavoriteItemInfos;
+                    }
+
+                    @Override
+                    public void onLoadResult(List<LocalMyFavoriteItemInfo> object) {
                         mRefCollection.remove(this);
                         listener.onLoad(object);
                     }

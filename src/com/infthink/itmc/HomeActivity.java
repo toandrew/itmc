@@ -10,6 +10,7 @@ import com.infthink.itmc.adapter.HomeChannelAdapter;
 import com.infthink.itmc.adapter.HomeMediaStoreAdapter;
 import com.infthink.itmc.adapter.ScrollBannerAdapter;
 import com.infthink.itmc.data.DataManager;
+import com.infthink.itmc.data.LocalMyFavoriteInfoManager;
 import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
 import com.infthink.itmc.service.CoreService;
 import com.infthink.itmc.type.Banner;
@@ -80,6 +81,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     private DataManager mDataManager;
     private View mBottomItem;
     private ImageView mCastView;
+    
+    LocalMyFavoriteInfoManager mLocalLocalMyFavoriteInfo;
 
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
@@ -96,6 +99,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                 Upgrade upgrade = getService().getUpgrade();
                 upgrade.prepareUpgradeView(HomeActivity.this);
                 MessageManager.sendMessage(new AppUpdateEvent(false), 1, true);
+                
+                mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfoManager.getInstance(HomeActivity.this);
             }
         }, 1000);
 
@@ -324,6 +329,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         ArrayList localArrayList = new ArrayList();
         LocalMediaCategoryInfo c = new LocalMediaCategoryInfo();
         localArrayList.add(c);
+        localArrayList.add(c);
         if (mHomeMediaStoreAdapter == null) {
             mHomeMediaStoreAdapter = new HomeMediaStoreAdapter(this);
             mHomeMediaStoreListView.setAdapter(mHomeMediaStoreAdapter);
@@ -334,8 +340,15 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                     long arg3) {
-                Intent intent = new Intent(HomeActivity.this, RecentPlayHistoryActivity.class);
-                startActivity(intent);
+                android.util.Log.d("XXXXXXXXXX", " arg2 = " + arg2);
+                if (arg2 == 1){
+                    Intent intent = new Intent(HomeActivity.this, RecentPlayHistoryActivity.class);
+                    startActivity(intent);
+                } 
+                if (arg2 == 2){
+                    Intent intent = new Intent(HomeActivity.this, RecentMyFavouriteActivity.class);
+                    startActivity(intent);
+                } 
             }
         });
     }
