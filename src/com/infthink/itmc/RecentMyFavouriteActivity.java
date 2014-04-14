@@ -45,7 +45,6 @@ public class RecentMyFavouriteActivity extends CoreActivity {
     }
     @Override
     public void onResume() {
-        android.util.Log.d("XXXXXXXXXX", "channel = ");
         loadFav();
         super.onResume();
      }

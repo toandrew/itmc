@@ -340,7 +340,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                     long arg3) {
-                android.util.Log.d("XXXXXXXXXX", " arg2 = " + arg2);
                 if (arg2 == 1){
                     Intent intent = new Intent(HomeActivity.this, RecentPlayHistoryActivity.class);
                     startActivity(intent);

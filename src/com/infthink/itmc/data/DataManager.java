@@ -196,7 +196,7 @@ public class DataManager {
         String textUrl =
                 URL_GET_LIST_BY_RANK + "?channelid=" + channelId + "&pageno=" + pageNo
                         + "&pagesize=" + pageSize + "&orderby=" + orderBy;
-
+        android.util.Log.d("XXXXXXXXXX", "loadRecommendChannel textUrl = " + textUrl);
         SimpleTextLoadListener<RankInfoList> textLoadListener =
                 new SimpleTextLoadListener<RankInfoList>() {
 
@@ -599,7 +599,7 @@ public class DataManager {
                                         myFavoriteItemInfo.mediaId = Integer.parseInt(mediaObj.opt("mediaid").toString());
                                         myFavoriteItemInfo.mediaInfo = new MediaInfo(mediaObj.toString());
                                         myFavoriteItemInfo.id = mediaObj.opt("id").toString();
-                                        if(mediaObj.opt("updateTime").toString() == null){
+                                        if(mediaObj.opt("updatetime").toString() == null){
                                             myFavoriteItemInfo.addDate = String.valueOf(Calendar.getInstance().getTimeInMillis());
                                         }
                                         android.util.Log.d("XXXXXXXXX", "mediaInfo mediaName = " + myFavoriteItemInfo.mediaInfo.mediaName);

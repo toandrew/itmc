@@ -4,6 +4,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.infthink.itmc.adapter.HomeChannelAdapter;
 import com.infthink.itmc.adapter.PosterListAdapter;
 import com.infthink.itmc.adapter.RankListAdapter;
@@ -25,11 +29,13 @@ import com.infthink.itmc.widget.MediaView.OnMediaClickListener;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.AvoidXfermode.Mode;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ChannelActivity extends CoreActivity implements OnPageChangeListener, OnClickListener {
     public static final int PAGE_COUNT = 3;
@@ -150,10 +157,9 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         imageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                 Intent intent = new Intent(ChannelActivity.this,
-                 SearchActivity.class);
-                 startActivity(intent);
-                 overridePendingTransition(R.anim.appear, R.anim.stay_same);
+                Intent intent = new Intent(ChannelActivity.this, SearchActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.appear, R.anim.stay_same);
             }
         });
         ActionBar actionBar = getActionBar();
@@ -168,6 +174,8 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(frameLayout, lp);
     }
+    
+    int mPageCurr = 0;
 
     private void onActivate() {
         initActionBar();
@@ -225,48 +233,130 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                 listView.setAdapter(mRankAdapter);
                 views[i] = loadingListView;
             } else {
-                LoadingListView loadingListView =
-                        (LoadingListView) View.inflate(this, R.layout.channel_posters_panel, null);
-                View loadView = View.inflate(this, R.layout.load_view, null);
-                loadingListView.setLoadingView(loadView);
-                ((TextView) loadView.findViewById(R.id.hint_text)).setText(R.string.loading_video);
-
-
-                views[i] = loadingListView;
-                ListView listView = loadingListView.getListView();
-                mLoadingLv[i] = loadingListView;
-                mListView[i] = listView;
-                // this.retryLoadingView[m] = localRetryLoadingView2;
-                // listView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
-                // listView.setCanLoadMore(true);
-                // listView.setOnLoadMoreListener(this);
-
                 if ((PAGE_HOT == i) && (mIsManual)) {
-                    mHeaderView = View.inflate(this, R.layout.banner_view, null);
-                    mHeaderView.setPadding(margin, marginTop, margin, margin);
-                    mBannerView = ((ViewPager) mHeaderView.findViewById(R.id.banner));
-                    // BannerViewPageChangeListener
-                    // localBannerViewPageChangeListener = new
-                    // BannerViewPageChangeListener();
-                    // localBannerViewPageChangeListener.proguardStub();
-                    mBannerView.setOnPageChangeListener(this);
-                    mBannerAdapter = new ScrollBannerAdapter(this); // , this);
-                    // mBannerAdapter.setOnMediaClickListener(this);
-                    mBannerView.setAdapter(mBannerAdapter);
-                    mBannerIndicator =
-                            ((BannerIndicator) mHeaderView.findViewById(R.id.bannerIndicator));
-                    mBannerCountChanged = false;
-                    mBannerMediaCount = 1; // 0;
-                    mBannerViewIndex = -1;
-                    if (mBannerMediaList != null) mBannerMediaCount = mBannerMediaList.length;
-                    mBannerIndicator.setIndicatorNum(mBannerMediaCount);
-                    if (mBannerMediaCount > 0) listView.addHeaderView(mHeaderView);
-                    // listView.setOnTouchInterceptor(this);
+                    LoadingListView loadingListView =
+                            (LoadingListView) View.inflate(this, R.layout.channel_posters_panel,
+                                    null);
+                    View loadView = View.inflate(this, R.layout.load_view, null);
+                    loadingListView.setLoadingView(loadView);
+                    ((TextView) loadView.findViewById(R.id.hint_text))
+                            .setText(R.string.loading_video);
+
+                    views[i] = loadingListView;
+                    ListView listView = loadingListView.getListView();
+                    mLoadingLv[i] = loadingListView;
+                    mListView[i] = listView;
+                    // this.retryLoadingView[m] = localRetryLoadingView2;
+                    // listView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
+                    // listView.setCanLoadMore(true);
+                    // listView.setOnLoadMoreListener(this);
+
+                    if ((PAGE_HOT == i) && (mIsManual)) {
+                        mHeaderView = View.inflate(this, R.layout.banner_view, null);
+                        mHeaderView.setPadding(margin, marginTop, margin, margin);
+                        mBannerView = ((ViewPager) mHeaderView.findViewById(R.id.banner));
+                        // BannerViewPageChangeListener
+                        // localBannerViewPageChangeListener = new
+                        // BannerViewPageChangeListener();
+                        // localBannerViewPageChangeListener.proguardStub();
+                        mBannerView.setOnPageChangeListener(this);
+                        mBannerAdapter = new ScrollBannerAdapter(this); // , this);
+                        // mBannerAdapter.setOnMediaClickListener(this);
+                        mBannerView.setAdapter(mBannerAdapter);
+                        mBannerIndicator =
+                                ((BannerIndicator) mHeaderView.findViewById(R.id.bannerIndicator));
+                        mBannerCountChanged = false;
+                        mBannerMediaCount = 1; // 0;
+                        mBannerViewIndex = -1;
+                        if (mBannerMediaList != null) mBannerMediaCount = mBannerMediaList.length;
+                        mBannerIndicator.setIndicatorNum(mBannerMediaCount);
+                        if (mBannerMediaCount > 0) listView.addHeaderView(mHeaderView);
+                        // listView.setOnTouchInterceptor(this);
+                    }
+                    PosterListAdapter posterAdapter = new PosterListAdapter(this);
+                    mPosterAdapter[i] = posterAdapter;
+                    // mPosterAdapter[i].setOnMediaClickListener(this);
+                    listView.setAdapter(mPosterAdapter[i]);
+                } else {
+                    // LoadingListView loadingListView =
+                    // (LoadingListView) View.inflate(this, R.layout.channel_posters_panel,
+                    // null);
+                    // View loadView = View.inflate(this, R.layout.load_view, null);
+                    // loadingListView.setLoadingView(loadView);
+                    // ((TextView) loadView.findViewById(R.id.hint_text))
+                    // .setText(R.string.loading_video);
+                    //
+                    // views[i] = loadingListView;
+                    // ListView listView = loadingListView.getListView();
+                    // mLoadingLv[i] = loadingListView;
+                    // mListView[i] = listView;
+                    // PosterListAdapter posterAdapter = new PosterListAdapter(this);
+                    // mPosterAdapter[i] = posterAdapter;
+                    // // mPosterAdapter[i].setOnMediaClickListener(this);
+                    // listView.setAdapter(mPosterAdapter[i]);
+
+                    final PullToRefreshListView mPullRefreshListView =
+                            (PullToRefreshListView) View.inflate(this, R.layout.activity_ptr_list,
+                                    null);
+                    mPullRefreshListView.setMode(com.handmark.pulltorefresh.library.PullToRefreshBase.Mode.PULL_FROM_END);
+                    views[i] = mPullRefreshListView;;
+                    
+                    mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+                        @Override
+                        public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+//                            String label =
+//                                    DateUtils.formatDateTime(getApplicationContext(),
+//                                            System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME
+//                                                    | DateUtils.FORMAT_SHOW_DATE
+//                                                    | DateUtils.FORMAT_ABBREV_ALL);
+//
+//                            // Update the LastUpdatedLabel
+//                            refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+
+                            // Do work to refresh the list here.
+                            // new GetDataTask().execute();
+                            mPageCurr += 1;
+                            String channelId = mChannel.channelID + "";
+                            mDataManager.loadChannelRank(channelId, mPageCurr, 30, 1,
+                                new DataManager.IOnloadListener<RankInfoList>() {
+
+                                    @Override
+                                    public void onLoad(RankInfoList entity) {
+                                        // TODO Auto-generated method stub
+                                        RankInfo[] ranks = entity.ranks;
+                                        ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
+                                        if (ranks != null) {
+                                            for (int i = 0; i < ranks.length; i++) {
+                                                localArrayList.add(ranks[i]);
+                                                MediaInfo[] medias = ranks[i].mediaInfos;
+                                                mPosterAdapter[2].addGroup(medias);
+                                            }
+                                        }
+                                       mPosterAdapter[2].refresh();
+
+                                        // Call onRefreshComplete when the list has been refreshed.
+                                        mPullRefreshListView.onRefreshComplete();
+                                    };
+                                });
+                        }
+                    });
+//
+//                    // Add an end-of-list listener
+//                    mPullRefreshListView
+//                            .setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+//
+//                                @Override
+//                                public void onLastItemVisible() {
+//                                    Toast.makeText(ChannelActivity.this, "End of List!",
+//                                            Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+
+                    PosterListAdapter posterAdapter = new PosterListAdapter(this);
+                    mPosterAdapter[i] = posterAdapter;
+                    ListView listView = mPullRefreshListView.getRefreshableView();
+                    listView.setAdapter(mPosterAdapter[i]);
                 }
-                PosterListAdapter posterAdapter = new PosterListAdapter(this);
-                mPosterAdapter[i] = posterAdapter;
-                // mPosterAdapter[i].setOnMediaClickListener(this);
-                listView.setAdapter(mPosterAdapter[i]);
             }
         }
 
@@ -371,22 +461,22 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     }
 
     private void setNewChannelAdapter() {
-        // for (int i = 0; i < mNewInfoList.size(); i++){
-        RankInfo rankInfo = mNewInfoList.get(0);
-        MediaInfo[] medias = rankInfo.mediaInfos;
-        mPosterAdapter[2].setGroup(medias);
-        mPosterAdapter[2].setOnMediaClickListener(new OnMediaClickListener() {
+        for (int i = 0; i < mNewInfoList.size(); i++) {
+            RankInfo rankInfo = mNewInfoList.get(0);
+            MediaInfo[] medias = rankInfo.mediaInfos;
+            mPosterAdapter[2].setGroup(medias);
+            mPosterAdapter[2].setOnMediaClickListener(new OnMediaClickListener() {
 
-            @Override
-            public void onMediaClick(MediaView paramMediaView, Object paramObject) {
-                // TODO Auto-generated method stub
-                Intent intent = new Intent(ChannelActivity.this, MediaDetailActivity.class);
-                MediaInfo mediaInfo = paramMediaView.getMediaInfo();
-                intent.putExtra("mediaInfo", mediaInfo);
-                startActivity(intent);
-            }
-        });
-        // }
+                @Override
+                public void onMediaClick(MediaView paramMediaView, Object paramObject) {
+                    // TODO Auto-generated method stub
+                    Intent intent = new Intent(ChannelActivity.this, MediaDetailActivity.class);
+                    MediaInfo mediaInfo = paramMediaView.getMediaInfo();
+                    intent.putExtra("mediaInfo", mediaInfo);
+                    startActivity(intent);
+                }
+            });
+        }
 
     }
 
