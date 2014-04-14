@@ -206,9 +206,9 @@ public class WebViewActivity extends BaseWebViewActivity implements
                 mLastY = event.getY();
             }
             if ((event.getY() - mLastY > 0) && mUrlLoadFinish) {
-                showBarsWithAnimation();
+//                showBarsWithAnimation();
             } else {
-                hideBarsWithAnimation();
+//                hideBarsWithAnimation();
             }
             break;
         case MotionEvent.ACTION_CANCEL:
