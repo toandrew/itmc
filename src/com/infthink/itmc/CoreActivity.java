@@ -66,8 +66,7 @@ public class CoreActivity extends BaseActivity<CoreService> implements CastSearc
         
         mCastDeviceAdapter = new CastDeviceAdapter(this);
         mListView.setAdapter(mCastDeviceAdapter);
-        ITApp.getNetcastManager().setCastSearchListener(this);
-        ITApp.getNetcastManager().setCastSessionListener(this);
+
         mListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -79,6 +78,21 @@ public class CoreActivity extends BaseActivity<CoreService> implements CastSearc
             }
         });
         createCastView();
+    }
+    
+    
+
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ITApp.getNetcastManager().setCastSearchListener(this);
+        ITApp.getNetcastManager().setCastSessionListener(this);
     }
 
     private void checkNetworkStatus() {

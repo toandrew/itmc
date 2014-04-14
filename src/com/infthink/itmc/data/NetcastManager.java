@@ -53,6 +53,7 @@ public class NetcastManager {
     private boolean mIsSessionEstablished;
     private int mCurVolume;
     private int mLastVolume;
+    private boolean mSearching = false;
     
     public NetcastManager(Context context) {
         mApplication = ITApp.getInstance();
@@ -145,10 +146,12 @@ public class NetcastManager {
     }
 
     public void startSearch() {
-        mCastDeviceMap.clear();
-        mCastDeviceList.clear();
-
-        mServerSearcher.startSearch(mCastContext, mSearchListener);
+        if (!mSearching) {
+            mCastDeviceMap.clear();
+            mCastDeviceList.clear();
+    
+            mServerSearcher.startSearch(mCastContext, mSearchListener);
+        }
     }
 
     private void startQuery() {
@@ -216,7 +219,7 @@ public class NetcastManager {
             }
         });
     }
-    
+
     public void setVolumeUp() {
         if (!mRampStream.hasAttached() || mLastVolume == mCurVolume) {
             return;
@@ -241,6 +244,7 @@ public class NetcastManager {
         @Override
         public void onStart() {
             Log.d(TAG, "onStart");
+            mSearching = true;
             if (mCastSearchListener != null) {
                 mCastSearchListener.onSearchStart();
             }
@@ -249,6 +253,7 @@ public class NetcastManager {
         @Override
         public void onFinish() {
             Log.d(TAG, "onFinish");
+            mSearching = false;
             if (mCastSearchListener != null) {
                 mCastSearchListener.onSearchFinish();
             }
@@ -270,7 +275,6 @@ public class NetcastManager {
 
         @Override
         public void onResultList(ArrayList<CastDevice> devices) {
-            Log.d(TAG, "onResultList: devices size is " + devices.size());
         }
     };
 
