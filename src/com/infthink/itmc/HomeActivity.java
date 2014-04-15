@@ -54,6 +54,7 @@ import android.widget.Toast;
 
 public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         OnClickListener {
+    private static final String TAG = HomeActivity.class.getSimpleName();
     private static final int MSG_UPDATE_HOME_CHANNEL = 0;
     private static final int MSG_UPDATE_HOME_BANNER = 1;
 
@@ -87,22 +88,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
-
+        android.util.Log.d(TAG, "onCreateAfterSuper");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDataManager = getService().getDataManager();
-                getChannelMap();
-                Upgrade upgrade = getService().getUpgrade();
-                upgrade.prepareUpgradeView(HomeActivity.this);
-                MessageManager.sendMessage(new AppUpdateEvent(false), 1, true);
-                
-                mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfoManager.getInstance(HomeActivity.this);
-            }
-        }, 1000);
 
         setContentView(R.layout.activity_home);
         mBottomItem = View.inflate(this, R.layout.home_bottom_item, null);
@@ -119,6 +106,18 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         decorView.addView(mBottomItem, 0, lp);
         // localViewGroup.addView(this.vOnlineBottombar);
         onCreateActivate();
+    }
+    
+    @Override
+    protected void onInitialized() {
+        android.util.Log.d(TAG, "onInitialized");
+        mDataManager = getService().getDataManager();
+        getChannelMap();
+        Upgrade upgrade = getService().getUpgrade();
+        upgrade.prepareUpgradeView(HomeActivity.this);
+        MessageManager.sendMessage(new AppUpdateEvent(false), 1, true);
+
+        mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfoManager.getInstance(HomeActivity.this);
     }
 
     private void onCreateActivate() {
