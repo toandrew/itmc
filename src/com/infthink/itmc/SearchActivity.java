@@ -198,7 +198,8 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
 
     private void setTitlesSearching() {
         mResultTitleTv.setText(mSearchingHint);
-        mResultRecommendHintTv.setText(mSearchingHint);
+        mResultTitleTv.setVisibility(View.INVISIBLE);
+        mResultRecommendHintTv.setText(mResultRecommendHint);
     }
 
     public class CategoryDetailInfo {
@@ -312,21 +313,23 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
     
     private void searchResult(MediaInfo[] medias) {
         mResultAdapter.setGroup(medias);
-        while(mViewFlipper.getCurrentView() != this.mSearchResultView) {
-            mViewFlipper.showNext();
-        }
 
         if (mResultAdapter.getGroup().size() > 0) {
-            mResultLoadingListView.setShowLoading(false);
+            while(mViewFlipper.getCurrentView() != this.mSearchResultView) {
+                mViewFlipper.showNext();
+            }
         } else {
-            mResultLoadingListView.setShowLoading(true);
+            while(mViewFlipper.getCurrentView() != this.mSearchResultRecommendView) {
+                mViewFlipper.showNext();
+            }
         }
+        mResultLoadingListView.setShowLoading(false);
     }
 
     public void onPerformSearch(String keyword) {
         mSearchKey = keyword;
         mCurrentCategory = mCategoryAll;
-
+        mResultLoadingListView.setShowLoading(true);
         dismissInputMethod();
         getService().getDataManager().searchMedia("83886080", URLEncoder.encode(keyword), 1, 10, 1, new DataManager.IOnloadListener<MediaInfo[]>() {
 
