@@ -263,4 +263,6 @@
     <dimen name="player_popuptop_marginTop">2.0dip</dimen>
     
     <dimen name="detail_title_width_1">770.0px</dimen>
+    <dimen name="detail_bottom_left_button_width">120.0px</dimen>
+    <dimen name="detail_bottom_left_button_height">135.0px</dimen>
 </resources>

@@ -19,8 +19,8 @@
 
             <Button
                 android:id="@+id/btn_myfavorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/detail_bottom_left_button_width"
+                android:layout_height="@dimen/detail_bottom_left_button_height"
                 android:layout_gravity="center"
                
                 android:background="@drawable/btn_detail_left_select_source" />

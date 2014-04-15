@@ -36,6 +36,8 @@ import com.infthink.itmc.widget.PagerView;
 import com.infthink.itmc.widget.RatingView;
 import com.infthink.libs.cache.simple.BitmapCachePool;
 import com.infthink.libs.cache.simple.ImageLoader;
+import com.infthink.libs.common.message.MessageManager;
+import com.infthink.libs.upgrade.Upgrade;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -351,25 +353,26 @@ public class MediaDetailActivity extends CoreActivity
 
     }
 
+    private static final String TAG = MediaDetailActivity.class.getSimpleName();
+
+    @Override
+    protected void onInitialized() {
+        android.util.Log.d(TAG, "onInitialized");
+        mDataManager = getService().getDataManager();
+        mLocalLocalMyFavoriteInfo =
+                LocalMyFavoriteInfoManager.getInstance(MediaDetailActivity.this);
+        isFavorite =
+                mLocalLocalMyFavoriteInfo.checkIsFavorite(MediaDetailActivity.this,
+                        mediaInfo.mediaID);
+        refreshMyFavorite();
+        download();
+    }
+
     @Override
     protected void onCreateAfterSuper(Bundle paramBundle) {
         super.onCreateAfterSuper(paramBundle);
         getActionBar().hide();
         setContentView(R.layout.media_detail_layout);
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDataManager = getService().getDataManager();
-                mLocalLocalMyFavoriteInfo =
-                        LocalMyFavoriteInfoManager.getInstance(MediaDetailActivity.this);
-                isFavorite =
-                        mLocalLocalMyFavoriteInfo.checkIsFavorite(MediaDetailActivity.this,
-                                mediaInfo.mediaID);
-                refreshMyFavorite();
-                download();
-            }
-        }, 1000);
 
         Intent localIntent = getIntent();
         this.isBanner = localIntent.getBooleanExtra("isBanner", false);

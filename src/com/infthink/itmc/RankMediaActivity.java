@@ -9,6 +9,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.infthink.itmc.adapter.PosterListAdapter;
 import com.infthink.itmc.adapter.RankListAdapter.OnRankClickListener;
 import com.infthink.itmc.data.DataManager;
+import com.infthink.itmc.data.LocalMyFavoriteInfoManager;
 import com.infthink.itmc.type.Channel;
 import com.infthink.itmc.type.MediaInfo;
 import com.infthink.itmc.type.RankInfo;
@@ -44,6 +45,15 @@ public class RankMediaActivity extends CoreActivity implements OnClickListener {
     // private ArrayList<RankInfo> mNewInfoList = new ArrayList<RankInfo>();
     public static final int MSG_UPDATE_RANK_MEDIA = 1;
     private ArrayList<RankInfo> mRankInfoList = new ArrayList<RankInfo>();
+    
+    private static final String TAG = RankMediaActivity.class.getSimpleName();
+
+    @Override
+    protected void onInitialized() {
+        android.util.Log.d(TAG, "onInitialized");
+        mDataManager = getService().getDataManager();
+        download();
+    }
 
     @Override
     public void onClick(View arg0) {
@@ -69,15 +79,6 @@ public class RankMediaActivity extends CoreActivity implements OnClickListener {
         mRankInfo = ((RankInfo) getIntent().getSerializableExtra("rankinfo"));
 
         android.util.Log.d("XXXXXXXXXX", "channel.channelID = " + mRankInfo.channelID);
-
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDataManager = getService().getDataManager();
-                download();
-            }
-        }, 1000);
 
         onActivate();
     }

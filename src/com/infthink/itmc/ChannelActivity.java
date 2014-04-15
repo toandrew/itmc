@@ -91,15 +91,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         mChannel = ((Channel) getIntent().getSerializableExtra("channel"));
         android.util.Log.d("XXXXXXXXXX", "channelID = " + mChannel.channelID);
 
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDataManager = getService().getDataManager();
-                download();
-            }
-        }, 1000);
-
         // this.isManual = getIntent().getBooleanExtra("isManual",
         // this.isManual);
         // if (this.channel != null)
@@ -107,6 +98,15 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         loadChannelFilter();
         onActivate();
         // }
+    }
+    
+    private static final String TAG = ChannelActivity.class.getSimpleName();
+
+    @Override
+    protected void onInitialized() {
+        android.util.Log.d(TAG, "onInitialized");
+        mDataManager = getService().getDataManager();
+        download();
     }
 
     private void loadChannelFilter() {
