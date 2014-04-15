@@ -11,6 +11,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.infthink.itmc.adapter.HomeChannelAdapter;
 import com.infthink.itmc.adapter.PosterListAdapter;
 import com.infthink.itmc.adapter.RankListAdapter;
+import com.infthink.itmc.adapter.RankListAdapter.OnRankClickListener;
 import com.infthink.itmc.adapter.ScrollBannerAdapter;
 import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.type.Banner;
@@ -75,20 +76,20 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     private int mBannerViewIndex = -1;
     private Banner[] mBannerMediaList = null;
     private PosterListAdapter[] mPosterAdapter = new PosterListAdapter[3];
-    private Channel mChannel;
+    private RankInfo mRankInfo;
     private DataManager mDataManager;
     private ArrayList<RankInfo> mRankInfoList = new ArrayList<RankInfo>();
     private ArrayList<Channel> mChannelList = new ArrayList<Channel>();
     private ArrayList<RankInfo> mNewInfoList = new ArrayList<RankInfo>();
     private HashMap<Channel, ShowBaseInfo[]> mRecommendationOfChannels = new HashMap();
-
+    private Channel mChannel;
     @Override
     protected void onCreateAfterSuper(Bundle paramBundle) {
         super.onCreateAfterSuper(paramBundle);
         setContentView(R.layout.channel_activity);
 
         mChannel = ((Channel) getIntent().getSerializableExtra("channel"));
-        android.util.Log.d("XXXXXXXXXX", "channel = " + mChannel.channelID);
+        android.util.Log.d("XXXXXXXXXX", "channelID = " + mChannel.channelID);
 
         Handler h = new Handler();
         h.postDelayed(new Runnable() {
@@ -247,7 +248,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     mLoadingLv[i] = loadingListView;
                     mListView[i] = listView;
                     // this.retryLoadingView[m] = localRetryLoadingView2;
-                    // listView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
+//                     listView.setLoadMoreView(UIUtil.createMediaLoadMoreView(this));
                     // listView.setCanLoadMore(true);
                     // listView.setOnLoadMoreListener(this);
 
@@ -278,23 +279,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     // mPosterAdapter[i].setOnMediaClickListener(this);
                     listView.setAdapter(mPosterAdapter[i]);
                 } else {
-                    // LoadingListView loadingListView =
-                    // (LoadingListView) View.inflate(this, R.layout.channel_posters_panel,
-                    // null);
-                    // View loadView = View.inflate(this, R.layout.load_view, null);
-                    // loadingListView.setLoadingView(loadView);
-                    // ((TextView) loadView.findViewById(R.id.hint_text))
-                    // .setText(R.string.loading_video);
-                    //
-                    // views[i] = loadingListView;
-                    // ListView listView = loadingListView.getListView();
-                    // mLoadingLv[i] = loadingListView;
-                    // mListView[i] = listView;
-                    // PosterListAdapter posterAdapter = new PosterListAdapter(this);
-                    // mPosterAdapter[i] = posterAdapter;
-                    // // mPosterAdapter[i].setOnMediaClickListener(this);
-                    // listView.setAdapter(mPosterAdapter[i]);
-
                     final PullToRefreshListView mPullRefreshListView =
                             (PullToRefreshListView) View.inflate(this, R.layout.activity_ptr_list,
                                     null);
@@ -304,14 +288,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
                         @Override
                         public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-//                            String label =
-//                                    DateUtils.formatDateTime(getApplicationContext(),
-//                                            System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME
-//                                                    | DateUtils.FORMAT_SHOW_DATE
-//                                                    | DateUtils.FORMAT_ABBREV_ALL);
-//
-//                            // Update the LastUpdatedLabel
-//                            refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
 
                             // Do work to refresh the list here.
                             // new GetDataTask().execute();
@@ -323,6 +299,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                                     @Override
                                     public void onLoad(RankInfoList entity) {
                                         // TODO Auto-generated method stub
+                                        if (entity == null) return;
                                         RankInfo[] ranks = entity.ranks;
                                         ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
                                         if (ranks != null) {
@@ -340,17 +317,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                                 });
                         }
                     });
-//
-//                    // Add an end-of-list listener
-//                    mPullRefreshListView
-//                            .setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
-//
-//                                @Override
-//                                public void onLastItemVisible() {
-//                                    Toast.makeText(ChannelActivity.this, "End of List!",
-//                                            Toast.LENGTH_SHORT).show();
-//                                }
-//                            });
 
                     PosterListAdapter posterAdapter = new PosterListAdapter(this);
                     mPosterAdapter[i] = posterAdapter;
@@ -407,6 +373,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     }
 
     private void setBannerAdapter() {
+        if (mBannerMediaList == null || mBannerMediaList.length == 0) return;
         mBannerAdapter.setBannerList(mBannerMediaList);
         mBannerView.setCurrentItem(1);
         mBannerMediaCount = mBannerMediaList.length;
@@ -427,8 +394,20 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     }
 
     private void setRankAdapter() {
+        if (mRankInfoList == null || mRankInfoList.size() == 0) return;
         mRankAdapter.setmRankInfoList(mRankInfoList);
         mRankAdapter.setGroup(mRankInfoList);
+        mRankAdapter.setOnRankClickListener(new OnRankClickListener() {
+            
+            @Override
+            public void onMoreClick(View paramView, RankInfo paramRankInfo) {
+                // TODO Auto-generated method stub
+                RankInfo rankInfo = (RankInfo)paramView.getTag();
+                Intent intent = new Intent(ChannelActivity.this, RankMediaActivity.class);
+                intent.putExtra("rankinfo", rankInfo);
+                startActivity(intent);
+            }
+        });
         mRankAdapter.setOnMediaClickListener(new OnMediaClickListener() {
 
             @Override
@@ -443,6 +422,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     }
 
     private void setRecommendAdapter() {
+        if (mChannelList == null || mChannelList.size() == 0) return;
         MediaInfo[] medias = (MediaInfo[]) mRecommendationOfChannels.get(mChannelList.get(0));
         mPosterAdapter[0].setGroup(medias);
         mPosterAdapter[0].setOnMediaClickListener(new OnMediaClickListener() {
@@ -477,7 +457,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                 }
             });
         }
-
     }
 
     // private void getChannelMapByChannelId() {
@@ -496,6 +475,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
 
             @Override
             public void onLoad(Banner[] entity) {
+                if (entity == null) return;
                 mBannerMediaList = entity;
                 mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL_BANNER);
             }
@@ -505,6 +485,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                 new DataManager.IOnloadListener<RecommendChannel>() {
                     @Override
                     public void onLoad(RecommendChannel entity) {
+                        if (entity == null) return;
                         mChannelList = (ArrayList<Channel>) entity.channelList;
                         mRecommendationOfChannels = entity.recommend;
                         mHandler.sendEmptyMessage(MSG_UPDATE_CHANNEL);
@@ -517,8 +498,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     @Override
                     public void onLoad(RankInfoList entity) {
                         // TODO Auto-generated method stub
-                        android.util.Log.d("XXXXXXXXXX", "download loadChannelRank = "
-                                + entity.ranks[0].mediaInfos[0].mediaName);
+                        if (entity == null) return;
                         RankInfo[] ranks = entity.ranks;
                         ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
                         if (ranks != null) {
@@ -538,6 +518,8 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     @Override
                     public void onLoad(RankInfoList entity) {
                         // TODO Auto-generated method stub
+                        android.util.Log.d("XXXXXXXXXX", "channel.loadChannelRank = " +entity.ranks.length);
+                        if (entity == null) return;
                         RankInfo[] ranks = entity.ranks;
                         ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();
                         if (ranks != null) {
@@ -589,8 +571,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 
     private void callBack() {
         mHandler.postDelayed(mRunnable, 5000);

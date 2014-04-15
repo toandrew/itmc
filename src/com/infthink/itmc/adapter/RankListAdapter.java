@@ -19,8 +19,8 @@ import com.infthink.itmc.widget.MediaView;
 public class RankListAdapter extends BaseGroupAdapter<RankInfo> implements View.OnClickListener {
     private int mMargin;
     private ArrayList<RankInfo> mRankInfoList = new ArrayList<RankInfo>();
-     private MediaView.OnMediaClickListener onMediaClickListener;
-     private OnRankClickListener onRankClickListener;
+    private MediaView.OnMediaClickListener onMediaClickListener;
+    private OnRankClickListener onRankClickListener;
 
 
     public void setmRankInfoList(ArrayList<RankInfo> mRankInfoList) {
@@ -31,15 +31,13 @@ public class RankListAdapter extends BaseGroupAdapter<RankInfo> implements View.
         super(context);
         mMargin = context.getResources().getDimensionPixelSize(R.dimen.page_margin);
     }
-    
-    public MediaView.OnMediaClickListener getOnMediaClickListener()
-    {
-      return this.onMediaClickListener;
+
+    public MediaView.OnMediaClickListener getOnMediaClickListener() {
+        return this.onMediaClickListener;
     }
 
-    public OnRankClickListener getOnRankClickListener()
-    {
-      return this.onRankClickListener;
+    public OnRankClickListener getOnRankClickListener() {
+        return this.onRankClickListener;
     }
 
     @Override
@@ -55,23 +53,25 @@ public class RankListAdapter extends BaseGroupAdapter<RankInfo> implements View.
             holder.channelName = (TextView) convertView.findViewById(R.id.channel_name);
             holder.mediaViews = new MediaView[3];
             holder.mediaViews[0] = (MediaView) convertView.findViewById(R.id.left);
-             holder.mediaViews[0].setOnMediaClickListener(this.onMediaClickListener);
-            holder.mediaViews[0].setTag(new HomeActivity.MediaViewMetaInfo(0, item.channelID, item.channelName));
+            holder.mediaViews[0].setOnMediaClickListener(this.onMediaClickListener);
+            holder.mediaViews[0].setTag(new HomeActivity.MediaViewMetaInfo(0, item.channelID,
+                    item.channelName));
             holder.mediaViews[1] = ((MediaView) convertView.findViewById(R.id.middle));
-             holder.mediaViews[1].setOnMediaClickListener(this.onMediaClickListener);
-            holder.mediaViews[1].setTag(new HomeActivity.MediaViewMetaInfo(0, item.channelID, item.channelName));
+            holder.mediaViews[1].setOnMediaClickListener(this.onMediaClickListener);
+            holder.mediaViews[1].setTag(new HomeActivity.MediaViewMetaInfo(0, item.channelID,
+                    item.channelName));
             holder.mediaViews[2] = ((MediaView) convertView.findViewById(R.id.right));
-             holder.mediaViews[2].setOnMediaClickListener(this.onMediaClickListener);
-            holder.mediaViews[2].setTag(new HomeActivity.MediaViewMetaInfo(0, item.channelID, item.channelName));
+            holder.mediaViews[2].setOnMediaClickListener(this.onMediaClickListener);
+            holder.mediaViews[2].setTag(new HomeActivity.MediaViewMetaInfo(0, item.channelID,
+                    item.channelName));
 
             convertView.setTag(holder);
         }
-        
+
         holder.more = convertView.findViewById(R.id.channel_more);
-        
         MediaView[] mediaView = new MediaView[3];
-        for (int j = 0; j < mRankInfoList.size(); j++){
-            if(mRankInfoList.get(j).channelID == item.channelID){
+        for (int j = 0; j < mRankInfoList.size(); j++) {
+            if (mRankInfoList.get(j).channelID == item.channelID) {
                 for (int i = 0; i < 3; i++) {
                     RankInfo rankInfo = mRankInfoList.get(j);
                     mediaView[i] = holder.mediaViews[i];
@@ -84,14 +84,14 @@ public class RankListAdapter extends BaseGroupAdapter<RankInfo> implements View.
 
         RankInfo rankInfo = (RankInfo) getItem(position);
         holder.channelName.setText(rankInfo.channelName);
-//        holder.more.setOnClickListener(this);
+        holder.more.setOnClickListener(this);
         holder.more.setTag(rankInfo);
-//        for (int i = 0; i < 3; i++) {
-//            MediaViewMetaInfo meta = (MediaViewMetaInfo) holder.mediaViews[i].getTag();
-//            meta.position = i;
-//            meta.channelID = rankInfo.channelID;
-//            meta.channelName = rankInfo.channelName;
-//        }
+        // for (int i = 0; i < 3; i++) {
+        // MediaViewMetaInfo meta = (MediaViewMetaInfo) holder.mediaViews[i].getTag();
+        // meta.position = i;
+        // meta.channelID = rankInfo.channelID;
+        // meta.channelName = rankInfo.channelName;
+        // }
         // UIUtil.fillPosterViews(localViewHolder.mediaViews,
         // localRankInfo.mediaInfos);
         if (position == mGroup.size() - 1) {
@@ -121,26 +121,23 @@ public class RankListAdapter extends BaseGroupAdapter<RankInfo> implements View.
 
         private ViewHolder() {}
     }
-    
-    public void onClick(View paramView)
-    {
-      if ((paramView.getTag() != null) && ((paramView.getTag() instanceof RankInfo)) && (this.onRankClickListener != null))
-        this.onRankClickListener.onMoreClick(paramView, (RankInfo)paramView.getTag());
+
+    public void onClick(View paramView) {
+        if ((paramView.getTag() != null) && ((paramView.getTag() instanceof RankInfo))
+                && (this.onRankClickListener != null))
+            this.onRankClickListener.onMoreClick(paramView, (RankInfo) paramView.getTag());
     }
 
-    public void setOnMediaClickListener(MediaView.OnMediaClickListener paramOnMediaClickListener)
-    {
-      this.onMediaClickListener = paramOnMediaClickListener;
+    public void setOnMediaClickListener(MediaView.OnMediaClickListener paramOnMediaClickListener) {
+        this.onMediaClickListener = paramOnMediaClickListener;
     }
 
-    public void setOnRankClickListener(OnRankClickListener paramOnRankClickListener)
-    {
-      this.onRankClickListener = paramOnRankClickListener;
+    public void setOnRankClickListener(OnRankClickListener paramOnRankClickListener) {
+        this.onRankClickListener = paramOnRankClickListener;
     }
-    
-    public static abstract interface OnRankClickListener
-    {
-      public abstract void onMoreClick(View paramView, RankInfo paramRankInfo);
+
+    public static abstract interface OnRankClickListener {
+        public abstract void onMoreClick(View paramView, RankInfo paramRankInfo);
     }
 
 }
