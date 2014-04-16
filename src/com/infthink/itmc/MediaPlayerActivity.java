@@ -165,14 +165,14 @@ public class MediaPlayerActivity extends CoreActivity implements
             });
         }
 
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadNextUrl();
-            }
-
-        }, 20000);
+//        Handler h = new Handler();
+//        h.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                loadNextUrl();
+//            }
+//
+//        }, 20000);
     }
     
     protected void updateCastBtnState() {
