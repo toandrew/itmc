@@ -150,12 +150,13 @@ public class AdvancedVideoDemo extends ListActivity {
 
                 Bitmap bitmap =
                         ThumbnailUtils.createVideoThumbnail(info.filePath, Thumbnails.MINI_KIND);
-                int width = 200;
-                int height = width * 3 / 4;
-                Bitmap bitmap1 = ThumbnailUtils.extractThumbnail(bitmap, width, height);
-                info.thumbPathBitmap = bitmap1;
-                bitmap.recycle();
-
+                if (bitmap != null) {
+                    int width = 200;
+                    int height = width * 3 / 4;
+                    Bitmap bitmap1 = ThumbnailUtils.extractThumbnail(bitmap, width, height);
+                    info.thumbPathBitmap = bitmap1;
+                    bitmap.recycle();
+                }
                 // 然后将其加入到videoList
                 videoList.add(info);
 
