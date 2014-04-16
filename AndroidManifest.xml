@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.infthink.itmc"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="1000012"
+    android:versionName="1.0.12" >
 
     <uses-sdk
         android:minSdkVersion="12"
@@ -95,6 +95,14 @@
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar" />
+        
+         <activity
+            android:name="com.infthink.itmc.AdvancedVideoDemo"
+            android:screenOrientation="portrait"
+            android:theme="@style/ChannelTheme"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustNothing" >
+        </activity>
 
         <service android:name="com.infthink.itmc.service.CoreService" />
 

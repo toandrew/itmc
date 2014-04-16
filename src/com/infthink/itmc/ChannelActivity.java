@@ -34,6 +34,7 @@ import android.graphics.AvoidXfermode.Mode;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.format.DateUtils;
@@ -630,7 +631,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
 
     @Override
     public void onPageScrolled(int arg0, float arg1, int arg2) {
-
     }
 
     @Override
@@ -642,4 +642,6 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     public void onClick(View v) {
         // TODO Auto-generated method stub
     }
+   
+
 }

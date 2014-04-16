@@ -7,6 +7,7 @@ import com.infthink.itmc.R;
 import com.infthink.itmc.type.MediaCategoryInfo;
 import com.infthink.itmc.type.VideoInfo;
 import com.infthink.itmc.util.LogUtil;
+import com.infthink.itmc.widget.MediaView;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -99,23 +100,37 @@ public class HomeMediaStoreAdapter extends BaseGroupAdapter<MediaCategoryInfo> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = View.inflate(mContext, R.layout.myvideo_item, null);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.media_title);
             convertView.setTag(viewHolder);
+        }else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
+        
+        if(position == 0){
+            viewHolder.tvTitle.setText("最近播放");
+        } 
+        if(position == 1){
+            viewHolder.tvTitle.setText("收藏");
+        } 
+        if(position == 2){
+            viewHolder.tvTitle.setText("本地视频");
+        } 
         return convertView;
     }
 
     private class ViewHolder {
-        ImageView arrowView;
-        CheckBox cbSelect;
-        ImageView ivMyFavorite;
-        ImageView shadowView;
-        ImageView thumbTypeView;
+        public ImageView arrowView;
+        public CheckBox cbSelect;
+        public ImageView ivMyFavorite;
+        public ImageView shadowView;
+        public ImageView thumbTypeView;
 //        MediaThumbView thumbView;
-        TextView tvDesc;
-        ImageView tvThumb;
-        TextView tvTitle;
+        public TextView tvDesc;
+        public ImageView tvThumb;
+        public TextView tvTitle;
 
         private ViewHolder() {
         }
     }
+
 }

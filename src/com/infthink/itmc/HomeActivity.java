@@ -327,8 +327,11 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     private void setMediaAdapter() {
         ArrayList localArrayList = new ArrayList();
         LocalMediaCategoryInfo c = new LocalMediaCategoryInfo();
+        
         localArrayList.add(c);
         localArrayList.add(c);
+        localArrayList.add(c);
+        
         if (mHomeMediaStoreAdapter == null) {
             mHomeMediaStoreAdapter = new HomeMediaStoreAdapter(this);
             mHomeMediaStoreListView.setAdapter(mHomeMediaStoreAdapter);
@@ -347,6 +350,10 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                     Intent intent = new Intent(HomeActivity.this, RecentMyFavouriteActivity.class);
                     startActivity(intent);
                 } 
+                if (arg2 == 3){
+                    Intent intent = new Intent(HomeActivity.this, AdvancedVideoDemo.class);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -469,6 +476,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
             // overridePendingTransition(R.anim.appear, R.anim.stay_same);
         }
+        
+        
     }
 
     @MessageResponse
