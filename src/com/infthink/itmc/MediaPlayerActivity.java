@@ -87,7 +87,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         long seekTo = 0;
         LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
-        if (history != null && history.mediaCi == mCi) {
+        if (history != null && history.mediaCi == mCi && history.mediaSource == mSource) {
             seekTo = Integer.valueOf(history.playSeconds);
         }
         
