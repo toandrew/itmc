@@ -16,6 +16,7 @@ import com.infthink.netcast.sdk.RampConstants;
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer.OnInfoListener;
 import io.vov.vitamio.widget.VideoView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -85,14 +86,13 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (mMediaId.equals("-1")) {
             mMediaId = mMediaTitle;
         }
-        long seekTo = 0;
-        LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
-        if (history != null && history.mediaCi == mCi && history.mediaSource == mSource) {
-            seekTo = Integer.valueOf(history.playSeconds);
-        }
         
         final FrameLayout contentView = new FrameLayout(this);
         mVideoView = new VideoView(this);
+        mCastMediaController = new CastMediaController(
+                this);
+        mCastMediaController.setFileName(mMediaTitle);
+
         mTextView = new TextView(this);
         mTextView.setText("正在加载 " + mMediaTitle + " , 请稍后...");
         mTextView.setGravity(Gravity.CENTER);
@@ -106,68 +106,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                 FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
         contentView.setBackgroundColor(Color.BLACK);
         setContentView(contentView);
-        android.util.Log.d("XXXXXXXXX", "mPlayUrl = " + mPlayUrl);
-        if (mPlayUrl == "") {
-            // Tell the user to provide a media file URL/path.
-            android.util.Log.d("XXXXXXXXX", "");
-            return;
-        } else {
-            /*
-             * Alternatively,for streaming media you can use
-             * mVideoView.setVideoURI(Uri.parse(URLstring));
-             */
-            mCastMediaController = new CastMediaController(
-                    this);
-            mCastMediaController.setFileName(mMediaTitle);
-            if (ITApp.getNetcastManager().isConnectedDevice()) {
-                playToCast(mPlayUrl, mMediaTitle, seekTo);
-            }
-            
-            mVideoView.setVideoPath(mPlayUrl);
-            updateCastBtnState();
-            mVideoView.setMediaController(mCastMediaController);
-            mCastMediaController
-                    .setCastButtonClickListener(new OnCastButtonClickListener() {
-                        @Override
-                        public void onClick() {
-                            showCastList();
-                        }
-                    });
-            mVideoView.requestFocus();
-            final long position = seekTo;
-            mVideoView
-                    .setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
-                            // optional need Vitamio 4.0
-                            mediaPlayer.setPlaybackSpeed(1.0f);
-                            mTextView.setVisibility(View.GONE);
-                            if (mIsPlayToCast) {
-                                Handler h = new Handler();
-                                h.postDelayed(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        mVideoView.pause();
-                                    }
-                                }, 1000);
-                                
-                            } else {
-                                if (mVideoView.getDuration() > (position + 1000))
-                                    mVideoView.seekTo(position);
-                            }
-                        }
-                    });
-            mVideoView.setOnCompletionListener(new OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    if (mNextUrl != null && mNextUrl.length() > 0) {
-                        mVideoView.setVideoPath(mNextUrl);
-                        mNextUrl = null;
-                    }
-                }
-            });
-        }
+        
 
 //        Handler h = new Handler();
 //        h.postDelayed(new Runnable() {
@@ -179,6 +118,80 @@ public class MediaPlayerActivity extends CoreActivity implements
 //        }, 20000);
     }
     
+    private void initVideo() {
+        if (mPlayUrl == "") return;
+        android.util.Log.d("XXXXXXXXX", "mPlayUrl = " + mPlayUrl);
+        long seekTo = 0;
+        LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
+        if (history != null && history.mediaCi == mCi && history.mediaSource == mSource) {
+            seekTo = Integer.valueOf(history.playSeconds);
+        }
+
+        /*
+         * Alternatively,for streaming media you can use
+         * mVideoView.setVideoURI(Uri.parse(URLstring));
+         */
+
+        if (ITApp.getNetcastManager().isConnectedDevice()) {
+            playToCast(mPlayUrl, mMediaTitle, seekTo);
+        }
+        
+        mVideoView.setVideoPath(mPlayUrl);
+        updateCastBtnState();
+        mVideoView.setMediaController(mCastMediaController);
+        mCastMediaController
+                .setCastButtonClickListener(new OnCastButtonClickListener() {
+                    @Override
+                    public void onClick() {
+                        showCastList();
+                    }
+                });
+        mVideoView.requestFocus();
+        final long position = seekTo;
+        mVideoView
+                .setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        // optional need Vitamio 4.0
+                        mediaPlayer.setPlaybackSpeed(1.0f);
+                        mTextView.setVisibility(View.GONE);
+                        android.util.Log.d("QQQQQQQQQQ", "mIsPlayToCast = " + mIsPlayToCast);
+                        if (!mIsPlayToCast) {
+                            if (mVideoView.getDuration() > (position + 1000))
+                                mVideoView.seekTo(position);
+                        }
+                    }
+                });
+        mVideoView.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (mNextUrl != null && mNextUrl.length() > 0) {
+                    mVideoView.setVideoPath(mNextUrl);
+                    mNextUrl = null;
+                }
+            }
+        });
+        mVideoView.setOnInfoListener(new OnInfoListener() {
+
+            @Override
+            public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                    if (!mIsPlayToCast) {
+                        mVideoView.start();
+                    }
+                }
+                return false;
+            }
+            
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initVideo();
+    }
+
     protected void updateCastBtnState() {
         mCastMediaController.updateCastBtnState(isSessionEstablished());
     }
@@ -187,6 +200,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     protected void onPause() {
         super.onPause();
         recordMedia();
+        
     }
 
     @Override
