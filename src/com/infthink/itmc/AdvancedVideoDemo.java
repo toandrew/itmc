@@ -8,6 +8,7 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
@@ -20,6 +21,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -160,8 +163,28 @@ public class AdvancedVideoDemo extends ListActivity {
         }
 
         // 然后需要设置ListView的Adapter了，使用我们自定义的Adatper
-        VideoAdapter adapter = new VideoAdapter(this, videoList);
+        final VideoAdapter adapter = new VideoAdapter(this, videoList);
         this.getListView().setAdapter(adapter);
+        getListView().setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                    long id) {
+                VideoInfo info = (VideoInfo) adapter.getItem(position);
+                Intent intent = new Intent(AdvancedVideoDemo.this,
+                        MediaPlayerActivity.class);
+                intent.putExtra("media_id", -1);
+                intent.putExtra("pageUrl", "");
+                intent.putExtra("source", -1);
+                intent.putExtra("meidaTitle", info.title);
+                intent.putExtra("available_episode_count", -1);
+                intent.putExtra("current_episode", -1);
+                intent.putExtra("path", info.filePath);
+                intent.putExtra("pageUrl", "");
+                startActivity(intent);
+            }
+            
+        });
     }
 
     static class VideoInfo {

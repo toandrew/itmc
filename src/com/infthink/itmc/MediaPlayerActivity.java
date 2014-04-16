@@ -49,7 +49,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     private CastMediaController mCastMediaController;
     private int mCastSeekPosition = -1;
     private boolean mIsPlayToCast;
-    private int mMediaId;
+    private String mMediaId;
     private String mPageUrl;
     private long mPlayCurrentTime;
     
@@ -62,7 +62,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         LocalPlayHistoryInfoManager.getInstance(this).saveHistory(this, mMediaId, mCi, String.valueOf(playTime), String.valueOf(Calendar.getInstance().getTimeInMillis()), mSource, mMediaTitle, mPlayUrl, mPageUrl, "none");
     }
-    
+
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
@@ -75,14 +75,16 @@ public class MediaPlayerActivity extends CoreActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Intent intent = getIntent();
-        mMediaId = intent.getIntExtra("media_id", -1);
+        mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
         mPlayUrl = intent.getStringExtra("path");
         mMediaTitle = intent.getStringExtra("meidaTitle");
         mMediaCount = intent.getIntExtra("available_episode_count", -1);
         mCi = intent.getIntExtra("current_episode", -1);
         mSource = intent.getIntExtra("source", -1);
         mPageUrl = intent.getStringExtra("pageUrl");
-        
+        if (mMediaId.equals("-1")) {
+            mMediaId = mMediaTitle;
+        }
         long seekTo = 0;
         LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
         if (history != null && history.mediaCi == mCi) {

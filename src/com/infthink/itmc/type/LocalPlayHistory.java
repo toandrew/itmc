@@ -7,14 +7,14 @@ public class LocalPlayHistory extends BaseLocalPlayHistory {
     public String imageUrl = "";
     public String issueDate = "";
     public int mediaCi;
-    public int mediaId;
+    public String mediaId;
     public int mediaSource;
     public String mediaUrl = "";
     public String playSeconds;
     public String videoName = "";
 
     public LocalPlayHistory() {
-        this.mediaId = -1;
+        this.mediaId = "";
         this.mediaCi = -1;
         this.playSeconds = "0";
         this.playDate = "";
@@ -24,7 +24,7 @@ public class LocalPlayHistory extends BaseLocalPlayHistory {
         this.issueDate = "";
     }
 
-    public LocalPlayHistory(int mediaId, int mediaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
+    public LocalPlayHistory(String mediaId, int mediaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
         this.mediaId = mediaId;
         this.mediaCi = mediaCi;
         this.playSeconds = playSeconds;

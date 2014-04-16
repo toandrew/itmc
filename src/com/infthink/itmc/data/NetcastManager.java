@@ -1,9 +1,11 @@
 package com.infthink.itmc.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.infthink.itmc.ITApp;
@@ -18,11 +20,19 @@ import com.infthink.netcast.sdk.MediaStatus;
 import com.infthink.netcast.sdk.ServerSearcher;
 import com.infthink.netcast.sdk.SessionError;
 import com.infthink.netcast.sdk.ServerSearcher.IOnSearchResultListener;
+import com.nanohttpd.webserver.src.main.java.fi.iki.elonen.SimpleWebServer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -55,7 +65,16 @@ public class NetcastManager {
     private int mLastVolume;
     private boolean mSearching = false;
     
+    private String mIpAddress;
+
+    private SimpleWebServer mNanoHTTPD;
+    private int port = 8080;
+    private String mRootDir = "/";
+    
+    private Context mContext;
+    
     public NetcastManager(Context context) {
+        mContext = context;
         mApplication = ITApp.getInstance();
         mCastContext = new CastContext(context);
         mServerSearcher = new ServerSearcher();
@@ -93,7 +112,73 @@ public class NetcastManager {
         return true;
     }
     
+    private String intToIp(int i) {
+        return ((i) & 0xFF) + "." + ((i >> 8) & 0xFF) + "."
+                + ((i >> 16) & 0xFF) + "." + (i >> 24 & 0xFF);
+    }
+
+    private void startServer(int port) {
+        try {
+            WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+            mIpAddress = intToIp(wifiInfo.getIpAddress());
+
+            if (wifiInfo.getSupplicantState() != SupplicantState.COMPLETED) {
+                throw new Exception("Please connect to a WIFI-network.");
+            }
+
+            Log.e(TAG, "Starting server " + mIpAddress + ":" + port + ".");
+
+            List<File> rootDirs = new ArrayList<File>();
+            boolean quiet = false;
+            Map<String, String> options = new HashMap<String, String>();
+            rootDirs.add(new File(mRootDir).getAbsoluteFile());
+
+            // mNanoHTTPD
+            try {
+                mNanoHTTPD = new SimpleWebServer(mIpAddress, port, rootDirs,
+                        quiet);
+                mNanoHTTPD.start();
+            } catch (IOException ioe) {
+                Log.e(TAG, "Couldn't start server:\n" + ioe);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    private void stopServer() {
+        if (mNanoHTTPD != null) {
+            mNanoHTTPD.stop();
+        } else {
+            Log.e(TAG, "Cannot kill server!? Please restart your phone.");
+        }
+    }
+
+    private void initWebserver() {
+        stopServer();
+        startServer(8080);
+    }
+    
+    private String processLocalVideoUrl(String url) {
+        String real_url = url;
+        if (url != null && url.startsWith("file://")) {
+
+            initWebserver();
+            // remove "file://"
+            real_url = url.replaceAll("file://", "");
+            return "http://" + mIpAddress + ":8080" + real_url;
+
+        } else if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {
+            initWebserver();
+            return "http://" + mIpAddress + ":8080" + real_url;
+        }
+        return url;
+    }
+    
     public void playVideo(String videoUrl, String videoName) {
+        videoUrl = processLocalVideoUrl(videoUrl);
         mRampStream.loadMedia(videoUrl, videoName);
     }
     
@@ -137,6 +222,7 @@ public class NetcastManager {
     }
     
     public void disconnectDevice() {
+        stopServer();
         setCurrentDevice(null);
         mSession.endSession(false);
     }

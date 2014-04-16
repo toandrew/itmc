@@ -27,7 +27,7 @@ public class LocalPlayHistoryInfoManager {
         return SharedPreferencesUtil.getHistoryVideos(context);
     }
     
-    public void saveHistory(Context context, int mediaId, int meidaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
+    public void saveHistory(Context context, String mediaId, int meidaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
         String value = SharedPreferencesUtil.createHistoryValue(mediaId, meidaCi, playSeconds, playDate, mediaSource, videoName, mediaUrl, html5Page, imageUrl);
         SharedPreferencesUtil.recordHistory(context, mediaId, value);
         mLocalPlayHistorys = getHistoryVideos(context);
@@ -38,10 +38,10 @@ public class LocalPlayHistoryInfoManager {
         SharedPreferencesUtil.clearHistory(context);
     }
     
-    public LocalPlayHistory getHistoryById(int mediaId) {
+    public LocalPlayHistory getHistoryById(String mediaId) {
         if (mLocalPlayHistorys != null) {
             for (LocalPlayHistory history : mLocalPlayHistorys) {
-                if (history.mediaId == mediaId) {
+                if (history.mediaId.equals(mediaId)) {
                     return history;
                 }
             }

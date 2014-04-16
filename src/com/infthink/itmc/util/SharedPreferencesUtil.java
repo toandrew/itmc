@@ -16,12 +16,12 @@ public class SharedPreferencesUtil {
     private static final String HISTORY_SPLIT = "；";
 
     // value: mediaId, meidaCi, playSeconds, playDate, mediaSource, videoName, mediaUrl, html5Page
-    public static String createHistoryValue(int mediaId, int meidaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
+    public static String createHistoryValue(String mediaId, int meidaCi, String playSeconds, String playDate, int mediaSource, String videoName, String mediaUrl, String html5Page, String imageUrl) {
         return mediaId + VIDEO_SPLIT + meidaCi + VIDEO_SPLIT + playSeconds + VIDEO_SPLIT + playDate + VIDEO_SPLIT + mediaSource + VIDEO_SPLIT + videoName + VIDEO_SPLIT + mediaUrl + VIDEO_SPLIT + html5Page + VIDEO_SPLIT + imageUrl;
     }
 
     // value: mediaId, meidaCi, playSeconds, playDate, mediaSource, videoName, mediaUrl, html5Page
-    public static void recordHistory(Context context, int mediaId, String value) {
+    public static void recordHistory(Context context, String mediaId, String value) {
         SharedPreferences sp = context.getSharedPreferences(HISTORY_NAME, Context.MODE_PRIVATE);
         Editor editor = sp.edit();
         String history = getHistory(context);
@@ -32,7 +32,7 @@ public class SharedPreferencesUtil {
             for(int i = 0; i < strs.length; i++) {
                 String video = strs[i];
                 String[] obj = video.split(VIDEO_SPLIT);
-                if (mediaId == Integer.valueOf(obj[0])) {
+                if (mediaId.equals(obj[0])) {
                     String newValue = history.replace(video + HISTORY_SPLIT, "");
                     sb.replace(0, sb.length(), newValue);
                     break;
@@ -72,7 +72,7 @@ public class SharedPreferencesUtil {
 
     private static LocalPlayHistory getHistoryVideo(String value) {
         String[] strs = value.split(VIDEO_SPLIT);
-        LocalPlayHistory history = new LocalPlayHistory(Integer.valueOf(strs[0]), Integer.valueOf(strs[1]), strs[2], strs[3], Integer.valueOf(strs[4]), strs[5], strs[6], strs[7], strs[8]);
+        LocalPlayHistory history = new LocalPlayHistory(strs[0], Integer.valueOf(strs[1]), strs[2], strs[3], Integer.valueOf(strs[4]), strs[5], strs[6], strs[7], strs[8]);
         return history;
     }
 

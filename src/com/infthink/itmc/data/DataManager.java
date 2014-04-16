@@ -430,11 +430,12 @@ public class DataManager {
                                         MediaUrlInfo superURLInfo;
                                         android.util.Log.d("XXXXXXXXXX", "superObj JSONArray");
                                     }
+                                    android.util.Log.d("XXXXXXXXXX", "mediaUrlInfoList ＝ "
+                                            + mediaUrlInfoList.urlNormal[0].mediaUrl);
                                 }
                             }
                         }
-                        android.util.Log.d("XXXXXXXXXX", "mediaUrlInfoList ＝ "
-                                + mediaUrlInfoList.urlNormal[0].mediaUrl);
+                        
                         return mediaUrlInfoList;
                     }
 
