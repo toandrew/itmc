@@ -19,7 +19,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.type.MediaInfo;
+import com.infthink.itmc.type.RecommendChannel;
 import com.infthink.itmc.util.Html5PlayUrlRetriever;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.util.Html5PlayUrlRetriever.PlayUrlListener;
@@ -55,6 +57,9 @@ public class WebViewActivity extends BaseWebViewActivity implements
     private String mMediaTitle;
     private int mMediaCount;
     private int mMediaId;
+    private DataManager mDataManager;
+    private boolean mIsPageFinished = false;
+    private boolean mIsLoadedUrl = false;
 
     @Override
     protected void onCreateAfterSuper(Bundle bundle) {
@@ -84,6 +89,22 @@ public class WebViewActivity extends BaseWebViewActivity implements
 
         mRetriever = new Html5PlayUrlRetriever(mWebView, mSource);
         mRetriever.setPlayUrlListener(this);
+    }
+    
+    @Override
+    protected void onInitialized() {
+        mDataManager = getService().getDataManager();
+        mDataManager.loadMediaPlayUrl(mMediaId, mCi, mSource, new DataManager.IOnloadListener<String>() {
+            @Override
+            public void onLoad(String entity) {
+                mIsLoadedUrl = true;
+                if (entity != null && entity.length() > 0) {
+                    startPlayer(entity);
+                } else {
+                    startRetriever();
+                }
+            }
+        });
     }
 
     private void initUI() {
@@ -158,20 +179,31 @@ public class WebViewActivity extends BaseWebViewActivity implements
         h.post(new Runnable() {
             @Override
             public void run() {
-                mPlayUrl = playUrl;
-                mUrlLoadFinish = true;
-                Intent intent = new Intent(WebViewActivity.this,
-                        MediaPlayerActivity.class);
-                intent.putExtras(getIntent());
-                intent.putExtra("path", mPlayUrl);
-                intent.putExtra("pageUrl", mPageUrl);
-                startActivity(intent);
+                startPlayer(playUrl);
             }
         });
     }
 
     protected void onPageFinish(WebView webView, String url) {
-        mRetriever.start();
+        mIsPageFinished = true;
+        startRetriever();
+    }
+    
+    private void startRetriever() {
+        if (mIsPageFinished && mIsLoadedUrl) {
+            mRetriever.start();
+        }
+    }
+    
+    private void startPlayer(String url) {
+        mPlayUrl = url;
+        mUrlLoadFinish = true;
+        Intent intent = new Intent(WebViewActivity.this,
+                MediaPlayerActivity.class);
+        intent.putExtras(getIntent());
+        intent.putExtra("path", mPlayUrl);
+        intent.putExtra("pageUrl", mPageUrl);
+        startActivity(intent);
     }
 
     @Override

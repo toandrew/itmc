@@ -448,6 +448,39 @@ public class DataManager {
         mRefCollection.add(textLoadListener);
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
+    
+    public void loadMediaPlayUrl(int mediaID, int ci, int source,
+            final IOnloadListener<String> listener) {
+        String args = "?mediaid=" + mediaID + "&ci=" + ci + "&source=" + source;
+        String textUrl = URL_GET_MEDIA + args;
+        android.util.Log.d("XXXXXXXXXX", "loadMediaPlayUrl textUrl = " + textUrl);
+        SimpleTextLoadListener<String> textLoadListener =
+                new SimpleTextLoadListener<String>() {
+
+                    @Override
+                    public String parseText(String text) {
+                        String url = null;
+                        if (text != null && text.length() > 0) {
+                            JSONUtils jsonUtil = JSONUtils.parse(text);
+                            int status = Integer.valueOf(jsonUtil.opt("status", "100").toString());
+                            if (status == 0) {
+                                url = jsonUtil.opt("url", "").toString();
+                            }
+                        }
+                        android.util.Log.d("XXXXXXXXXX", "url ＝ " + url);
+                        return url;
+                    }
+
+                    @Override
+                    public void onLoadResult(String url) {
+                        mRefCollection.remove(this);
+                        listener.onLoad(url);
+                    }
+
+                };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
 
     public void searchMedia(String channelId, String keyword, int pageNo, int pageSize,
             int orderby, final IOnloadListener<MediaInfo[]> listener) {
