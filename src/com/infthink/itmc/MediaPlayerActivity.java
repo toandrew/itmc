@@ -115,6 +115,7 @@ public class MediaPlayerActivity extends CoreActivity implements
              */
             mCastMediaController = new CastMediaController(
                     this);
+            mCastMediaController.setFileName(mMediaTitle);
             if (ITApp.getNetcastManager().isConnectedDevice()) {
                 playToCast(mPlayUrl, mMediaTitle, seekTo);
             }
