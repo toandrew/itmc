@@ -99,7 +99,8 @@ public class MediaPlayerActivity extends CoreActivity implements
         mTextView.setBackgroundColor(Color.TRANSPARENT);
         contentView.addView(mVideoView, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT));
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER));
         contentView.addView(mTextView, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
@@ -121,6 +122,7 @@ public class MediaPlayerActivity extends CoreActivity implements
             if (ITApp.getNetcastManager().isConnectedDevice()) {
                 playToCast(mPlayUrl, mMediaTitle, seekTo);
             }
+            
             mVideoView.setVideoPath(mPlayUrl);
             updateCastBtnState();
             mVideoView.setMediaController(mCastMediaController);
@@ -132,7 +134,6 @@ public class MediaPlayerActivity extends CoreActivity implements
                         }
                     });
             mVideoView.requestFocus();
-
             final long position = seekTo;
             mVideoView
                     .setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -152,7 +153,8 @@ public class MediaPlayerActivity extends CoreActivity implements
                                 }, 1000);
                                 
                             } else {
-                                mVideoView.seekTo(position);
+                                if (mVideoView.getDuration() > (position + 1000))
+                                    mVideoView.seekTo(position);
                             }
                         }
                     });
