@@ -190,7 +190,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
     }
     
     private void startRetriever() {
-        if (mIsPageFinished && mIsLoadedUrl) {
+        if (mIsPageFinished && mIsLoadedUrl && mPlayUrl != null) {
             mRetriever.start();
         }
     }
