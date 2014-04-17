@@ -407,18 +407,20 @@ public class DataManager {
                                     if (normalObj instanceof JSONArray) {
                                         android.util.Log.d("XXXXXXXXXX", "normalObj JSONArray");
                                         JSONArray normalArray = (JSONArray) normalObj;
-                                        mediaUrlInfoList.urlNormal =
-                                                new MediaUrlInfo[normalArray.length()];
-                                        for (int i = 0; i < normalArray.length(); i++) {
-                                            JSONObject normaJsonObject =
-                                                    normalArray.optJSONObject(i);
-                                            MediaUrlInfo normalURLInfo = new MediaUrlInfo();
-                                            normalURLInfo.mediaSource =
-                                                    normaJsonObject.optInt("source");
-                                            normalURLInfo.mediaUrl =
-                                                    normaJsonObject.optString("playurl");
-                                            normalURLInfo.isHtml = normaJsonObject.optInt("isHtml");
-                                            mediaUrlInfoList.urlNormal[i] = normalURLInfo;
+                                        if (normalArray.length() > 0) {
+                                            mediaUrlInfoList.urlNormal =
+                                                    new MediaUrlInfo[normalArray.length()];
+                                            for (int i = 0; i < normalArray.length(); i++) {
+                                                JSONObject normaJsonObject =
+                                                        normalArray.optJSONObject(i);
+                                                MediaUrlInfo normalURLInfo = new MediaUrlInfo();
+                                                normalURLInfo.mediaSource =
+                                                        normaJsonObject.optInt("source");
+                                                normalURLInfo.mediaUrl =
+                                                        normaJsonObject.optString("playurl");
+                                                normalURLInfo.isHtml = normaJsonObject.optInt("isHtml");
+                                                mediaUrlInfoList.urlNormal[i] = normalURLInfo;
+                                            }
                                         }
                                     }
                                     if (highObj instanceof JSONArray) {
@@ -430,8 +432,6 @@ public class DataManager {
                                         MediaUrlInfo superURLInfo;
                                         android.util.Log.d("XXXXXXXXXX", "superObj JSONArray");
                                     }
-                                    android.util.Log.d("XXXXXXXXXX", "mediaUrlInfoList ＝ "
-                                            + mediaUrlInfoList.urlNormal[0].mediaUrl);
                                 }
                             }
                         }
