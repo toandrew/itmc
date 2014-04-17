@@ -133,6 +133,7 @@ public class MediaDetailActivity extends CoreActivity
     TextView mDescTextview;
 
     private int mPreferenceSource = -1;
+    private int mSourceSelect = 0;
     private String mMediaUrl;
 
     public static final int MSG_UPDATE_DETAIL_INFO = 1;
@@ -150,9 +151,10 @@ public class MediaDetailActivity extends CoreActivity
                 public void onItemClick(AdapterView<?> paramAdapterView, View paramView,
                         int paramInt, long paramLong) {
                     if (MediaDetailActivity.this.sourceListAdapterData != null) {
+                        mSourceSelect = paramInt;
                         mPreferenceSource =
                                 (Integer) MediaDetailActivity.this.sourceListAdapterData.get(
-                                        paramInt).intValue();
+                                        mSourceSelect).intValue();
                         mMediaUrl = "";
                         // MediaDetailActivity.access$1602(MediaDetailActivity.this,
                         // ((Integer)MediaDetailActivity.this.sourceListAdapterData.get(paramInt)).intValue());
@@ -479,6 +481,27 @@ public class MediaDetailActivity extends CoreActivity
         refreshSelectedSource(sourceListAdapterData.get(0).intValue());
     }
 
+    private void setMediaSource() {
+        MediaUrlInfoList mMediaUrlInfoList2 = this.mMediaUrlInfoList;
+        this.sourceListAdapterData.clear();
+        for (int i = 0; i < mMediaUrlInfoList2.urlNormal.length; i++) {
+            MediaUrlInfo normal = mMediaUrlInfoList2.urlNormal[i];
+            this.sourceListAdapterData.add(normal.mediaSource);
+        }
+        refreshSelectedSource(this.mPreferenceSource);
+    }
+    
+    private int findSource(){
+        MediaUrlInfoList mMediaUrlInfoList2 = this.mMediaUrlInfoList;
+        for (int i = 0; i < mMediaUrlInfoList2.urlNormal.length; i++) {
+            MediaUrlInfo normal = mMediaUrlInfoList2.urlNormal[i];
+            if(this.mPreferenceSource == normal.mediaSource){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private void fillMediaInfo(MediaInfo paramMediaInfo) {
         // ((RatingView)findViewById(2131165219)).setScore(paramMediaInfo.score);
         // if (paramMediaInfo.score > 0.0F)
@@ -624,8 +647,22 @@ public class MediaDetailActivity extends CoreActivity
                     // TODO Auto-generated method stub
                     if (entity == null) return;
                     if (entity.urlNormal == null) return;
+                   
+                    mMediaUrlInfoList = entity;
+                    
+                    setMediaSource();
+                    android.util.Log.d("XXXXXXXXXX", "mSourceSelect = " + mSourceSelect + " mPreferenceSource = "
+                            + mPreferenceSource);
+                    mSourceSelect = findSource();
+                    if(mSourceSelect == -1){
+                        mSourceSelect = 0;
+                    }
+                    android.util.Log.d("XXXXXXXXXX", "mSourceSelect = " + mSourceSelect + " mPreferenceSource = "
+                            + mPreferenceSource);
                     // mPreferenceSource = entity.urlNormal[0].mediaSource;
+                    mPreferenceSource = entity.urlNormal[mSourceSelect].mediaSource;
                     mMediaUrl = entity.urlNormal[getSourceIDPos(mPreferenceSource)].mediaUrl;
+                    refreshSelectedSource(mPreferenceSource);
                     if (mMediaUrl == null || mPreferenceSource == -1) {
                         Toast.makeText(MediaDetailActivity.this, "视频地址正在获取中", Toast.LENGTH_SHORT)
                                 .show();
