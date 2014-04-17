@@ -72,6 +72,7 @@ public class NetcastManager {
     private String mRootDir = "/";
     
     private Context mContext;
+    private boolean mIsVideoPlaying = false;
     
     public NetcastManager(Context context) {
         mContext = context;
@@ -161,6 +162,10 @@ public class NetcastManager {
         startServer(8080);
     }
     
+    public boolean isDevicePlaying() {
+        return mIsVideoPlaying;
+    }
+    
     private String processLocalVideoUrl(String url) {
         String real_url = url;
         if (url != null && url.startsWith("file://")) {
@@ -178,6 +183,7 @@ public class NetcastManager {
     }
     
     public void playVideo(String videoUrl, String videoName) {
+        mIsVideoPlaying = true;
         videoUrl = processLocalVideoUrl(videoUrl);
         mRampStream.loadMedia(videoUrl, videoName);
     }
@@ -222,12 +228,14 @@ public class NetcastManager {
     }
     
     public void disconnectDevice() {
+        mIsVideoPlaying = false;
         stopServer();
         setCurrentDevice(null);
         mSession.endSession(false);
     }
 
     public void setCastStatusUpdateListener(CastStatusUpdateListener castStatusUpdateListener) {
+        android.util.Log.d("XXXXXXXXXX", "set = " + castStatusUpdateListener);
         mCastStatusUpdateListener = castStatusUpdateListener;
     }
 
@@ -264,6 +272,7 @@ public class NetcastManager {
                 }
 
                 if (mSession.hasStarted() && mRampStream.hasAttached()) {
+                    android.util.Log.d("XXXXXXXXXX", "start");
                     mRampStream.getPlayerState();
                 }
                 try {
@@ -277,6 +286,10 @@ public class NetcastManager {
     }
 
     private void cleanSession() {
+        mIsVideoPlaying = false;
+        stopServer();
+        setCurrentDevice(null);
+
         mIsSessionEstablished = false;
         mSession = null;
         mApplication.setCastSession(null);
@@ -349,6 +362,7 @@ public class NetcastManager {
         public void onResult(final CastDevice device) {
             mHandler.post(new Runnable() {
                 public void run() {
+                    android.util.Log.d("XXXXXXXXX", "device = " + device.getFriendlyName());
                     if (mCastDeviceMap.get(device.getFriendlyName()) == null) {
                         addDevice(device);
                         if (mCastSearchListener != null) {
@@ -433,6 +447,7 @@ public class NetcastManager {
                 @Override
                 public void run() {
                     mCurVolume = status.getVolume();
+                    android.util.Log.d("XXXXXXXXX", " mCastStatusUpdateListener = " + mCastStatusUpdateListener);
                     if (mCastStatusUpdateListener != null) {
                         mCastStatusUpdateListener.updateStatus(status);
                     }

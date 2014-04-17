@@ -98,11 +98,11 @@ public class WebViewActivity extends BaseWebViewActivity implements
             @Override
             public void onLoad(String entity) {
                 mIsLoadedUrl = true;
-                if (entity != null && entity.length() > 0) {
-                    startPlayer(entity);
-                } else {
+//                if (entity != null && entity.length() > 0) {
+//                    startPlayer(entity);
+//                } else {
                     startRetriever();
-                }
+//                }
             }
         });
     }

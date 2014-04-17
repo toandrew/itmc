@@ -19,6 +19,9 @@ import io.vov.vitamio.MediaPlayer.OnCompletionListener;
 import io.vov.vitamio.MediaPlayer.OnInfoListener;
 import io.vov.vitamio.widget.VideoView;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -76,6 +79,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Intent intent = getIntent();
+        
         mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
         mPlayUrl = intent.getStringExtra("path");
         mMediaTitle = intent.getStringExtra("meidaTitle");
@@ -131,8 +135,11 @@ public class MediaPlayerActivity extends CoreActivity implements
          * Alternatively,for streaming media you can use
          * mVideoView.setVideoURI(Uri.parse(URLstring));
          */
-
-        if (ITApp.getNetcastManager().isConnectedDevice()) {
+        mIsPlayToCast = ITApp.getNetcastManager().isDevicePlaying();
+        if (mIsPlayToCast) {
+            ITApp.getNetcastManager().setCastStatusUpdateListener(this);
+            mCastMediaController.setPlayMode(mIsPlayToCast);
+        } else if (ITApp.getNetcastManager().isConnectedDevice()) {
             playToCast(mPlayUrl, mMediaTitle, seekTo);
         }
         mTextView.setVisibility(View.VISIBLE);
@@ -189,6 +196,10 @@ public class MediaPlayerActivity extends CoreActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        NotificationManager notificationManager = (NotificationManager) this
+                .getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
+        
         initVideo();
     }
 
@@ -201,6 +212,27 @@ public class MediaPlayerActivity extends CoreActivity implements
         super.onPause();
         recordMedia();
         
+        if (mIsPlayToCast) {
+            NotificationManager notificationManager = (NotificationManager) this
+                    .getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+            String appName = this.getResources().getString(R.string.app_name);
+            Notification notification = new Notification(
+                    R.drawable.ic_launcher, appName, System.currentTimeMillis());
+            notification.flags |= Notification.FLAG_ONGOING_EVENT;
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+            CharSequence contentTitle = appName;
+            CharSequence contentText = "正在播放: " + mMediaTitle;
+
+            Intent notificationIntent = new Intent(MediaPlayerActivity.this,
+                    MediaPlayerActivity.class);
+            notificationIntent.putExtras(getIntent());
+            PendingIntent contentItent = PendingIntent.getActivity(this, 0,
+                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            notification.setLatestEventInfo(this, contentTitle, contentText,
+                    contentItent);
+            notificationManager.notify(0, notification);
+        }
     }
 
     @Override
