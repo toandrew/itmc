@@ -99,8 +99,12 @@ public class LocalMyFavoriteInfoManager {
 
             @Override
             public void onLoad(List<LocalMyFavoriteItemInfo> entity) {
-                // TODO Auto-generated method stub
-                myFavoriteLocalMediaCache = entity;
+                if (entity != null) {
+                    myFavoriteLocalMediaCache = entity;
+                } else {
+                    myFavoriteLocalMediaCache.clear();
+                }
+                
             }
         });
         mHandler.sendEmptyMessageDelayed(MSG_GET_FAVORITE, 10 * 60 * 1000);
