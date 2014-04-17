@@ -16,6 +16,7 @@ import com.infthink.netcast.sdk.RampConstants;
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer.OnErrorListener;
 import io.vov.vitamio.MediaPlayer.OnInfoListener;
 import io.vov.vitamio.widget.VideoView;
 import android.annotation.SuppressLint;
@@ -135,17 +136,22 @@ public class MediaPlayerActivity extends CoreActivity implements
          * Alternatively,for streaming media you can use
          * mVideoView.setVideoURI(Uri.parse(URLstring));
          */
-        mIsPlayToCast = ITApp.getNetcastManager().isDevicePlaying();
-        if (mIsPlayToCast) {
-            ITApp.getNetcastManager().setCastStatusUpdateListener(this);
-            mCastMediaController.setPlayMode(mIsPlayToCast);
-        } else if (ITApp.getNetcastManager().isConnectedDevice()) {
-            playToCast(mPlayUrl, mMediaTitle, seekTo);
-        }
+        
         mTextView.setVisibility(View.VISIBLE);
         mVideoView.setVideoPath(mPlayUrl);
         updateCastBtnState();
         mVideoView.setMediaController(mCastMediaController);
+        
+        mIsPlayToCast = ITApp.getNetcastManager().isDevicePlaying();
+        if (mIsPlayToCast) {
+            ITApp.getNetcastManager().setCastStatusUpdateListener(this);
+            mCastMediaController.setPlayMode(mIsPlayToCast);
+            mCastMediaController.show(0);
+            mVideoView.setBackgroundResource(R.drawable.casting);
+        } else if (ITApp.getNetcastManager().isConnectedDevice()) {
+            playToCast(mPlayUrl, mMediaTitle, seekTo);
+        }
+        
         mCastMediaController
                 .setCastButtonClickListener(new OnCastButtonClickListener() {
                     @Override
@@ -154,6 +160,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                     }
                 });
         mVideoView.requestFocus();
+        
         final long position = seekTo;
         mVideoView
                 .setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -189,7 +196,6 @@ public class MediaPlayerActivity extends CoreActivity implements
                 }
                 return false;
             }
-            
         });
     }
 
@@ -321,12 +327,16 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (millisecond > 1000) {
             mCastSeekPosition = (int) (millisecond / 1000);
         }
+        mCastMediaController.show(0);
+        mVideoView.setBackgroundResource(R.drawable.casting);
         mVideoView.pause();
     }
     
     private void play() {
+        mVideoView.setBackgroundResource(R.drawable.transparent);
         mIsPlayToCast = false;
         mCastMediaController.setPlayMode(mIsPlayToCast);
+        mCastMediaController.show();
         ITApp.getNetcastManager().setCastStatusUpdateListener(null);
         long time = mCastPosition * 1000;
         if (time > 0 && Math.abs(time - mVideoView.getCurrentPosition()) > 1000) {

@@ -392,7 +392,7 @@ public class CastMediaController extends MediaController {
     }
 
     public void hide() {
-        if (mAnchor == null)
+        if (mAnchor == null || mIsPlayToCast)
             return;
 
         if (mShowing) {
