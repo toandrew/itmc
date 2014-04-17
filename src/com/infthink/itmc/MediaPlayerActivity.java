@@ -135,7 +135,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (ITApp.getNetcastManager().isConnectedDevice()) {
             playToCast(mPlayUrl, mMediaTitle, seekTo);
         }
-        
+        mTextView.setVisibility(View.VISIBLE);
         mVideoView.setVideoPath(mPlayUrl);
         updateCastBtnState();
         mVideoView.setMediaController(mCastMediaController);
