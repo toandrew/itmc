@@ -197,6 +197,13 @@ public class MediaPlayerActivity extends CoreActivity implements
                 return false;
             }
         });
+        mVideoView.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                finish();
+            }
+        });
+        
     }
 
     @Override
