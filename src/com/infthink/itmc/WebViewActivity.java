@@ -90,7 +90,7 @@ public class WebViewActivity extends BaseWebViewActivity implements
         mRetriever = new Html5PlayUrlRetriever(mWebView, mSource);
         mRetriever.setPlayUrlListener(this);
     }
-    
+
     @Override
     protected void onInitialized() {
         mDataManager = getService().getDataManager();

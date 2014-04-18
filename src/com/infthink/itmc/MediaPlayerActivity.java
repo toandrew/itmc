@@ -80,7 +80,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Intent intent = getIntent();
-        
+
         mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
         mPlayUrl = intent.getStringExtra("path");
         mMediaTitle = intent.getStringExtra("meidaTitle");
@@ -89,7 +89,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         mSource = intent.getIntExtra("source", -1);
         mPageUrl = intent.getStringExtra("pageUrl");
         if (mMediaId.equals("-1")) {
-            mMediaId = mMediaTitle;
+            mMediaId = mPlayUrl;
         }
         
         final FrameLayout contentView = new FrameLayout(this);
