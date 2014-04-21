@@ -15,14 +15,21 @@ import com.infthink.itmc.widget.LoadingListView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -63,6 +70,7 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
     private TextView mResultRecommendTitleTv;
     private Button mResultTitleBtn;
     private EditText mEditSearch;
+    private Drawable mClearTextButton;
 
     private OnItemClickListener mResultListOnItemClickListener = new OnItemClickListener() {
 
@@ -95,14 +103,80 @@ public class SearchActivity extends CoreActivity implements OnEditorActionListen
         onActive();
     }
 
+    void removeClearButton() {
+        mEditSearch.setCompoundDrawables(mEditSearch.getCompoundDrawables()[0],
+                mEditSearch.getCompoundDrawables()[1], null,
+                mEditSearch.getCompoundDrawables()[3]);
+    }
+
+    void addClearButton() {
+        mEditSearch.setCompoundDrawables(mEditSearch.getCompoundDrawables()[0],
+                mEditSearch.getCompoundDrawables()[1], mClearTextButton,
+                mEditSearch.getCompoundDrawables()[3]);
+    }
+
     private void onActive() {
         mEditSearch = (EditText) findViewById(R.id.input);
+        mClearTextButton = mEditSearch.getCompoundDrawables()[2];
         // mEditSearch.setTextColor(localResources.getColor(2131230732));
         // mEditSearch.setTextSize(0,
         // localResources.getDimensionPixelSize(2131296410));
         mEditSearch.requestFocus();
         // mEditSearch.addTextChangedListener(this);
         mEditSearch.setOnEditorActionListener(this);
+        mEditSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                    int arg2, int arg3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                    int arg3) {
+                if (mEditSearch.getText().toString().equals(""))
+                    removeClearButton();
+                else
+                    addClearButton();
+
+            }
+
+        });
+        mEditSearch.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                // Is there an X showing?
+                if (mEditSearch.getCompoundDrawables()[2] == null)
+                    return false;
+                // Only do this for up touches
+                if (event.getAction() != MotionEvent.ACTION_UP)
+                    return false;
+                // Is touch on our clear button?
+                if (event.getX() > mEditSearch.getWidth()
+                        - mEditSearch.getPaddingRight()
+                        - mClearTextButton.getIntrinsicWidth()) {
+                    mEditSearch.setText("");
+                    removeClearButton();
+                }
+                return false;
+            }
+        });
+        ImageView back = (ImageView) findViewById(R.id.return_back);
+        back.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                finish();
+            }
+            
+        });
 
         mRecommendList = new ArrayList<String>();
         // TODO: 测试

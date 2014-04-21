@@ -235,7 +235,6 @@ public class NetcastManager {
     }
 
     public void setCastStatusUpdateListener(CastStatusUpdateListener castStatusUpdateListener) {
-        android.util.Log.d("XXXXXXXXXX", "set = " + castStatusUpdateListener);
         mCastStatusUpdateListener = castStatusUpdateListener;
     }
 
@@ -272,7 +271,6 @@ public class NetcastManager {
                 }
 
                 if (mSession.hasStarted() && mRampStream.hasAttached()) {
-                    android.util.Log.d("XXXXXXXXXX", "start");
                     mRampStream.getPlayerState();
                 }
                 try {
@@ -447,7 +445,6 @@ public class NetcastManager {
                 @Override
                 public void run() {
                     mCurVolume = status.getVolume();
-                    android.util.Log.d("XXXXXXXXX", " mCastStatusUpdateListener = " + mCastStatusUpdateListener);
                     if (mCastStatusUpdateListener != null) {
                         mCastStatusUpdateListener.updateStatus(status);
                     }

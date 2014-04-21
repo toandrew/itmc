@@ -203,7 +203,6 @@ public class MediaPlayerActivity extends CoreActivity implements
                 finish();
             }
         });
-        
     }
 
     @Override
