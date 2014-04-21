@@ -136,8 +136,7 @@ public class MediaPlayerActivity extends CoreActivity implements
          * Alternatively,for streaming media you can use
          * mVideoView.setVideoURI(Uri.parse(URLstring));
          */
-        
-        mTextView.setVisibility(View.VISIBLE);
+
         mVideoView.setVideoPath(mPlayUrl);
         updateCastBtnState();
         mVideoView.setMediaController(mCastMediaController);
@@ -148,8 +147,12 @@ public class MediaPlayerActivity extends CoreActivity implements
             mCastMediaController.setPlayMode(mIsPlayToCast);
             mCastMediaController.show(0);
             mVideoView.setBackgroundResource(R.drawable.casting);
+            mTextView.setVisibility(View.GONE);
         } else if (ITApp.getNetcastManager().isConnectedDevice()) {
             playToCast(mPlayUrl, mMediaTitle, seekTo);
+            mTextView.setVisibility(View.GONE);
+        } else {
+            mTextView.setVisibility(View.VISIBLE);
         }
         
         mCastMediaController
