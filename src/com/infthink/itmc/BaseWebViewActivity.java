@@ -27,8 +27,8 @@ public class BaseWebViewActivity extends CoreActivity implements
         mWebView.getSettings().setJavaScriptEnabled(true);
         
         // UC浏览器的 User－Agent
-        String ua = "Mozilla/5.0 (Linux; U; Android 4.1.1; zh-CN; MI 2S Build/JRO03L) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 UCBrowser/9.5.2.394 U3/0.8.0 Mobile Safari/533.1";
-        mWebView.getSettings().setUserAgentString(ua);
+//        String ua = "Mozilla/5.0 (Linux; U; Android 4.1.1; zh-CN; MI 2S Build/JRO03L) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 UCBrowser/9.5.2.394 U3/0.8.0 Mobile Safari/533.1";
+//        mWebView.getSettings().setUserAgentString(ua);
         mWebView.clearCache(false);
         // DeviceInfo localDeviceInfo = DKApp.deviceInfo();
         // if (localDeviceInfo.isWapApnUsed()) {
