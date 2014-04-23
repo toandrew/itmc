@@ -5,6 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     
+    <string name="no_playhistory">no playhistory</string>
+    <string name="today">today</string>
+    
     <string name="all">All</string>
     <string name="director_colon">"Director: "</string>
     <string name="actors_colon">"Cast: "</string>
