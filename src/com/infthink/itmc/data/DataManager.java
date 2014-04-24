@@ -452,7 +452,7 @@ public class DataManager {
     
     public void loadMediaPlayUrl(int mediaID, int ci, int source,
             final IOnloadListener<String> listener) {
-        String args = "?mediaid=" + mediaID + "&ci=" + ci + "&source=" + source;
+        String args = "?mediaid=" + mediaID + "&ci=" + ci + "&source=" + source + "&sort=1";
         String textUrl = URL_GET_MEDIA + args;
         android.util.Log.d("XXXXXXXXXX", "loadMediaPlayUrl textUrl = " + textUrl);
         SimpleTextLoadListener<String> textLoadListener =
