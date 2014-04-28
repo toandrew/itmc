@@ -597,6 +597,19 @@ public class MediaDetailActivity extends CoreActivity
         }
         mDialog1.show();
         getPlayerUrl();
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                if (mDialog1.isShowing()) {
+                    mDialog1.dismiss();
+                    showFailDialog();
+                    if (mUrlRetriever != null)
+                        mUrlRetriever.release();
+                }
+            }
+        }, 5000);
     }
     
     @SuppressLint({ "SetJavaScriptEnabled" })
@@ -782,11 +795,13 @@ public class MediaDetailActivity extends CoreActivity
     
     @Override
     public void onUrlUpdate(String pageUrl, String playUrl) {
-        mDialog1.dismiss();
-        if (playUrl != null && playUrl.length() > 0) {
-            playVideo(playUrl);
-        } else {
-            showFailDialog();
+        if (mDialog1.isShowing()) {
+            mDialog1.dismiss();
+            if (playUrl != null && playUrl.length() > 0) {
+                playVideo(playUrl);
+            } else {
+                showFailDialog();
+            }
         }
         if (mUrlRetriever != null)
             mUrlRetriever.release();

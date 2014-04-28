@@ -104,6 +104,53 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
         lp.setMargins(0, height, 0, 0);
         decorView.addView(mBottomItem, 0, lp);
+        
+        if (ITApp.getInstance().getMode() == ITApp.MODE_UNDEFINED) {
+            final LinearLayout content = new LinearLayout(this);
+            content.setBackgroundColor(Color.BLACK);
+            content.setOrientation(LinearLayout.VERTICAL);
+            Button common = new Button(this);
+            common.setText("common");
+
+            common.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    ITApp.getInstance().setMode(ITApp.MODE_COMMON);
+                    content.setVisibility(View.GONE);
+                }
+            });
+            content.addView(common);
+
+            Button mp4 = new Button(this);
+            mp4.setText("mp4");
+
+            mp4.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    ITApp.getInstance().setMode(ITApp.MODE_MP4);
+                    content.setVisibility(View.GONE);
+                }
+            });
+            content.addView(mp4);
+            
+            Button flv = new Button(this);
+            flv.setText("flv");
+
+            flv.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    ITApp.getInstance().setMode(ITApp.MODE_FLV);
+                    content.setVisibility(View.GONE);
+                }
+            });
+            content.addView(flv);
+            content.setGravity(Gravity.CENTER);
+            FrameLayout.LayoutParams fl = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT);
+
+            decorView.addView(content, fl);
+        }
         // localViewGroup.addView(this.vOnlineBottombar);
         onCreateActivate();
     }

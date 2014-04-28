@@ -20,6 +20,11 @@ import android.net.http.HttpResponseCache;
 import android.util.Log;
 
 public class ITApp extends BaseApplication {
+    public static final int MODE_UNDEFINED = -1;
+    public static final int MODE_COMMON = 0;
+    public static final int MODE_MP4 = 1;
+    public static final int MODE_FLV = 2;
+    
     private static Context sContext;
     private static ITApp sInstance;
     private static Resources sResources;
@@ -30,6 +35,7 @@ public class ITApp extends BaseApplication {
     private CastDevice mDevice;
     private String mCastAppName;
     private static NetcastManager sNetcastManager;
+    private int mMode = MODE_UNDEFINED;
     
     public ITApp() {
         sInstance = this;
@@ -37,6 +43,14 @@ public class ITApp extends BaseApplication {
 
     public static ITApp getInstance() {
         return sInstance;
+    }
+    
+    public void setMode(int mode) {
+        mMode = mode;
+    }
+    
+    public int getMode() {
+        return mMode;
     }
     
     public static final Context context() {
