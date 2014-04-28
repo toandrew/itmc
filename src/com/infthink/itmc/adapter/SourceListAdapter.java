@@ -44,10 +44,10 @@ public class SourceListAdapter extends BaseGroupAdapter<Integer> {
             localResources = this.mContext.getResources();
             if (!localViewHolder.sourceItemBar.isSelected()) {
                 localViewHolder.sourceItemBar.setBackgroundColor(localResources
-                    .getColor(R.color.select_source_gray));
+                        .getColor(R.color.select_source_gray));
             } else {
                 localViewHolder.sourceItemBar.setBackgroundColor(localResources
-                    .getColor(R.color.select_source_yellow));
+                        .getColor(R.color.select_source_yellow));
             }
             switch (i) {
                 case 3:
@@ -94,6 +94,11 @@ public class SourceListAdapter extends BaseGroupAdapter<Integer> {
                     localViewHolder.sourceItemIv
                             .setBackgroundResource(R.drawable.select_source_item_letv);
                     localViewHolder.sourceItemTv.setText(R.string.letv);
+                    break;
+                case 34:
+                    localViewHolder.sourceItemIv
+                            .setBackgroundResource(R.drawable.select_source_item_funshion);
+                    localViewHolder.sourceItemTv.setText(R.string.funshion);
                     break;
                 default:
                     localViewHolder.sourceItemIv

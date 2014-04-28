@@ -42,6 +42,7 @@ import com.infthink.libs.cache.simple.ImageLoader;
 import com.infthink.libs.common.message.MessageManager;
 import com.infthink.libs.upgrade.Upgrade;
 
+import android.R.drawable;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -230,6 +231,10 @@ public class MediaDetailActivity extends CoreActivity
         }
         if (paramInt == 32) {
             this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_letv);
+            return;
+        }
+        if(paramInt == 34) {
+            this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_funshion);
             return;
         }
         this.btnSelectSource.setBackgroundResource(R.drawable.select_source_item_default);
