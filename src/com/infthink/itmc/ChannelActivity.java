@@ -107,7 +107,22 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
     protected void onInitialized() {
         android.util.Log.d(TAG, "onInitialized");
         mDataManager = getService().getDataManager();
-        download();
+        if (ITApp.getChannelMap() == null) {
+            getChannelMap();
+        } else {
+            download();
+        }
+    }
+
+    private void getChannelMap() {
+        mDataManager
+                .loadChannelMap(new DataManager.IOnloadListener<HashMap<Integer, String>>() {
+                    @Override
+                    public void onLoad(HashMap<Integer, String> channelMap) {
+                        ITApp.setChannelMap(channelMap);
+                        download();
+                    }
+                });
     }
 
     private void loadChannelFilter() {
