@@ -8,15 +8,18 @@
         android:minSdkVersion="12"
         android:targetSdkVersion="18" />
 
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RAISED_THREAD_PRIORITY" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
@@ -30,7 +33,7 @@
             android:name="com.infthink.itmc.HomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/HomeTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
             <intent-filter>
@@ -42,42 +45,42 @@
         <activity
             android:name="com.infthink.itmc.ChannelActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ChannelTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
         <activity
             android:name="com.infthink.itmc.RankMediaActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ChannelTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
         <activity
             android:name="com.infthink.itmc.RecentPlayHistoryActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ChannelTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
          <activity
             android:name="com.infthink.itmc.RecentMyFavouriteActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ChannelTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
         <activity
             android:name="com.infthink.itmc.MediaDetailActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ChannelTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
         <activity
             android:name="com.infthink.itmc.SearchActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/SearchTheme"
+            android:theme="@style/DefaultTheme"
             android:windowSoftInputMode="adjustNothing|stateVisible" />
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"
@@ -94,18 +97,41 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar" />
+            android:theme="@style/DefaultTheme" />
         
          <activity
             android:name="com.infthink.itmc.AdvancedVideoDemo"
             android:screenOrientation="portrait"
-            android:theme="@style/ChannelTheme"
+            android:theme="@style/DefaultTheme"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustNothing" >
         </activity>
 
         <service android:name="com.infthink.itmc.service.CoreService" />
+        
+        <service android:name="com.infthink.itmc.service.AppCastDeviceService" android:exported="false">
+            <intent-filter>
+                <action android:name="android.media.MediaRouteProviderService" />
+            </intent-filter>
+            
+            <intent-filter>
+                <action android:name="com.fireflycast.cast.service.INTENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.fireflycast.cast.service.DEVICE_SCANNER_INTENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
 
+        <service android:name="com.infthink.itmc.service.AppCastService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.fireflycast.cast.service.BIND_CAST_DEVICE_CONTROLLER_SERVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+          
+        </service>
+        
         <meta-data
             android:name="upgrade_url"
             android:value="http://ota.infthink.com/check" />

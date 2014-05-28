@@ -1,7 +1,9 @@
 package com.infthink.itmc;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 
+import com.fireflycast.cast.CastMediaControlIntent;
 import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
 import com.infthink.itmc.data.NetcastManager.CastStatusUpdateListener;
 import com.infthink.itmc.type.LocalPlayHistory;
@@ -18,8 +20,11 @@ import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
 import io.vov.vitamio.MediaPlayer.OnErrorListener;
 import io.vov.vitamio.MediaPlayer.OnInfoListener;
+import io.vov.vitamio.widget.MediaController.OnHiddenListener;
+import io.vov.vitamio.widget.MediaController.OnShownListener;
 import io.vov.vitamio.widget.VideoView;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,8 +32,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.MediaRouteActionProvider;
+import android.support.v7.media.MediaRouteSelector;
+import android.support.v7.media.MediaRouter;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -37,6 +48,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.FrameLayout.LayoutParams;
 
 public class MediaPlayerActivity extends CoreActivity implements
         PlayUrlListener, CastStatusUpdateListener {
@@ -57,6 +69,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     private String mMediaId;
     private String mPageUrl;
     private long mPlayCurrentTime;
+    private ActionBar mActionBar;
     
     private void recordMedia() {
         long playTime;
@@ -67,7 +80,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         LocalPlayHistoryInfoManager.getInstance(this).saveHistory(this, mMediaId, mCi, String.valueOf(playTime), String.valueOf(Calendar.getInstance().getTimeInMillis()), mSource, mMediaTitle, mPlayUrl, mPageUrl, "none");
     }
-
+    
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
@@ -75,9 +88,16 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (!LibsChecker.checkVitamioLibs(this))
             return;
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        mMediaRouter = MediaRouter.getInstance(this);
+        mMediaRouteSelector = new MediaRouteSelector.Builder()
+        .addControlCategory(CastMediaControlIntent.categoryForCast(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID))
+        .build();
+        mMediaRouterCallback = ITApp.getInstance().getCastManager().getMediaRouterCallback();
+
+        mActionBar = getActionBar();
 
         Intent intent = getIntent();
 
@@ -97,7 +117,18 @@ public class MediaPlayerActivity extends CoreActivity implements
         mCastMediaController = new CastMediaController(
                 this);
         mCastMediaController.setFileName(mMediaTitle);
-
+        mCastMediaController.setOnHiddenListener(new OnHiddenListener() {
+            @Override
+            public void onHidden() {
+                mActionBar.hide();
+            }
+        });
+        mCastMediaController.setOnShownListener(new OnShownListener() {
+            @Override
+            public void onShown() {
+                mActionBar.show(); 
+            }
+        });
         mTextView = new TextView(this);
         mTextView.setText("正在加载 " + mMediaTitle + " , 请稍后...");
         mTextView.setGravity(Gravity.CENTER);
@@ -111,17 +142,26 @@ public class MediaPlayerActivity extends CoreActivity implements
                 FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
         contentView.setBackgroundColor(Color.BLACK);
         setContentView(contentView);
-        
-
-//        Handler h = new Handler();
-//        h.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                loadNextUrl();
-//            }
-//
-//        }, 20000);
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem mediaRouteMenuItem = menu.findItem(R.id.media_route_menu_item);
+        android.util.Log.d("XXXXXXXXXXX", "mediaRouteMenuItem = " + mediaRouteMenuItem);
+        MediaRouteActionProvider mediaRouteActionProvider =
+                (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
+        android.util.Log.d("XXXXXXXXXXX", "mediaRouteActionProvider = " + mediaRouteActionProvider);
+        mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
+        return true;
+    }
+    private MediaRouter mMediaRouter;
+    private MediaRouteSelector mMediaRouteSelector;
+    private MediaRouter.Callback mMediaRouterCallback;
     
     private void initVideo() {
         if (mPlayUrl == "") return;

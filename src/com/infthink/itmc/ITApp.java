@@ -6,18 +6,17 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.HashMap;
 
+import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
+import com.infthink.itmc.data.ChromeCastManager;
 import com.infthink.itmc.data.NetcastManager;
 import com.infthink.libs.base.BaseApplication;
-import com.infthink.libs.cache.simple.BitmapCachePool;
 import com.infthink.libs.common.message.MessageManager;
 import com.infthink.netcast.sdk.ApplicationSession;
 import com.infthink.netcast.sdk.CastDevice;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.http.HttpResponseCache;
-import android.util.Log;
 
 public class ITApp extends BaseApplication {
     public static final int MODE_UNDEFINED = -1;
@@ -36,7 +35,9 @@ public class ITApp extends BaseApplication {
     private String mCastAppName;
     private static NetcastManager sNetcastManager;
     private int mMode = MODE_UNDEFINED;
-    
+    private static ChromeCastManager sCastManager;
+    private static VideoCastManager mCastMgr = null;
+
     public ITApp() {
         sInstance = this;
     }
@@ -74,14 +75,22 @@ public class ITApp extends BaseApplication {
     public static NetcastManager getNetcastManager() {
         return sNetcastManager;
     }
-
+    
+    public static ChromeCastManager getCastManager() {
+        return sCastManager;
+    }
+    private static String APPLICATION_ID;
     @Override
     public void onCreate() {
         super.onCreate();
+        
+        //TODO: id
+        APPLICATION_ID = "app:?url=http://www.baidu.com";
 
         sContext = getApplicationContext();
         sResources = getResources();
         sNetcastManager = new NetcastManager(sContext);
+        sCastManager = new ChromeCastManager();
 
         try {
             File externalCacheDir = getExternalCacheDir();
@@ -100,7 +109,21 @@ public class ITApp extends BaseApplication {
 //        MessageManager.init(this);
 
     }
-    
+
+    public static VideoCastManager getCastManager(Context context) {
+        if (null == mCastMgr) {
+            mCastMgr = VideoCastManager.initialize(context, APPLICATION_ID,
+                    null, null);
+            mCastMgr.enableFeatures(
+                    VideoCastManager.FEATURE_NOTIFICATION |
+                            VideoCastManager.FEATURE_LOCKSCREEN |
+                            VideoCastManager.FEATURE_DEBUGGING);
+
+        }
+        mCastMgr.setContext(context);
+        mCastMgr.setStopOnDisconnect(false);
+        return mCastMgr;
+    }
 
     @Override
     public void onLowMemory() {

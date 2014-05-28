@@ -28,6 +28,10 @@ import com.infthink.itmc.data.NetcastManager.CastSessionListener;
 import com.infthink.itmc.service.CoreService;
 import com.infthink.libs.common.utils.NetworkUtils;
 import com.infthink.netcast.sdk.CastDevice;
+import com.infthink.netcast.sdk.CastSearcher;
+
+import android.support.v7.media.MediaRouter;
+import android.support.v7.media.MediaRouteSelector;
 
 public class CoreActivity extends BaseActivity<CoreService> implements CastSearchListener, CastSessionListener {
 
@@ -41,6 +45,10 @@ public class CoreActivity extends BaseActivity<CoreService> implements CastSearc
     private CastDeviceAdapter mCastDeviceAdapter;
     private ImageView mCastView;
 
+    private MediaRouter mMediaRouter;
+    private MediaRouteSelector mMediaRouteSelector;
+    private MediaRouter.Callback mMediaRouterCallback;
+
     @Override
     protected final Class<CoreService> getServiceClass() {
         return CoreService.class;
@@ -52,7 +60,7 @@ public class CoreActivity extends BaseActivity<CoreService> implements CastSearc
         if (!sDoNegativieClicked) {
             checkNetworkStatus();
         }
-
+        ITApp.getNetcastManager().startSearch();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Connecting to cast device...");
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -79,8 +87,6 @@ public class CoreActivity extends BaseActivity<CoreService> implements CastSearc
         });
         createCastView();
     }
-    
-    
 
     @Override
     protected void onPause() {
@@ -142,7 +148,6 @@ public class CoreActivity extends BaseActivity<CoreService> implements CastSearc
             }
         } else {
             mAvailableDevices.show();
-            ITApp.getNetcastManager().startSearch();
         }
     }
 

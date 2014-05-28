@@ -1,18 +1,16 @@
 package com.infthink.itmc;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
+import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
+import com.firefly.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerImpl;
+import com.fireflycast.cast.ApplicationMetadata;
 import com.infthink.itmc.adapter.HomeChannelAdapter;
 import com.infthink.itmc.adapter.HomeMediaStoreAdapter;
 import com.infthink.itmc.adapter.ScrollBannerAdapter;
 import com.infthink.itmc.data.DataManager;
 import com.infthink.itmc.data.LocalMyFavoriteInfoManager;
-import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
-import com.infthink.itmc.service.CoreService;
 import com.infthink.itmc.type.Banner;
 import com.infthink.itmc.type.Channel;
 import com.infthink.itmc.type.LocalMediaCategoryInfo;
@@ -36,6 +34,7 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -82,12 +81,14 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     private DataManager mDataManager;
     private View mBottomItem;
     private ImageView mCastView;
+    private VideoCastManager mCastManager;
     
     LocalMyFavoriteInfoManager mLocalLocalMyFavoriteInfo;
 
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
+
         android.util.Log.d(TAG, "onCreateAfterSuper");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
@@ -166,8 +167,20 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
         mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfoManager.getInstance(HomeActivity.this);
     }
-
+    private void setupActionBar() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setBackgroundDrawable(
+//                getResources().getDrawable(R.drawable.ab_transparent_democastoverlay));
+    }
     private void onCreateActivate() {
+        mCastManager = ITApp.getCastManager(this);
+        
+        setupActionBar();
+        setupCastListener();
+        
         LinearLayout layout = new LinearLayout(this);
         mCastView = getCastView();
 
@@ -184,7 +197,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         });
         layout.addView(imageView);
         layout.addView(mCastView);
-
+        mCastView.setVisibility(View.GONE);
+        
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setBackgroundDrawable(null);
@@ -226,7 +240,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         mBannerAdapter = new ScrollBannerAdapter(this/* , this */);
         // mBannerAdapter.setOnMediaClickListener(this);
         mBannerView.setAdapter(mBannerAdapter);
-
 
         mBannerIndicator = ((BannerIndicator) mHeaderView.findViewById(R.id.bannerIndicator));
 
@@ -283,6 +296,13 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         setMediaAdapter();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mCastManager.removeVideoCastConsumer(mCastConsumer);
+        mCastManager.decrementUiCounter();
+    }
+
     private void setBannerAdapter() {
         if (mBannerMediaList != null && mBannerMediaList.length > 0) {
             mBannerAdapter.setBannerList(mBannerMediaList);
@@ -304,11 +324,85 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
             startBannerScrollTimer();
         }
     }
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+    private VideoCastConsumerImpl mCastConsumer;
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateCastBtnState();
+        mCastManager = ITApp.getCastManager(this);
+        mCastManager.addVideoCastConsumer(mCastConsumer);
+        mCastManager.incrementUiCounter();
+//        updateCastBtnState();
+    }
+    
+    private void setupCastListener() {
+        mCastConsumer = new VideoCastConsumerImpl() {
+            @Override
+            public void onApplicationConnected(ApplicationMetadata appMetadata,
+                    String sessionId, boolean wasLaunched) {
+                Log.d(TAG, "onApplicationLaunched() is reached");
+//                if (null != mSelectedMedia) {
+//
+//                    if (mPlaybackState == PlaybackState.PLAYING) {
+//                        mVideoView.pause();
+//                        try {
+//                            loadRemoteMedia(mSeekbar.getProgress(), true);
+//                            finish();
+//                        } catch (Exception e) {
+//                            Utils.handleException(LocalPlayerActivity.this, e);
+//                        }
+//                        return;
+//                    } else {
+//                        updatePlaybackLocation(PlaybackLocation.REMOTE);
+//                    }
+//                }
+            }
+
+            @Override
+            public void onApplicationDisconnected(int errorCode) {
+                Log.d(TAG, "onApplicationDisconnected() is reached with errorCode: " + errorCode);
+//                updatePlaybackLocation(PlaybackLocation.LOCAL);
+            }
+
+            @Override
+            public void onDisconnected() {
+//                Log.d(TAG, "onDisconnected() is reached");
+//                mPlaybackState = PlaybackState.PAUSED;
+//                mLocation = PlaybackLocation.LOCAL;
+            }
+
+            @Override
+            public void onRemoteMediaPlayerMetadataUpdated() {
+//                try {
+//                    mRemoteMediaInformation = mCastManager.getRemoteMediaInformation();
+//                } catch (Exception e) {
+//                    // silent
+//                }
+            }
+
+            @Override
+            public void onFailed(int resourceId, int statusCode) {
+
+            }
+
+            @Override
+            public void onConnectionSuspended(int cause) {
+//                Utils.showToast(LocalPlayerActivity.this,
+//                        R.string.connection_temp_lost);
+            }
+
+            @Override
+            public void onConnectivityRecovered() {
+//                Utils.showToast(LocalPlayerActivity.this,
+//                        R.string.connection_recovered);
+            }
+
+        };
     }
 
     private void getChannelMap() {
@@ -320,6 +414,15 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                         download();
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (null != mCastManager) {
+            mCastManager.clearContext(this);
+            mCastConsumer = null;
+        }
     }
 
     private void download() {
@@ -407,8 +510,9 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // getMenuInflater().inflate(R.menu.home, menu);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
         return true;
     }
 
@@ -523,8 +627,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
             // overridePendingTransition(R.anim.appear, R.anim.stay_same);
         }
-        
-        
     }
 
     @MessageResponse
