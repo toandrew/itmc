@@ -10,7 +10,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.infthink.itmc.base.BaseService;
 import com.infthink.itmc.data.DataManager;
-import com.infthink.itmc.data.NetcastManager;
 import com.infthink.libs.common.utils.SystemUtils;
 
 import android.content.Context;

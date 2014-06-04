@@ -37,6 +37,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -80,7 +81,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     private long mTimeLastBackPressed;
     private DataManager mDataManager;
     private View mBottomItem;
-    private ImageView mCastView;
     private VideoCastManager mCastManager;
     
     LocalMyFavoriteInfoManager mLocalLocalMyFavoriteInfo;
@@ -179,10 +179,8 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         mCastManager = ITApp.getCastManager(this);
         
         setupActionBar();
-        setupCastListener();
         
         LinearLayout layout = new LinearLayout(this);
-        mCastView = getCastView();
 
         ImageView imageView = new ImageView(this);
         imageView.setImageResource(R.drawable.clickable_icon_search);
@@ -196,8 +194,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
             }
         });
         layout.addView(imageView);
-        layout.addView(mCastView);
-        mCastView.setVisibility(View.GONE);
         
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
@@ -299,7 +295,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     @Override
     protected void onPause() {
         super.onPause();
-        mCastManager.removeVideoCastConsumer(mCastConsumer);
         mCastManager.decrementUiCounter();
     }
 
@@ -329,82 +324,14 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     protected void onStart() {
         super.onStart();
     }
-    private VideoCastConsumerImpl mCastConsumer;
 
     @Override
     protected void onResume() {
         super.onResume();
         mCastManager = ITApp.getCastManager(this);
-        mCastManager.addVideoCastConsumer(mCastConsumer);
         mCastManager.incrementUiCounter();
-//        updateCastBtnState();
     }
     
-    private void setupCastListener() {
-        mCastConsumer = new VideoCastConsumerImpl() {
-            @Override
-            public void onApplicationConnected(ApplicationMetadata appMetadata,
-                    String sessionId, boolean wasLaunched) {
-                Log.d(TAG, "onApplicationLaunched() is reached");
-//                if (null != mSelectedMedia) {
-//
-//                    if (mPlaybackState == PlaybackState.PLAYING) {
-//                        mVideoView.pause();
-//                        try {
-//                            loadRemoteMedia(mSeekbar.getProgress(), true);
-//                            finish();
-//                        } catch (Exception e) {
-//                            Utils.handleException(LocalPlayerActivity.this, e);
-//                        }
-//                        return;
-//                    } else {
-//                        updatePlaybackLocation(PlaybackLocation.REMOTE);
-//                    }
-//                }
-            }
-
-            @Override
-            public void onApplicationDisconnected(int errorCode) {
-                Log.d(TAG, "onApplicationDisconnected() is reached with errorCode: " + errorCode);
-//                updatePlaybackLocation(PlaybackLocation.LOCAL);
-            }
-
-            @Override
-            public void onDisconnected() {
-//                Log.d(TAG, "onDisconnected() is reached");
-//                mPlaybackState = PlaybackState.PAUSED;
-//                mLocation = PlaybackLocation.LOCAL;
-            }
-
-            @Override
-            public void onRemoteMediaPlayerMetadataUpdated() {
-//                try {
-//                    mRemoteMediaInformation = mCastManager.getRemoteMediaInformation();
-//                } catch (Exception e) {
-//                    // silent
-//                }
-            }
-
-            @Override
-            public void onFailed(int resourceId, int statusCode) {
-
-            }
-
-            @Override
-            public void onConnectionSuspended(int cause) {
-//                Utils.showToast(LocalPlayerActivity.this,
-//                        R.string.connection_temp_lost);
-            }
-
-            @Override
-            public void onConnectivityRecovered() {
-//                Utils.showToast(LocalPlayerActivity.this,
-//                        R.string.connection_recovered);
-            }
-
-        };
-    }
-
     private void getChannelMap() {
         mDataManager
                 .loadChannelMap(new DataManager.IOnloadListener<HashMap<Integer, String>>() {
@@ -421,7 +348,6 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         super.onDestroy();
         if (null != mCastManager) {
             mCastManager.clearContext(this);
-            mCastConsumer = null;
         }
     }
 
@@ -513,6 +439,16 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main, menu);
         mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_stop:
+                mCastManager.disconnect();
+                break;
+        }
         return true;
     }
 

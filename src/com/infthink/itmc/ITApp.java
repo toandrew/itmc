@@ -7,12 +7,10 @@ import java.net.CookieManager;
 import java.util.HashMap;
 
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
+import com.fireflycast.cast.Cast;
 import com.infthink.itmc.data.ChromeCastManager;
-import com.infthink.itmc.data.NetcastManager;
 import com.infthink.libs.base.BaseApplication;
 import com.infthink.libs.common.message.MessageManager;
-import com.infthink.netcast.sdk.ApplicationSession;
-import com.infthink.netcast.sdk.CastDevice;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -30,10 +28,8 @@ public class ITApp extends BaseApplication {
     private static String sInternalCachePath;
     private static String sExternalCachePath;
     private static HashMap<Integer, String> sChannelMap;
-    private ApplicationSession mSession;
-    private CastDevice mDevice;
     private String mCastAppName;
-    private static NetcastManager sNetcastManager;
+//    private static NetcastManager sNetcastManager;
     private int mMode = MODE_UNDEFINED;
     private static ChromeCastManager sCastManager;
     private static VideoCastManager mCastMgr = null;
@@ -72,25 +68,21 @@ public class ITApp extends BaseApplication {
         }
     }
     
-    public static NetcastManager getNetcastManager() {
-        return sNetcastManager;
-    }
-    
-    public static ChromeCastManager getCastManager() {
-        return sCastManager;
-    }
+//    public static NetcastManager getNetcastManager() {
+//        return sNetcastManager;
+//    }
+
     private static String APPLICATION_ID;
     @Override
     public void onCreate() {
         super.onCreate();
         
         //TODO: id
-        APPLICATION_ID = "app:?url=http://www.baidu.com";
+        APPLICATION_ID = Cast.CastApi.makeApplicationId("http://castapp.infthink.com/mediaplayer/index.html");
 
         sContext = getApplicationContext();
         sResources = getResources();
-        sNetcastManager = new NetcastManager(sContext);
-        sCastManager = new ChromeCastManager();
+//        sNetcastManager = new NetcastManager(sContext);
 
         try {
             File externalCacheDir = getExternalCacheDir();
@@ -143,7 +135,7 @@ public class ITApp extends BaseApplication {
         }
         MessageManager.close();
         
-        sNetcastManager.destroy();
+//        sNetcastManager.destroy();
     }
     
     public static String getInternalFilesDir() {
@@ -173,22 +165,6 @@ public class ITApp extends BaseApplication {
         } catch (Exception localException) {
         }
         return 0;
-    }
-
-    public ApplicationSession getCastSession() {
-        return mSession;
-    }
-
-    public void setCastSession(ApplicationSession session) {
-        mSession = session;
-    }
-
-    public CastDevice getCastDevice() {
-        return mDevice;
-    }
-
-    public void setCastDevice(CastDevice device) {
-        mDevice = device;
     }
 
     public String getCastAppName() {

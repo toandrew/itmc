@@ -90,7 +90,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
         setContentView(R.layout.channel_activity);
 
         mChannel = ((Channel) getIntent().getSerializableExtra("channel"));
-        android.util.Log.d("XXXXXXXXXX", "channelID = " + mChannel.channelID);
+        android.util.Log.d(TAG, "channelID = " + mChannel.channelID);
 
         // this.isManual = getIntent().getBooleanExtra("isManual",
         // this.isManual);
@@ -534,7 +534,7 @@ public class ChannelActivity extends CoreActivity implements OnPageChangeListene
                     @Override
                     public void onLoad(RankInfoList entity) {
                         // TODO Auto-generated method stub
-                        android.util.Log.d("XXXXXXXXXX", "channel.loadChannelRank = " +entity.ranks.length);
+                        android.util.Log.d(TAG, "channel.loadChannelRank = " +entity.ranks.length);
                         if (entity == null) return;
                         RankInfo[] ranks = entity.ranks;
                         ArrayList<RankInfo> localArrayList = new ArrayList<RankInfo>();

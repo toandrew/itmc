@@ -111,20 +111,17 @@ public class LocalMyFavoriteInfoManager {
     }
 
     private void uploadFav() {
-        android.util.Log.d("XXXXXXXXXX", "uploadFav");
         // Collections.reverse(myFavoriteAddItemInfoVector);
         final Vector myFavoriteAddItemInfoVectorTemp = new Vector(myFavoriteAddItemInfoVector);
         myFavoriteAddItemInfoVector.clear();
         for (int i = 0; i < myFavoriteAddItemInfoVectorTemp.size(); i++) {
             final Integer mediaID = (Integer) myFavoriteAddItemInfoVectorTemp.get(i);
             String deviceid = macAddress;
-            android.util.Log.d("XXXXXXXXXX", "uploadFav mediaID  = " + mediaID);
             mDataManager.uploadFavorite(deviceid, mediaID, new IOnloadListener<Integer>() {
                 @Override
                 public void onLoad(Integer entity) {
                     // TODO Auto-generated method stub
                     if (entity == 0) {
-                        android.util.Log.d("XXXXXXXXXX", "uploadFav  = " + mediaID);
                         myFavoriteAddItemInfoVectorTemp.removeElement(mediaID);
                     } else {
                         myFavoriteAddItemInfoVector.add(mediaID);
@@ -135,14 +132,11 @@ public class LocalMyFavoriteInfoManager {
         }
         for (int i = 0; i < myFavoriteAddItemInfoVector.size(); i++) {
             Integer mediaID = myFavoriteAddItemInfoVector.get(i);
-            android.util.Log.d("XXXXXXXXXX", "myFavoriteAddItemInfoVector －－－uploadFav  = "
-                    + mediaID);
         }
         mHandler.sendEmptyMessageDelayed(MSG_ADD_FAVORITE, 60 * 1000);
     }
 
     private void deleteFav() {
-        android.util.Log.d("XXXXXXXXXX", "deleteFav");
         // Collections.reverse(myFavoriteRemoveItemInfoVector);
         final Vector myFavoriteRemoveItemInfoVectorTemp =
                 new Vector(myFavoriteRemoveItemInfoVector);
@@ -156,7 +150,6 @@ public class LocalMyFavoriteInfoManager {
                 public void onLoad(Integer entity) {
                     // TODO Auto-generated method stub
                     if (entity == 0) {
-                        android.util.Log.d("XXXXXXXXXX", "deleteFav  = " + mediaID);
                         myFavoriteRemoveItemInfoVectorTemp.removeElement(mediaID);
                     } else {
                         myFavoriteRemoveItemInfoVector.add(mediaID);
@@ -167,8 +160,6 @@ public class LocalMyFavoriteInfoManager {
         }
         for (int i = 0; i < myFavoriteRemoveItemInfoVector.size(); i++) {
             Integer mediaID = myFavoriteRemoveItemInfoVector.get(i);
-            android.util.Log.d("XXXXXXXXXX", "myFavoriteRemoveItemInfoVector －－－mediaID  = "
-                    + mediaID);
         }
 
     }
@@ -197,8 +188,6 @@ public class LocalMyFavoriteInfoManager {
         // Collections.reverse(myFavoriteLocalMediaCache);
         for (int i = 0; i < myFavoriteLocalMediaCache.size(); i++) {
             LocalMyFavoriteItemInfo localMyFavoriteItemInfo = myFavoriteLocalMediaCache.get(i);
-            android.util.Log.d("XXXXXXXXXX", "myFavoriteLocalMediaCache －－－mediaName  = "
-                    + localMyFavoriteItemInfo.mediaInfo.mediaName);
         }
         return true;
     }
@@ -207,7 +196,6 @@ public class LocalMyFavoriteInfoManager {
         Iterator<LocalMyFavoriteItemInfo> iterator = myFavoriteLocalMediaCache.iterator();
         while (iterator.hasNext()) {
             LocalMyFavoriteItemInfo localMyFavoriteItemInfo = iterator.next();
-            android.util.Log.d("XXXXXXXXX", "checkIsFavorite mediaName = " + localMyFavoriteItemInfo.mediaInfo.mediaName);
             if(mediaId == localMyFavoriteItemInfo.mediaInfo.mediaID){
                 return true;
             }

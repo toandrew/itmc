@@ -1,41 +1,41 @@
 package com.infthink.itmc;
 
-import java.lang.reflect.Field;
 import java.util.Calendar;
 
-import com.fireflycast.cast.CastMediaControlIntent;
+import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
+import com.firefly.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerImpl;
+import com.firefly.sample.castcompanionlibrary.cast.exceptions.CastException;
+import com.firefly.sample.castcompanionlibrary.cast.exceptions.NoConnectionException;
+import com.firefly.sample.castcompanionlibrary.cast.exceptions.TransientNetworkDisconnectionException;
+import com.fireflycast.cast.ApplicationMetadata;
+import com.fireflycast.cast.MediaInfo;
+import com.fireflycast.cast.MediaMetadata;
+import com.fireflycast.cast.MediaStatus;
 import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
-import com.infthink.itmc.data.NetcastManager.CastStatusUpdateListener;
 import com.infthink.itmc.type.LocalPlayHistory;
 import com.infthink.itmc.util.Html5PlayUrlRetriever;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.util.Html5PlayUrlRetriever.PlayUrlListener;
 import com.infthink.itmc.widget.CastMediaController;
-import com.infthink.itmc.widget.CastMediaController.OnCastButtonClickListener;
-import com.infthink.netcast.sdk.MediaStatus;
-import com.infthink.netcast.sdk.RampConstants;
+import com.infthink.itmc.widget.CastMediaController.OnChangeMediaStateListener;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
-import io.vov.vitamio.MediaPlayer.OnErrorListener;
 import io.vov.vitamio.MediaPlayer.OnInfoListener;
 import io.vov.vitamio.widget.MediaController.OnHiddenListener;
 import io.vov.vitamio.widget.MediaController.OnShownListener;
 import io.vov.vitamio.widget.VideoView;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.res.Resources.NotFoundException;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.MediaRouteActionProvider;
-import android.support.v7.media.MediaRouteSelector;
-import android.support.v7.media.MediaRouter;
+import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -48,10 +48,9 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.FrameLayout.LayoutParams;
 
 public class MediaPlayerActivity extends CoreActivity implements
-        PlayUrlListener, CastStatusUpdateListener {
+        PlayUrlListener, OnChangeMediaStateListener {
     private String mPlayUrl;
     private String mNextUrl;
     private VideoView mVideoView;
@@ -65,15 +64,35 @@ public class MediaPlayerActivity extends CoreActivity implements
     private int mCastPosition = 0;
     private CastMediaController mCastMediaController;
     private int mCastSeekPosition = -1;
-    private boolean mIsPlayToCast;
+//    private boolean mIsPlayToCast;
     private String mMediaId;
     private String mPageUrl;
     private long mPlayCurrentTime;
     private ActionBar mActionBar;
+    private VideoCastManager mCastManager;
+    private VideoCastConsumerImpl mCastConsumer;
+    
+    /*
+     * indicates whether we are doing a local or a remote playback
+     */
+    public static enum PlaybackLocation {
+        LOCAL,
+        REMOTE;
+    }
+
+    /*
+     * List of various states that we can be in
+     */
+//    public static enum PlaybackState {
+//        PLAYING, PAUSED, BUFFERING, IDLE;
+//    }
+    
+    private PlaybackLocation mLocation;
+//    private PlaybackState mPlaybackState;
     
     private void recordMedia() {
         long playTime;
-        if (mIsPlayToCast) {
+        if (mCastManager.isConnected()) {
             playTime = mPlayCurrentTime;
         } else {
             playTime = mVideoView.getCurrentPosition();
@@ -91,14 +110,13 @@ public class MediaPlayerActivity extends CoreActivity implements
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        mMediaRouter = MediaRouter.getInstance(this);
-        mMediaRouteSelector = new MediaRouteSelector.Builder()
-        .addControlCategory(CastMediaControlIntent.categoryForCast(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID))
-        .build();
-        mMediaRouterCallback = ITApp.getInstance().getCastManager().getMediaRouterCallback();
 
-        mActionBar = getActionBar();
-
+        mActionBar = getSupportActionBar();
+        
+        mCastManager = ITApp.getCastManager(this);
+        setupActionBar();
+        setupCastListener();
+        
         Intent intent = getIntent();
 
         mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
@@ -111,11 +129,12 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (mMediaId.equals("-1")) {
             mMediaId = mPlayUrl;
         }
-        
+
         final FrameLayout contentView = new FrameLayout(this);
         mVideoView = new VideoView(this);
         mCastMediaController = new CastMediaController(
                 this);
+        mCastMediaController.setOnChangeMediaStateListener(this);
         mCastMediaController.setFileName(mMediaTitle);
         mCastMediaController.setOnHiddenListener(new OnHiddenListener() {
             @Override
@@ -143,25 +162,98 @@ public class MediaPlayerActivity extends CoreActivity implements
         contentView.setBackgroundColor(Color.BLACK);
         setContentView(contentView);
     }
+    
+    private void setupCastListener() {
+        mCastConsumer = new VideoCastConsumerImpl() {
+            @Override
+            public void onApplicationConnected(ApplicationMetadata appMetadata,
+                    String sessionId, boolean wasLaunched) {
+                updatePlaybackLocation(PlaybackLocation.REMOTE);
+            }
+
+            @Override
+            public void onApplicationDisconnected(int errorCode) {
+//                Log.d(TAG, "onApplicationDisconnected() is reached with errorCode: " + errorCode);
+                updatePlaybackLocation(PlaybackLocation.LOCAL);
+            }
+
+            @Override
+            public void onDisconnected() {
+//                Log.d(TAG, "onDisconnected() is reached");
+//                mPlaybackState = PlaybackState.PAUSED;
+                updatePlaybackLocation(PlaybackLocation.LOCAL);
+            }
+
+            @Override
+            public void onRemoteMediaPlayerMetadataUpdated() {
+//                try {
+//                    mRemoteMediaInformation = mCastManager.getRemoteMediaInformation();
+//                } catch (Exception e) {
+//                    // silent
+//                }
+            }
+
+            @Override
+            public void onFailed(int resourceId, int statusCode) {
+
+            }
+
+            @Override
+            public void onConnectionSuspended(int cause) {
+//                Utils.showToast(LocalPlayerActivity.this,
+//                        R.string.connection_temp_lost);
+            }
+
+            @Override
+            public void onConnectivityRecovered() {
+//                Utils.showToast(LocalPlayerActivity.this,
+//                        R.string.connection_recovered);
+            }
+
+            @Override
+            public void onRemoteMediaPlayerStatusUpdated() {
+                try {
+                    mCastMediaController.setCastIsPlaying(mCastManager.getPlaybackStatus() == MediaStatus.PLAYER_STATE_PLAYING);
+                    mCastMediaController.setCastCurrentPosition(mCastManager.getCurrentMediaPosition());
+                    mCastMediaController.setCastDuration(mCastManager.getMediaDuration());
+                } catch (TransientNetworkDisconnectionException e) {
+                    e.printStackTrace();
+                } catch (NoConnectionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
     }
+    
+    private void setupActionBar() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setBackgroundDrawable(
+//                getResources().getDrawable(R.drawable.ab_transparent_democastoverlay));
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem mediaRouteMenuItem = menu.findItem(R.id.media_route_menu_item);
-        android.util.Log.d("XXXXXXXXXXX", "mediaRouteMenuItem = " + mediaRouteMenuItem);
-        MediaRouteActionProvider mediaRouteActionProvider =
-                (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
-        android.util.Log.d("XXXXXXXXXXX", "mediaRouteActionProvider = " + mediaRouteActionProvider);
-        mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
+        mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_stop:
+                mCastManager.disconnect();
+                break;
+        }
         return true;
     }
-    private MediaRouter mMediaRouter;
-    private MediaRouteSelector mMediaRouteSelector;
-    private MediaRouter.Callback mMediaRouterCallback;
     
     private void initVideo() {
         if (mPlayUrl == "") return;
@@ -178,30 +270,30 @@ public class MediaPlayerActivity extends CoreActivity implements
          */
 
         mVideoView.setVideoPath(mPlayUrl);
-        updateCastBtnState();
         mVideoView.setMediaController(mCastMediaController);
         
-        mIsPlayToCast = ITApp.getNetcastManager().isDevicePlaying();
-        if (mIsPlayToCast) {
-            ITApp.getNetcastManager().setCastStatusUpdateListener(this);
-            mCastMediaController.setPlayMode(mIsPlayToCast);
-            mCastMediaController.show(0);
-            mVideoView.setBackgroundResource(R.drawable.casting);
-            mTextView.setVisibility(View.GONE);
-        } else if (ITApp.getNetcastManager().isConnectedDevice()) {
-            playToCast(mPlayUrl, mMediaTitle, seekTo);
-            mTextView.setVisibility(View.GONE);
-        } else {
-            mTextView.setVisibility(View.VISIBLE);
+        try {
+            if ((mCastManager.isRemoteMoviePlaying() || mCastManager.isRemoteMoviePaused()) && mPlayUrl.equals(mCastManager.getRemoteMovieUrl())) {
+                mCastMediaController.show(0);
+                mVideoView.setBackgroundResource(R.drawable.casting);
+                mTextView.setVisibility(View.GONE);
+                mLocation = PlaybackLocation.REMOTE;
+                mCastMediaController.setPlayMode(true);
+                mCastMediaController.setCastIsPlaying(mCastManager.getPlaybackStatus() == MediaStatus.PLAYER_STATE_PLAYING);
+                mCastMediaController.setCastCurrentPosition(mCastManager.getCurrentMediaPosition());
+                mCastMediaController.setCastDuration(mCastManager.getMediaDuration());
+            } else if (mCastManager.isConnected()) {
+                playToCast(mPlayUrl, mMediaTitle, seekTo);
+                mTextView.setVisibility(View.GONE);
+            } else {
+                mTextView.setVisibility(View.VISIBLE);
+            }
+        } catch (TransientNetworkDisconnectionException e) {
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            e.printStackTrace();
         }
-        
-        mCastMediaController
-                .setCastButtonClickListener(new OnCastButtonClickListener() {
-                    @Override
-                    public void onClick() {
-                        showCastList();
-                    }
-                });
+
         mVideoView.requestFocus();
         
         final long position = seekTo;
@@ -212,8 +304,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                         // optional need Vitamio 4.0
                         mediaPlayer.setPlaybackSpeed(1.0f);
                         mTextView.setVisibility(View.GONE);
-                        android.util.Log.d("QQQQQQQQQQ", "mIsPlayToCast = " + mIsPlayToCast);
-                        if (!mIsPlayToCast) {
+                        if (!mCastManager.isConnected()) {
                             if (mVideoView.getDuration() > (position + 1000))
                                 mVideoView.seekTo(position);
                         }
@@ -233,7 +324,7 @@ public class MediaPlayerActivity extends CoreActivity implements
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
                 if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                    if (!mIsPlayToCast) {
+                    if (!mCastManager.isConnected()) {
                         mVideoView.start();
                     }
                 }
@@ -247,6 +338,41 @@ public class MediaPlayerActivity extends CoreActivity implements
             }
         });
     }
+    
+    private void updatePlaybackLocation(PlaybackLocation location) {
+        this.mLocation = location;
+        if (location == PlaybackLocation.LOCAL) {
+            play();
+        } else {
+            playToCast(mPlayUrl, mMediaTitle, mVideoView.getCurrentPosition());
+            
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mLocation == PlaybackLocation.LOCAL) {
+            return super.onKeyDown(keyCode, event);
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            onVolumeChange(0.1);
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            onVolumeChange(-0.1);
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+        return true;
+    }
+
+    private void onVolumeChange(double volumeIncrement) {
+        if (mCastManager == null) {
+            return;
+        }
+        try {
+            mCastManager.incrementVolume(volumeIncrement);
+        } catch (Exception e) {
+        }
+    }
+
 
     @Override
     protected void onResume() {
@@ -255,11 +381,10 @@ public class MediaPlayerActivity extends CoreActivity implements
                 .getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
         
+        mCastManager = ITApp.getCastManager(this);
+        mCastManager.addVideoCastConsumer(mCastConsumer);
+        mCastManager.incrementUiCounter();
         initVideo();
-    }
-
-    protected void updateCastBtnState() {
-        mCastMediaController.updateCastBtnState(isSessionEstablished());
     }
     
     @Override
@@ -267,46 +392,59 @@ public class MediaPlayerActivity extends CoreActivity implements
         super.onPause();
         recordMedia();
         
-        if (mIsPlayToCast) {
-            NotificationManager notificationManager = (NotificationManager) this
-                    .getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-            String appName = this.getResources().getString(R.string.app_name);
-            Notification notification = new Notification(
-                    R.drawable.ic_launcher, appName, System.currentTimeMillis());
-            notification.flags |= Notification.FLAG_ONGOING_EVENT;
-            notification.flags |= Notification.FLAG_NO_CLEAR;
-            notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-            CharSequence contentTitle = appName;
-            CharSequence contentText = "正在播放: " + mMediaTitle;
+        try {
+            if (mCastManager.isRemoteMediaLoaded()) {
+                NotificationManager notificationManager = (NotificationManager) this
+                        .getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+                String appName = this.getResources().getString(R.string.app_name);
+                Notification notification = new Notification(
+                        R.drawable.ic_launcher, appName, System.currentTimeMillis());
+                notification.flags |= Notification.FLAG_ONGOING_EVENT;
+                notification.flags |= Notification.FLAG_NO_CLEAR;
+                notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+                CharSequence contentTitle = appName;
+                CharSequence contentText = "正在播放: " + mMediaTitle;
 
-            Intent notificationIntent = new Intent(MediaPlayerActivity.this,
-                    MediaPlayerActivity.class);
-            notificationIntent.putExtras(getIntent());
-            PendingIntent contentItent = PendingIntent.getActivity(this, 0,
-                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            notification.setLatestEventInfo(this, contentTitle, contentText,
-                    contentItent);
-            notificationManager.notify(0, notification);
+                Intent notificationIntent = new Intent(MediaPlayerActivity.this,
+                        MediaPlayerActivity.class);
+                notificationIntent.putExtras(getIntent());
+                PendingIntent contentItent = PendingIntent.getActivity(this, 0,
+                        notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                notification.setLatestEventInfo(this, contentTitle, contentText,
+                        contentItent);
+                notificationManager.notify(0, notification);
+            }
+        } catch (NotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (TransientNetworkDisconnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        mCastManager.decrementUiCounter();
+        mCastManager.removeVideoCastConsumer(mCastConsumer);
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         switch (event.getKeyCode()) {
         case KeyEvent.KEYCODE_VOLUME_DOWN:
-            if (mIsPlayToCast) {
-                ITApp.getNetcastManager().setVolumeDown();
-                return true;
-            }
         case KeyEvent.KEYCODE_VOLUME_UP:
-            if (mIsPlayToCast) {
-                ITApp.getNetcastManager().setVolumeUp();
-                return true;
-            }
         default:
             break;
         }
         return super.dispatchKeyEvent(event);
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (null != mCastManager) {
+            mCastManager.clearContext(this);
+        }
     }
 
     // TODO: 需要抽象到MediaUrlForPlayerUtil类中
@@ -367,15 +505,26 @@ public class MediaPlayerActivity extends CoreActivity implements
     }
 
     private void playToCast(String url, String title, long millisecond) {
-        mIsPlayToCast = true;
-        mCastMediaController.setPlayMode(mIsPlayToCast);
-        ITApp.getNetcastManager().setCastStatusUpdateListener(this);
-        ITApp.getNetcastManager().playVideo(url,
-                title);
+        MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+        metadata.putString(MediaMetadata.KEY_TITLE, title);
+
+        MediaInfo mediaInfo = new MediaInfo.Builder(url)
+        .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+        .setContentType("video/mp4").setMetadata(metadata).build();
+        
+
         android.util.Log.d("XXXXXXXXXX", "url = " + url);
-        if (millisecond > 1000) {
-            mCastSeekPosition = (int) (millisecond / 1000);
+//        if (millisecond > 1000) {
+//            mCastSeekPosition = (int) (millisecond / 1000);
+//        }
+        try {
+            mCastManager.loadMedia(mediaInfo, true, (int) millisecond);
+        } catch (TransientNetworkDisconnectionException e) {
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            e.printStackTrace();
         }
+        mCastMediaController.setPlayMode(true);
         mCastMediaController.show(0);
         mVideoView.setBackgroundResource(R.drawable.casting);
         mVideoView.pause();
@@ -383,11 +532,20 @@ public class MediaPlayerActivity extends CoreActivity implements
     
     private void play() {
         mVideoView.setBackgroundResource(R.drawable.transparent);
-        mIsPlayToCast = false;
-        mCastMediaController.setPlayMode(mIsPlayToCast);
+//        mIsPlayToCast = false;
+        mCastMediaController.setPlayMode(false);
         mCastMediaController.show();
-        ITApp.getNetcastManager().setCastStatusUpdateListener(null);
-        long time = mCastPosition * 1000;
+//        ITApp.getNetcastManager().setCastStatusUpdateListener(null);
+        long time = 0;
+        try {
+            time = mCastManager.getCurrentMediaPosition();
+        } catch (TransientNetworkDisconnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         if (time > 0 && Math.abs(time - mVideoView.getCurrentPosition()) > 1000) {
             mVideoView.seekTo(time);
         }
@@ -395,57 +553,48 @@ public class MediaPlayerActivity extends CoreActivity implements
     }
 
     @Override
-    public void onSessionStarted() {
-        super.onSessionStarted();
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                playToCast(mPlayUrl, mMediaTitle, mVideoView.getCurrentPosition());
-            }
-        }, 1000);
-    }
-
-    @Override
-    public void onSessionFailed() {
-        super.onSessionFailed();
-    }
-
-    @Override
-    public void onSessionEnded() {
-        super.onSessionEnded();
-        play();
-    }
-
-    @Override
-    public void updateStatus(MediaStatus status) {
-        if (status.getState() == RampConstants.PLAYER_STATUS_PLAYING) {
-            mCastMediaController.setCastIsPlaying(true);
-            mCastMediaController.setCastDuration(status.getDuration() * 1000);
-            mPlayCurrentTime = status.getCurrentTime() * 1000;
-            mCastMediaController.setCastCurrentPosition(mPlayCurrentTime);
-        } else {
-            mCastMediaController.setCastIsPlaying(false);
+    public void seekEnd(long position) {
+        try {
+            android.util.Log.d("XXXXXXXXX", "position = " + position);
+            mCastManager.seek((int) position);
+        } catch (TransientNetworkDisconnectionException e) {
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            e.printStackTrace();
         }
-        switch (status.getState()) {
-        case RampConstants.PLAYER_STATUS_PLAYING:
-            if (mCastSeekPosition > 0) {
-                ITApp.getNetcastManager().seekTo(mCastSeekPosition);
-                mCastSeekPosition = -1;
-            }
-            mCastPosition = status.getCurrentTime();
-            break;
-        case RampConstants.PLAYER_STATUS_IDLE:
-            break;
-        case RampConstants.PLAYER_STATUS_PAUSE:
-            break;
-        case RampConstants.PLAYER_STATUS_STOP:
-            break;
-        case RampConstants.PLAYER_STATUS_PREPAREING:
-        case RampConstants.PLAYER_STATUS_BUFFERING:
-           break;
-        default:
-            break;
+    }
+
+    @Override
+    public void startMedia() {
+        try {
+            if (mCastManager != null)
+                mCastManager.play();
+        } catch (CastException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (TransientNetworkDisconnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void pauseMedia() {
+        try {
+            if (mCastManager != null)
+                mCastManager.pause();
+        } catch (CastException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (TransientNetworkDisconnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 }

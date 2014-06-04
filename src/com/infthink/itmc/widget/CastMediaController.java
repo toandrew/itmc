@@ -1,6 +1,8 @@
 package com.infthink.itmc.widget;
 
 import java.lang.reflect.Method;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.infthink.itmc.ITApp;
 import com.infthink.itmc.R;
@@ -35,9 +37,6 @@ import io.vov.vitamio.widget.MediaController.OnHiddenListener;
 import io.vov.vitamio.widget.MediaController.OnShownListener;
 
 public class CastMediaController extends MediaController {
-    private OnCastButtonClickListener mOnCastButtonClickListener;
-    private ImageButton mCastButton;
-
     private static final int sDefaultTimeout = 5000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
@@ -114,7 +113,10 @@ public class CastMediaController extends MediaController {
             String time = StringUtils.generateTime(newposition);
             if (mInstantSeeking) {
                 if (mIsPlayToCast) {
-                    ITApp.getNetcastManager().seekTo((int) (newposition / 1000));
+                    if (mOnChangeMediaStateListener != null) {
+                        mOnChangeMediaStateListener.seekEnd(newposition);
+                    }
+//                    ITApp.getNetcastManager().seekTo((int) (newposition / 1000));
                 } else {
                     mPlayer.seekTo(newposition);
                 }
@@ -127,10 +129,14 @@ public class CastMediaController extends MediaController {
 
         public void onStopTrackingTouch(SeekBar bar) {
             if (!mInstantSeeking) {
+                long position = (mDuration * bar.getProgress()) / 1000;
                 if (mIsPlayToCast) {
-                    ITApp.getNetcastManager().seekTo((int) (mDuration * bar.getProgress()) / 1000 / 1000);
+                    if (mOnChangeMediaStateListener != null) {
+                        mOnChangeMediaStateListener.seekEnd(position);
+                    }
+//                    ITApp.getNetcastManager().seekTo((int) (mDuration * bar.getProgress()) / 1000 / 1000);
                 } else {
-                    mPlayer.seekTo((mDuration * bar.getProgress()) / 1000);
+                    mPlayer.seekTo(position);
                 }
             }
                 
@@ -209,7 +215,7 @@ public class CastMediaController extends MediaController {
             mRoot = makeControllerView();
             mWindow.setContentView(mRoot);
             mWindow.setWidth(LayoutParams.MATCH_PARENT);
-            mWindow.setHeight(LayoutParams.MATCH_PARENT);
+            mWindow.setHeight(LayoutParams.WRAP_CONTENT);
         }
         initControllerView(mRoot);
     }
@@ -226,37 +232,10 @@ public class CastMediaController extends MediaController {
                 getResources().getIdentifier("mediacontroller", "layout",
                         mContext.getPackageName()), this);
     }
-    
-    public void updateCastBtnState(boolean connected) {
-        mIsConnected = connected;
-        if (mCastButton == null) return;
-        if (connected) {
-            mCastButton.setImageResource(R.drawable.img_cast_pressed);
-        } else {
-            mCastButton.setImageResource(R.drawable.img_cast_normal);
-        }
-    }
 
     private boolean mIsConnected = false;
 
     private void initControllerView(View v) {
-        mCastButton = (ImageButton) v.findViewById(getResources()
-                .getIdentifier("mediacontroller_cast", "id",
-                        mContext.getPackageName()));
-        if (mIsConnected) {
-            mCastButton.setImageResource(R.drawable.img_cast_pressed);
-        } else {
-            mCastButton.setImageResource(R.drawable.img_cast_normal);
-        }
-        mCastButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                if (mOnCastButtonClickListener != null) {
-                    mOnCastButtonClickListener.onClick();
-                }
-            }
-        });
-
         mPauseButton = (ImageButton) v.findViewById(getResources()
                 .getIdentifier("mediacontroller_play_pause", "id",
                         mContext.getPackageName()));
@@ -501,13 +480,21 @@ public class CastMediaController extends MediaController {
     private void doPauseResume() {
         if (isPlaying()) {
             if (this.mIsPlayToCast) {
-                ITApp.getNetcastManager().pause();
+                if (this.mOnChangeMediaStateListener != null) {
+                    mOnChangeMediaStateListener.pauseMedia();
+                }
+                stopTrickplayTimer();
+//                ITApp.getNetcastManager().pause();
             } else {
                 mPlayer.pause();
             }
         } else {
             if (this.mIsPlayToCast) {
-                ITApp.getNetcastManager().start();
+                if (this.mOnChangeMediaStateListener != null) {
+                    mOnChangeMediaStateListener.startMedia();
+                }
+                this.restartTrickplayTimer();
+//                ITApp.getNetcastManager().start();
             } else {
                 mPlayer.start();
             }
@@ -523,35 +510,73 @@ public class CastMediaController extends MediaController {
             mProgress.setEnabled(enabled);
         super.setEnabled(enabled);
     }
-
-    public void setPlayMode(boolean toCast) {
-        mIsPlayToCast = toCast;
-    }
-
-    public void setCastButtonClickListener(
-            OnCastButtonClickListener onCastButtonClickListener) {
-        mOnCastButtonClickListener = onCastButtonClickListener;
-    }
-
-    public static abstract interface OnCastButtonClickListener {
-        public abstract void onClick();
-    }
-
+    
     public void setCastCurrentPosition(long position) {
         mCastCurrentPosition = position;
     }
     public void setCastDuration(long duration) {
         mCastDuration = duration;
     }
-    public void setCastIsPlaying(boolean isPlaying) {
-        mIsCastPlaying = isPlaying;
+    
+    public void setPlayMode(boolean cast) {
+        mIsPlayToCast = cast;
+//        if (mIsPlayToCast) {
+//            restartTrickplayTimer();
+//        } else {
+//            stopTrickplayTimer();
+//        }
     }
     
+    public void setCastIsPlaying(boolean isPlaying) {
+        mIsCastPlaying = isPlaying;
+        if (mIsCastPlaying) {
+            restartTrickplayTimer();
+        } else {
+            stopTrickplayTimer();
+        }
+    }
+
     private boolean isPlaying() {
         if (mIsPlayToCast) {
             return mIsCastPlaying;
         } else {
             return mPlayer.isPlaying();
+        }
+    }
+    Timer mSeekbarTimer;
+    public void stopTrickplayTimer() {
+        if (null != mSeekbarTimer) {
+            mSeekbarTimer.cancel();
+        }
+    }
+
+    public void restartTrickplayTimer() {
+        stopTrickplayTimer();
+        mSeekbarTimer = new Timer();
+        mSeekbarTimer.scheduleAtFixedRate(new UpdateSeekbarTask(), 100, 1000);
+    }
+
+    private OnChangeMediaStateListener mOnChangeMediaStateListener;
+    public void setOnChangeMediaStateListener(OnChangeMediaStateListener onChangeMediaStateListener) {
+        mOnChangeMediaStateListener = onChangeMediaStateListener;
+    }
+    public interface OnChangeMediaStateListener {
+        void seekEnd(long position);
+        void startMedia();
+        void pauseMedia();
+    }
+    
+    private class UpdateSeekbarTask extends TimerTask {
+
+        @Override
+        public void run() {
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    mCastCurrentPosition += 1000;
+                }
+            });
         }
     }
 }

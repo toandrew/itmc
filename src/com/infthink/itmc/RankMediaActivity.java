@@ -78,7 +78,7 @@ public class RankMediaActivity extends CoreActivity implements OnClickListener {
         setContentView(R.layout.rank_media_activity);
         mRankInfo = ((RankInfo) getIntent().getSerializableExtra("rankinfo"));
 
-        android.util.Log.d("XXXXXXXXXX", "channel.channelID = " + mRankInfo.channelID);
+        android.util.Log.d(TAG, "channel.channelID = " + mRankInfo.channelID);
 
         onActivate();
     }
@@ -108,7 +108,7 @@ public class RankMediaActivity extends CoreActivity implements OnClickListener {
     }
 
     private void setRankAdapter() {
-        android.util.Log.d("XXXXXXXXXX", "channel.mRankInfoList = " + mRankInfoList.size());
+        android.util.Log.d(TAG, "channel.mRankInfoList = " + mRankInfoList.size());
 
         for (int i = 0; i < mRankInfoList.size(); i++) {
             RankInfo rankInfo = mRankInfoList.get(0);

@@ -435,7 +435,7 @@ public class MediaDetailActivity extends CoreActivity
 
     private void download() {
         String mediaID = this.mediaInfo.mediaID + "";
-        android.util.Log.d("XXXXXXXXXX", "download mediaID = " + mediaID);
+        android.util.Log.d(TAG, "download mediaID = " + mediaID);
         mDataManager.loadDetail(mediaID, new IOnloadListener<MediaDetailInfo2>() {
 
             @Override
@@ -544,7 +544,7 @@ public class MediaDetailActivity extends CoreActivity
             if (mMediaUrl == "") {
                 mMediaUrl = mMediaUrlInfoList.urlNormal[getSourceIDPos(mPreferenceSource)].mediaUrl;
             }
-            android.util.Log.d("XXXXXXXXXX", "mMediaUrl = " + mMediaUrl + " mPreferenceSource = "
+            android.util.Log.d(TAG, "mMediaUrl = " + mMediaUrl + " mPreferenceSource = "
                     + mPreferenceSource);
             
             
@@ -756,13 +756,13 @@ public class MediaDetailActivity extends CoreActivity
                     mMediaUrlInfoList = entity;
                     
                     setMediaSource();
-                    android.util.Log.d("XXXXXXXXXX", "mSourceSelect = " + mSourceSelect + " mPreferenceSource = "
+                    android.util.Log.d(TAG, "mSourceSelect = " + mSourceSelect + " mPreferenceSource = "
                             + mPreferenceSource);
                     mSourceSelect = findSource();
                     if(mSourceSelect == -1){
                         mSourceSelect = 0;
                     }
-                    android.util.Log.d("XXXXXXXXXX", "mSourceSelect = " + mSourceSelect + " mPreferenceSource = "
+                    android.util.Log.d(TAG, "mSourceSelect = " + mSourceSelect + " mPreferenceSource = "
                             + mPreferenceSource);
                     // mPreferenceSource = entity.urlNormal[0].mediaSource;
                     mPreferenceSource = entity.urlNormal[mSourceSelect].mediaSource;
