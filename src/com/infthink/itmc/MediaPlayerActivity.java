@@ -1,6 +1,12 @@
 package com.infthink.itmc;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
 import com.firefly.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerImpl;
@@ -18,6 +24,7 @@ import com.infthink.itmc.util.Util;
 import com.infthink.itmc.util.Html5PlayUrlRetriever.PlayUrlListener;
 import com.infthink.itmc.widget.CastMediaController;
 import com.infthink.itmc.widget.CastMediaController.OnChangeMediaStateListener;
+import com.nanohttpd.webserver.src.main.java.fi.iki.elonen.SimpleWebServer;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
@@ -30,9 +37,13 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Color;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -51,6 +62,7 @@ import android.widget.Toast;
 
 public class MediaPlayerActivity extends CoreActivity implements
         PlayUrlListener, OnChangeMediaStateListener {
+    private static final String TAG = MediaPlayerActivity.class.getSimpleName();
     private String mPlayUrl;
     private String mNextUrl;
     private VideoView mVideoView;
@@ -71,6 +83,12 @@ public class MediaPlayerActivity extends CoreActivity implements
     private ActionBar mActionBar;
     private VideoCastManager mCastManager;
     private VideoCastConsumerImpl mCastConsumer;
+    
+    private String mIpAddress;
+
+    private SimpleWebServer mNanoHTTPD;
+    private int port = 8080;
+    private String mRootDir = "/";
     
     /*
      * indicates whether we are doing a local or a remote playback
@@ -273,7 +291,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         mVideoView.setMediaController(mCastMediaController);
         
         try {
-            if ((mCastManager.isRemoteMoviePlaying() || mCastManager.isRemoteMoviePaused()) && mPlayUrl.equals(mCastManager.getRemoteMovieUrl())) {
+            if ((mCastManager.isRemoteMoviePlaying() || mCastManager.isRemoteMoviePaused()) && processLocalVideoUrl(mPlayUrl).equals(mCastManager.getRemoteMovieUrl())) {
                 mCastMediaController.show(0);
                 mVideoView.setBackgroundResource(R.drawable.casting);
                 mTextView.setVisibility(View.GONE);
@@ -342,6 +360,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     private void updatePlaybackLocation(PlaybackLocation location) {
         this.mLocation = location;
         if (location == PlaybackLocation.LOCAL) {
+            stopServer();
             play();
         } else {
             playToCast(mPlayUrl, mMediaTitle, mVideoView.getCurrentPosition());
@@ -442,6 +461,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopServer();
         if (null != mCastManager) {
             mCastManager.clearContext(this);
         }
@@ -507,8 +527,8 @@ public class MediaPlayerActivity extends CoreActivity implements
     private void playToCast(String url, String title, long millisecond) {
         MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         metadata.putString(MediaMetadata.KEY_TITLE, title);
-
-        MediaInfo mediaInfo = new MediaInfo.Builder(url)
+        
+        MediaInfo mediaInfo = new MediaInfo.Builder(processLocalVideoUrl(url))
         .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
         .setContentType("video/mp4").setMetadata(metadata).build();
         
@@ -596,5 +616,70 @@ public class MediaPlayerActivity extends CoreActivity implements
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+    private String processLocalVideoUrl(String url) {
+        String real_url = url;
+        if (url != null && url.startsWith("file://")) {
+
+            initWebserver();
+            // remove "file://"
+            real_url = url.replaceAll("file://", "");
+            return "http://" + mIpAddress + ":8080" + real_url;
+
+        } else if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {
+            initWebserver();
+            return "http://" + mIpAddress + ":8080" + real_url;
+        }
+        return url;
+    }
+    
+    private void initWebserver() {
+        stopServer();
+        startServer(8080);
+    }
+    
+    private void stopServer() {
+        if (mNanoHTTPD != null) {
+            mNanoHTTPD.stop();
+        } else {
+            Log.e(TAG, "Cannot kill server!? Please restart your phone.");
+        }
+    }
+    
+    private void startServer(int port) {
+        try {
+            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+            mIpAddress = intToIp(wifiInfo.getIpAddress());
+
+            if (wifiInfo.getSupplicantState() != SupplicantState.COMPLETED) {
+                throw new Exception("Please connect to a WIFI-network.");
+            }
+
+            Log.e(TAG, "Starting server " + mIpAddress + ":" + port + ".");
+
+            List<File> rootDirs = new ArrayList<File>();
+            boolean quiet = false;
+            Map<String, String> options = new HashMap<String, String>();
+            rootDirs.add(new File(mRootDir).getAbsoluteFile());
+
+            // mNanoHTTPD
+            try {
+                mNanoHTTPD = new SimpleWebServer(mIpAddress, port, rootDirs,
+                        quiet);
+                mNanoHTTPD.start();
+            } catch (IOException ioe) {
+                Log.e(TAG, "Couldn't start server:\n" + ioe);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+    
+    private String intToIp(int i) {
+        return ((i) & 0xFF) + "." + ((i >> 8) & 0xFF) + "."
+                + ((i >> 16) & 0xFF) + "." + (i >> 24 & 0xFF);
     }
 }

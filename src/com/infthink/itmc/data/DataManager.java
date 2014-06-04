@@ -578,7 +578,7 @@ public class DataManager {
             sb.append("&mediaid=" + mediaId);
         }
         String textUrl = URL_DELETE_FAVORITE + sb.toString();
-        android.util.Log.d("TAG, "textUrl = " + textUrl);
+        android.util.Log.d(TAG, "textUrl = " + textUrl);
         SimpleTextLoadListener<Integer> textLoadListener = new SimpleTextLoadListener<Integer>() {
 
             @Override
