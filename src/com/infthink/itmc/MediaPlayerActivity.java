@@ -575,8 +575,9 @@ public class MediaPlayerActivity extends CoreActivity implements
     @Override
     public void seekEnd(long position) {
         try {
-            android.util.Log.d("XXXXXXXXX", "position = " + position);
-            mCastManager.seek((int) position);
+            if (mCastManager != null && mCastManager.isRemoteMediaLoaded()) {
+                mCastManager.seek((int) position);
+            }
         } catch (TransientNetworkDisconnectionException e) {
             e.printStackTrace();
         } catch (NoConnectionException e) {
@@ -587,7 +588,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     @Override
     public void startMedia() {
         try {
-            if (mCastManager != null)
+            if (mCastManager != null && mCastManager.isRemoteMediaLoaded())
                 mCastManager.play();
         } catch (CastException e) {
             // TODO Auto-generated catch block
@@ -604,7 +605,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     @Override
     public void pauseMedia() {
         try {
-            if (mCastManager != null)
+            if (mCastManager != null && mCastManager.isRemoteMediaLoaded())
                 mCastManager.pause();
         } catch (CastException e) {
             // TODO Auto-generated catch block
