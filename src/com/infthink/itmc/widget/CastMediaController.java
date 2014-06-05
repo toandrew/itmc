@@ -575,6 +575,9 @@ public class CastMediaController extends MediaController {
                 @Override
                 public void run() {
                     mCastCurrentPosition += 1000;
+                    if (mCastCurrentPosition > mCastDuration) {
+                        mCastCurrentPosition = mCastDuration;
+                    }
                 }
             });
         }
