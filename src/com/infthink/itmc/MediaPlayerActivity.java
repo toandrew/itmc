@@ -130,7 +130,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mActionBar = getSupportActionBar();
-        
+        mLocation = PlaybackLocation.LOCAL;
         mCastManager = ITApp.getCastManager(this);
         setupActionBar();
         setupCastListener();
