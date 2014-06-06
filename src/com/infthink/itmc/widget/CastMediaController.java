@@ -564,6 +564,8 @@ public class CastMediaController extends MediaController {
         void seekEnd(long position);
         void startMedia();
         void pauseMedia();
+        long getCurrentPosition();
+        long getDuration();
     }
     
     private class UpdateSeekbarTask extends TimerTask {
@@ -574,10 +576,7 @@ public class CastMediaController extends MediaController {
 
                 @Override
                 public void run() {
-                    mCastCurrentPosition += 1000;
-                    if (mCastCurrentPosition > mCastDuration) {
-                        mCastCurrentPosition = mCastDuration;
-                    }
+                    mCastCurrentPosition = mOnChangeMediaStateListener.getCurrentPosition();
                 }
             });
         }

@@ -134,7 +134,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         mCastManager = ITApp.getCastManager(this);
         setupActionBar();
         setupCastListener();
-        
+
         Intent intent = getIntent();
 
         mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
@@ -163,7 +163,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         mCastMediaController.setOnShownListener(new OnShownListener() {
             @Override
             public void onShown() {
-                mActionBar.show(); 
+                mActionBar.show();
             }
         });
         mTextView = new TextView(this);
@@ -434,13 +434,10 @@ public class MediaPlayerActivity extends CoreActivity implements
                 notificationManager.notify(0, notification);
             }
         } catch (NotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (TransientNetworkDisconnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoConnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         mCastManager.decrementUiCounter();
@@ -486,7 +483,6 @@ public class MediaPlayerActivity extends CoreActivity implements
     Html5PlayUrlRetriever mUrlRetriever;
 
     private synchronized void getPlayerUrl(int source, String url) {
-        // DKLog.d(TAG, "get player url ");
         mSource = source;
         initWebView();
         mWebView.loadUrl(url);
@@ -505,7 +501,6 @@ public class MediaPlayerActivity extends CoreActivity implements
 
         public void onPageFinished(WebView webview, String url) {
             super.onPageFinished(webview, url);
-            // DKLog.d(MediaUrlForPlayerUtil.TAG, "on page finish");
             if (mSource == 8)
                 mUrlRetriever.startQiyiLoop();
         }
@@ -532,11 +527,6 @@ public class MediaPlayerActivity extends CoreActivity implements
         .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
         .setContentType("video/mp4").setMetadata(metadata).build();
         
-
-        android.util.Log.d("XXXXXXXXXX", "url = " + url);
-//        if (millisecond > 1000) {
-//            mCastSeekPosition = (int) (millisecond / 1000);
-//        }
         try {
             mCastManager.loadMedia(mediaInfo, true, (int) millisecond);
         } catch (TransientNetworkDisconnectionException e) {
@@ -560,10 +550,8 @@ public class MediaPlayerActivity extends CoreActivity implements
         try {
             time = mCastManager.getCurrentMediaPosition();
         } catch (TransientNetworkDisconnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoConnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         if (time > 0 && Math.abs(time - mVideoView.getCurrentPosition()) > 1000) {
@@ -591,13 +579,10 @@ public class MediaPlayerActivity extends CoreActivity implements
             if (mCastManager != null && mCastManager.isRemoteMediaLoaded())
                 mCastManager.play();
         } catch (CastException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (TransientNetworkDisconnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoConnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -608,13 +593,10 @@ public class MediaPlayerActivity extends CoreActivity implements
             if (mCastManager != null && mCastManager.isRemoteMediaLoaded())
                 mCastManager.pause();
         } catch (CastException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (TransientNetworkDisconnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoConnectionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -682,5 +664,34 @@ public class MediaPlayerActivity extends CoreActivity implements
     private String intToIp(int i) {
         return ((i) & 0xFF) + "." + ((i >> 8) & 0xFF) + "."
                 + ((i >> 16) & 0xFF) + "." + (i >> 24 & 0xFF);
+    }
+
+    @Override
+    public long getCurrentPosition() {
+        try {
+            if (mCastManager != null && mCastManager.isRemoteMediaLoaded())
+                return mCastManager.getCurrentMediaPosition();
+        } catch (TransientNetworkDisconnectionException e) {
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public long getDuration() {
+        
+        try {
+            if (mCastManager != null && mCastManager.isRemoteMediaLoaded())
+                return mCastManager.getMediaDuration();
+        } catch (TransientNetworkDisconnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoConnectionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
