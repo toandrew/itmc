@@ -429,8 +429,6 @@ public class MediaDetailActivity extends CoreActivity
         // this.personInfo.bigImageUrl.imageUrl = null;
         // }
         onActivate();
-
-
     }
 
     private void download() {
@@ -547,7 +545,6 @@ public class MediaDetailActivity extends CoreActivity
             android.util.Log.d(TAG, "mMediaUrl = " + mMediaUrl + " mPreferenceSource = "
                     + mPreferenceSource);
             
-            
             mPlayInfo = new MediaPlayInfo(mediaInfo.mediaID, Util.replaceString(mMediaUrl, "\\",
                     "").trim(), mPreferenceSource, mediaInfo.mediaName.trim(), mediaInfo.setCount, ci);
             getUrlAndPlay();
@@ -658,7 +655,6 @@ public class MediaDetailActivity extends CoreActivity
         intent.putExtra("current_episode", mPlayInfo.ci);
         intent.putExtra("ci", mPlayInfo.ci);
         intent.putExtra("path", mPlayInfo.playUrl);
-        
         startActivity(intent);
     }
 

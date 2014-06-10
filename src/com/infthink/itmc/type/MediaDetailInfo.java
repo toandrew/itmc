@@ -4,6 +4,7 @@ public class MediaDetailInfo
 {
   public String area;
   public ImageUrlInfo bigImageURL;
+  public String posterurl;
   public int currentCount;
   public String desc;
   public String issueDate;

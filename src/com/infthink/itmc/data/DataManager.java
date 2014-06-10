@@ -332,9 +332,11 @@ public class DataManager {
                                 if (obj != null) {
                                     mediaDetailInfo2 = new MediaDetailInfo2();
                                     String desc = ((JSONObject) obj).optString("desc");
+                                    String posterurl = ((JSONObject) obj).optString("posterurl");
                                     android.util.Log.d(TAG, "loadDetail desc = " + desc);
                                     MediaDetailInfo mdi = new MediaDetailInfo();
                                     mdi.desc = desc;
+                                    mdi.posterurl = posterurl;
                                     JSONObject mediaciinfo =
                                             ((JSONObject) obj).optJSONObject("mediaciinfo");
                                     JSONArray videos =

@@ -17,13 +17,19 @@ import com.fireflycast.cast.ApplicationMetadata;
 import com.fireflycast.cast.MediaInfo;
 import com.fireflycast.cast.MediaMetadata;
 import com.fireflycast.cast.MediaStatus;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Orientation;
+import com.infthink.itmc.data.DataManager;
+import com.infthink.itmc.data.LocalMyFavoriteInfoManager;
 import com.infthink.itmc.data.LocalPlayHistoryInfoManager;
+import com.infthink.itmc.data.DataManager.IOnloadListener;
 import com.infthink.itmc.type.LocalPlayHistory;
+import com.infthink.itmc.type.MediaDetailInfo2;
 import com.infthink.itmc.util.Html5PlayUrlRetriever;
 import com.infthink.itmc.util.Util;
 import com.infthink.itmc.util.Html5PlayUrlRetriever.PlayUrlListener;
 import com.infthink.itmc.widget.CastMediaController;
 import com.infthink.itmc.widget.CastMediaController.OnChangeMediaStateListener;
+import com.infthink.libs.cache.simple.ImageLoader;
 import com.nanohttpd.webserver.src.main.java.fi.iki.elonen.SimpleWebServer;
 
 import io.vov.vitamio.LibsChecker;
@@ -39,14 +45,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Color;
+import android.net.Uri;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils.TruncateAt;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -57,6 +68,9 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,6 +104,10 @@ public class MediaPlayerActivity extends CoreActivity implements
     private int port = 8080;
     private String mRootDir = "/";
     
+    private LinearLayout mLinearLayout;
+    private ImageView mImageView;
+    private TextView mCastNameView;
+    
     /*
      * indicates whether we are doing a local or a remote playback
      */
@@ -121,7 +139,6 @@ public class MediaPlayerActivity extends CoreActivity implements
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
-
         if (!LibsChecker.checkVitamioLibs(this))
             return;
 
@@ -147,13 +164,12 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (mMediaId.equals("-1")) {
             mMediaId = mPlayUrl;
         }
-
+        getSupportActionBar().setTitle(mMediaTitle);
         final FrameLayout contentView = new FrameLayout(this);
         mVideoView = new VideoView(this);
         mCastMediaController = new CastMediaController(
                 this);
         mCastMediaController.setOnChangeMediaStateListener(this);
-        mCastMediaController.setFileName(mMediaTitle);
         mCastMediaController.setOnHiddenListener(new OnHiddenListener() {
             @Override
             public void onHidden() {
@@ -170,6 +186,37 @@ public class MediaPlayerActivity extends CoreActivity implements
         mTextView.setText("正在加载 " + mMediaTitle + " , 请稍后...");
         mTextView.setGravity(Gravity.CENTER);
         mTextView.setBackgroundColor(Color.TRANSPARENT);
+        
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+        int size;
+        if (width > height) {
+            size = height / 3 * 2;
+        } else {
+            size = width / 3 * 2;
+        }
+        
+        mLinearLayout = new LinearLayout(this);
+        mLinearLayout.setOrientation(LinearLayout.VERTICAL);
+        mImageView = new ImageView(this);
+        mImageView.setScaleType(ScaleType.FIT_XY);
+        mImageView.setImageResource(R.drawable.default_videothumb);
+        mCastNameView = new TextView(this);
+        mCastNameView.setSingleLine();
+        mCastNameView.setBackgroundResource(R.drawable.cast_name_bg);
+        mCastNameView.setEllipsize(TruncateAt.MARQUEE);
+        mCastNameView.setMarqueeRepeatLimit(3);
+        mCastNameView.setGravity(Gravity.CENTER);
+//        mCastNameView.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.cast_icon), null, null, null);
+        LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp1.weight = 1;
+
+        LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        mLinearLayout.addView(mImageView, lp1);
+        mLinearLayout.addView(mCastNameView, lp2);
+        mLinearLayout.setVisibility(View.GONE);
+        
         contentView.addView(mVideoView, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -177,8 +224,32 @@ public class MediaPlayerActivity extends CoreActivity implements
         contentView.addView(mTextView, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
+        
+        contentView.addView(mLinearLayout, new FrameLayout.LayoutParams(
+                size, size, Gravity.CENTER));
         contentView.setBackgroundColor(Color.BLACK);
         setContentView(contentView);
+    }
+    private DataManager mDataManager;
+    @Override
+    protected void onInitialized() {
+        android.util.Log.d(TAG, "onInitialized");
+        mDataManager = getService().getDataManager();
+        download();
+    }
+    
+    private void download() {
+        mDataManager.loadDetail(mMediaId, new IOnloadListener<MediaDetailInfo2>() {
+            @Override
+            public void onLoad(MediaDetailInfo2 entity) {
+                if (entity != null && entity.mediaDetailInfo != null) {
+                    String url = Util.replaceString(entity.mediaDetailInfo.posterurl, "\\", "").trim();
+                    ImageLoader.loadImage(getService().getBitmapCache(),
+                            mImageView, url);
+//                    mImageView.setImageURI(Uri.parse(entity.mediaSetInfoList.));
+                }
+            }
+        });
     }
     
     private void setupCastListener() {
@@ -252,11 +323,17 @@ public class MediaPlayerActivity extends CoreActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayUseLogoEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 //        getSupportActionBar().setBackgroundDrawable(
 //                getResources().getDrawable(R.drawable.ab_transparent_democastoverlay));
     }
-    
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mVideoView.setVideoLayout(VideoView.VIDEO_LAYOUT_SCALE, 0);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -293,8 +370,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         try {
             if ((mCastManager.isRemoteMoviePlaying() || mCastManager.isRemoteMoviePaused()) && processLocalVideoUrl(mPlayUrl).equals(mCastManager.getRemoteMovieUrl())) {
                 mCastMediaController.show(0);
-                mVideoView.setBackgroundResource(R.drawable.casting);
-                mTextView.setVisibility(View.GONE);
+                showCastingView();
                 mLocation = PlaybackLocation.REMOTE;
                 mCastMediaController.setPlayMode(true);
                 mCastMediaController.setCastIsPlaying(mCastManager.getPlaybackStatus() == MediaStatus.PLAYER_STATE_PLAYING);
@@ -536,12 +612,24 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         mCastMediaController.setPlayMode(true);
         mCastMediaController.show(0);
-        mVideoView.setBackgroundResource(R.drawable.casting);
+        showCastingView();
         mVideoView.pause();
+    }
+
+    private void showCastingView() {
+        mCastNameView.setText("Casting to " + mCastManager.getDeviceName());
+        mLinearLayout.setVisibility(View.VISIBLE);
+        mVideoView.setBackgroundColor(Color.BLACK);
+        mTextView.setVisibility(View.GONE);
+    }
+    
+    private void hideCastingView() {
+        mVideoView.setBackgroundResource(R.drawable.transparent);
+        mLinearLayout.setVisibility(View.GONE);
     }
     
     private void play() {
-        mVideoView.setBackgroundResource(R.drawable.transparent);
+        hideCastingView();
 //        mIsPlayToCast = false;
         mCastMediaController.setPlayMode(false);
         mCastMediaController.show();

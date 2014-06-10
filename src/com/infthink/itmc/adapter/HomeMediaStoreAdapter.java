@@ -95,7 +95,6 @@ public class HomeMediaStoreAdapter extends BaseGroupAdapter<MediaCategoryInfo> {
     
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LogUtil.dumpLog(String.valueOf(position));
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();

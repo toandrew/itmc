@@ -290,9 +290,9 @@ public class CastMediaController extends MediaController {
      * @param name
      */
     public void setFileName(String name) {
-        mTitle = name;
-        if (mFileName != null)
-            mFileName.setText(mTitle);
+//        mTitle = name;
+//        if (mFileName != null)
+//            mFileName.setText(mTitle);
     }
 
     /**
@@ -336,16 +336,20 @@ public class CastMediaController extends MediaController {
         if (!mShowing && mAnchor != null && mAnchor.getWindowToken() != null) {
             if (mPauseButton != null)
                 mPauseButton.requestFocus();
-
             if (mFromXml) {
                 setVisibility(View.VISIBLE);
             } else {
                 int[] location = new int[2];
-
                 mAnchor.getLocationOnScreen(location);
+                int width = mAnchor.getWidth();
+                int height = mAnchor.getHeight();
+                if (mAnchor.getWidth() > mAnchor.getHeight()) {
+                    width = mAnchor.getHeight();
+                    height = mAnchor.getWidth();
+                }
                 Rect anchorRect = new Rect(location[0], location[1],
-                        location[0] + mAnchor.getWidth(), location[1]
-                                + mAnchor.getHeight());
+                        location[0] + width, location[1]
+                                + height);
 
                 mWindow.setAnimationStyle(mAnimStyle);
                 setWindowLayoutType();
