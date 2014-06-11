@@ -145,6 +145,19 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
                 }
             });
             content.addView(flv);
+            
+            Button m3u8 = new Button(this);
+            m3u8.setText("m3u8");
+
+            m3u8.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    ITApp.getInstance().setMode(ITApp.MODE_M3U8);
+                    content.setVisibility(View.GONE);
+                }
+            });
+            content.addView(m3u8);
+            
             content.setGravity(Gravity.CENTER);
             FrameLayout.LayoutParams fl = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,

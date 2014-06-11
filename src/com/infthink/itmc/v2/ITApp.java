@@ -21,6 +21,7 @@ public class ITApp extends BaseApplication {
     public static final int MODE_COMMON = 0;
     public static final int MODE_MP4 = 1;
     public static final int MODE_FLV = 2;
+    public static final int MODE_M3U8 = 3;
     
     private static Context sContext;
     private static ITApp sInstance;
