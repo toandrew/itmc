@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <com.infthink.itmc.widget.PagerView
+    <com.infthink.itmc.v2.widget.PagerView
         android:id="@+id/detail_pager"
         android:layout_width="fill_parent"
         android:layout_height="0.0dip"

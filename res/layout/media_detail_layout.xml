@@ -30,23 +30,23 @@
         android:layout_marginTop="270dp"
         android:background="@drawable/detail_scroll_bg_short" />
 
-    <com.infthink.itmc.widget.ShadowFrameLayout
+    <com.infthink.itmc.v2.widget.ShadowFrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
-        <com.infthink.itmc.widget.PagerView
+        <com.infthink.itmc.v2.widget.PagerView
             android:id="@+id/detail_pagerview"
             android:layout_width="fill_parent"
             android:layout_height="300dp"
             android:layout_marginTop="230dp" />
 
-        <com.infthink.itmc.widget.ShadowView
+        <com.infthink.itmc.v2.widget.ShadowView
             android:layout_width="fill_parent"
             android:layout_height="@dimen/shadow_mask_height"
             android:layout_gravity="top"
             android:layout_marginTop="@dimen/shadow_mask_magrin_top"
             android:background="@drawable/shadow_mask" />
-    </com.infthink.itmc.widget.ShadowFrameLayout>
+    </com.infthink.itmc.v2.widget.ShadowFrameLayout>
 
     <include layout="@layout/media_detail_bottom_bar" />
 

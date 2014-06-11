@@ -4,12 +4,12 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <com.infthink.itmc.widget.ScrollViewPager
+    <com.infthink.itmc.v2.widget.ScrollViewPager
         android:id="@+id/banner"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/banner_height" />
 
-    <com.infthink.itmc.widget.BannerIndicator
+    <com.infthink.itmc.v2.widget.BannerIndicator
         android:id="@+id/bannerIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

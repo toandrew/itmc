@@ -15,7 +15,7 @@
             android:layout_marginTop="@dimen/viewpager_bg_margin_top"
             android:background="@drawable/channel_bottom_bg" />
 
-        <com.infthink.itmc.widget.LoadingListView
+        <com.infthink.itmc.v2.widget.LoadingListView
             android:id="@+id/search_recommend_loading_list_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -59,7 +59,7 @@
                 android:textSize="@dimen/text_size_26" />
         </RelativeLayout>
 
-        <com.infthink.itmc.widget.LoadingListView
+        <com.infthink.itmc.v2.widget.LoadingListView
             android:id="@+id/search_result_loading_list_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -101,7 +101,7 @@
             android:textColor="@color/p_80_white"
             android:textSize="@dimen/text_size_34" />
 
-        <com.infthink.itmc.widget.LoadingListView
+        <com.infthink.itmc.v2.widget.LoadingListView
             android:id="@+id/search_result_recommend_loading_listview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />

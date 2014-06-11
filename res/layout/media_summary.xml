@@ -28,7 +28,7 @@
             android:layout_marginLeft="@dimen/detail_poster_margin_left"
             android:layout_marginTop="@dimen/detail_poster_margin_top" >
             
-            <com.infthink.itmc.widget.MediaView
+            <com.infthink.itmc.v2.widget.MediaView
                 android:id="@+id/media_view"
                 android:layout_width="@dimen/poster_width"
                 android:layout_height="@dimen/poster_height"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
-            <com.infthink.itmc.widget.RatingView
+            <com.infthink.itmc.v2.widget.RatingView
                 android:id="@+id/rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

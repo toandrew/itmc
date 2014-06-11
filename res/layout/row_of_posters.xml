@@ -4,19 +4,19 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <com.infthink.itmc.widget.MediaView
+    <com.infthink.itmc.v2.widget.MediaView
         android:id="@+id/middle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal" />
 
-    <com.infthink.itmc.widget.MediaView
+    <com.infthink.itmc.v2.widget.MediaView
         android:id="@+id/right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right" />
 
-    <com.infthink.itmc.widget.MediaView
+    <com.infthink.itmc.v2.widget.MediaView
         android:id="@+id/left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

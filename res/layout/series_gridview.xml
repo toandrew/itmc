@@ -17,7 +17,7 @@
 
     </GridView>
 
-    <com.infthink.itmc.widget.ShadowView
+    <com.infthink.itmc.v2.widget.ShadowView
         android:layout_width="fill_parent"
         android:layout_height="@dimen/shadow_mask_height"
         android:layout_gravity="top"

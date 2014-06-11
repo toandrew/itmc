@@ -9,8 +9,8 @@
         </FrameLayout>
         <View android:background="@drawable/detail_scroll_bg_short" android:layout_width="fill_parent" android:layout_height="@dimen/detial_series_bg_height" />
     </LinearLayout>
-    <com.infthink.itmc.widget.ShadowFrameLayout android:id="@+id/shadowContainer" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="@dimen/detial_series_content_margin_top">
+    <com.infthink.itmc.v2.widget.ShadowFrameLayout android:id="@+id/shadowContainer" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="@dimen/detial_series_content_margin_top">
         <include layout="@layout/series_detail_panel" />
-        <com.infthink.itmc.widget.ShadowView android:layout_gravity="top" android:background="@drawable/shadow_mask" android:layout_width="fill_parent" android:layout_height="@dimen/shadow_mask_height" android:layout_marginTop="@dimen/detial_series_shadow_mask_margin_top" />
-    </com.infthink.itmc.widget.ShadowFrameLayout>
+        <com.infthink.itmc.v2.widget.ShadowView android:layout_gravity="top" android:background="@drawable/shadow_mask" android:layout_width="fill_parent" android:layout_height="@dimen/shadow_mask_height" android:layout_marginTop="@dimen/detial_series_shadow_mask_margin_top" />
+    </com.infthink.itmc.v2.widget.ShadowFrameLayout>
 </FrameLayout>
