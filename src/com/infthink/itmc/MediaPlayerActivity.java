@@ -108,6 +108,8 @@ public class MediaPlayerActivity extends CoreActivity implements
     private ImageView mImageView;
     private TextView mCastNameView;
     
+    private DataManager mDataManager;
+    
     /*
      * indicates whether we are doing a local or a remote playback
      */
@@ -122,7 +124,7 @@ public class MediaPlayerActivity extends CoreActivity implements
 //    public static enum PlaybackState {
 //        PLAYING, PAUSED, BUFFERING, IDLE;
 //    }
-    
+    private FrameLayout mFrameLayout;
     private PlaybackLocation mLocation;
 //    private PlaybackState mPlaybackState;
     
@@ -164,7 +166,9 @@ public class MediaPlayerActivity extends CoreActivity implements
         if (mMediaId.equals("-1")) {
             mMediaId = mPlayUrl;
         }
+
         getSupportActionBar().setTitle(mMediaTitle);
+
         final FrameLayout contentView = new FrameLayout(this);
         mVideoView = new VideoView(this);
         mCastMediaController = new CastMediaController(
@@ -197,6 +201,8 @@ public class MediaPlayerActivity extends CoreActivity implements
             size = width / 3 * 2;
         }
         
+        mFrameLayout = new FrameLayout(this);
+        mFrameLayout.setBackgroundColor(Color.BLACK);
         mLinearLayout = new LinearLayout(this);
         mLinearLayout.setOrientation(LinearLayout.VERTICAL);
         mImageView = new ImageView(this);
@@ -215,7 +221,11 @@ public class MediaPlayerActivity extends CoreActivity implements
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         mLinearLayout.addView(mImageView, lp1);
         mLinearLayout.addView(mCastNameView, lp2);
-        mLinearLayout.setVisibility(View.GONE);
+        
+        
+        mFrameLayout.addView(mLinearLayout, new FrameLayout.LayoutParams(
+                size, size, Gravity.CENTER));
+        mFrameLayout.setVisibility(View.GONE);
         
         contentView.addView(mVideoView, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -225,12 +235,13 @@ public class MediaPlayerActivity extends CoreActivity implements
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
         
-        contentView.addView(mLinearLayout, new FrameLayout.LayoutParams(
-                size, size, Gravity.CENTER));
+        contentView.addView(mFrameLayout, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER));
         contentView.setBackgroundColor(Color.BLACK);
         setContentView(contentView);
     }
-    private DataManager mDataManager;
+    
     @Override
     protected void onInitialized() {
         android.util.Log.d(TAG, "onInitialized");
@@ -618,16 +629,14 @@ public class MediaPlayerActivity extends CoreActivity implements
 
     private void showCastingView() {
         mCastNameView.setText("Casting to " + mCastManager.getDeviceName());
-        mLinearLayout.setVisibility(View.VISIBLE);
-        mVideoView.setBackgroundColor(Color.BLACK);
+        mFrameLayout.setVisibility(View.VISIBLE);
         mTextView.setVisibility(View.GONE);
     }
-    
+
     private void hideCastingView() {
-        mVideoView.setBackgroundResource(R.drawable.transparent);
-        mLinearLayout.setVisibility(View.GONE);
+        mFrameLayout.setVisibility(View.GONE);
     }
-    
+
     private void play() {
         hideCastingView();
 //        mIsPlayToCast = false;

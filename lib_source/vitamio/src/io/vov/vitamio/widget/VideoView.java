@@ -452,11 +452,11 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
       mMediaController.setAnchorView(anchorView);
       mMediaController.setEnabled(isInPlaybackState());
 
-//      if (mUri != null) {
-//        List<String> paths = mUri.getPathSegments();
-//        String name = paths == null || paths.isEmpty() ? "null" : paths.get(paths.size() - 1);
-//        mMediaController.setFileName(name);
-//      }
+      if (mUri != null) {
+        List<String> paths = mUri.getPathSegments();
+        String name = paths == null || paths.isEmpty() ? "null" : paths.get(paths.size() - 1);
+        mMediaController.setFileName(name);
+      }
     }
   }
 
