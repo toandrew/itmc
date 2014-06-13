@@ -64,6 +64,8 @@ public class CastMediaController extends MediaController {
     private boolean mIsCastPlaying = false;
     private long mCastCurrentPosition = 0;
     private long mCastDuration = 0;
+    private Timer mSeekbarTimer;
+    private OnChangeMediaStateListener mOnChangeMediaStateListener;
     
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
@@ -547,7 +549,7 @@ public class CastMediaController extends MediaController {
             return mPlayer.isPlaying();
         }
     }
-    Timer mSeekbarTimer;
+
     public void stopTrickplayTimer() {
         if (null != mSeekbarTimer) {
             mSeekbarTimer.cancel();
@@ -560,7 +562,6 @@ public class CastMediaController extends MediaController {
         mSeekbarTimer.scheduleAtFixedRate(new UpdateSeekbarTask(), 100, 1000);
     }
 
-    private OnChangeMediaStateListener mOnChangeMediaStateListener;
     public void setOnChangeMediaStateListener(OnChangeMediaStateListener onChangeMediaStateListener) {
         mOnChangeMediaStateListener = onChangeMediaStateListener;
     }

@@ -190,7 +190,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
     }
     private void onCreateActivate() {
         mCastManager = ITApp.getCastManager(this);
-        
+
         setupActionBar();
         
         LinearLayout layout = new LinearLayout(this);

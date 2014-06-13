@@ -158,14 +158,14 @@ public class MediaPlayerActivity extends CoreActivity implements
 
         mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
         mPlayUrl = intent.getStringExtra("path");
+        if (mMediaId.equals("-1")) {
+            mMediaId = mPlayUrl;
+        }
         mMediaTitle = intent.getStringExtra("meidaTitle");
         mMediaCount = intent.getIntExtra("available_episode_count", -1);
         mCi = intent.getIntExtra("current_episode", -1);
         mSource = intent.getIntExtra("source", -1);
         mPageUrl = intent.getStringExtra("pageUrl");
-        if (mMediaId.equals("-1")) {
-            mMediaId = mPlayUrl;
-        }
 
         getSupportActionBar().setTitle(mMediaTitle);
 
@@ -296,7 +296,7 @@ public class MediaPlayerActivity extends CoreActivity implements
 
             @Override
             public void onFailed(int resourceId, int statusCode) {
-
+                updatePlaybackLocation(PlaybackLocation.LOCAL);
             }
 
             @Override
@@ -480,7 +480,6 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -493,7 +492,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         mCastManager.incrementUiCounter();
         initVideo();
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -662,6 +661,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     public void seekEnd(long position) {
         try {
             if (mCastManager != null && mCastManager.isRemoteMediaLoaded()) {
+                mCastMediaController.stopTrickplayTimer();
                 mCastManager.seek((int) position);
             }
         } catch (TransientNetworkDisconnectionException e) {
