@@ -96,7 +96,14 @@
             android:name="com.infthink.itmc.v2.MediaPlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/Theme.AppCompat">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
         
          <activity
             android:name="com.infthink.itmc.v2.AdvancedVideoDemo"

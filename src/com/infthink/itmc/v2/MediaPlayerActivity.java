@@ -1,12 +1,20 @@
 package com.infthink.itmc.v2;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
 import com.firefly.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerImpl;
@@ -43,6 +51,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -54,6 +63,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
@@ -109,6 +119,9 @@ public class MediaPlayerActivity extends CoreActivity implements
     private TextView mCastNameView;
     
     private DataManager mDataManager;
+    private boolean mFromSend;
+    
+    private Handler mHandler;
     
     /*
      * indicates whether we are doing a local or a remote playback
@@ -129,6 +142,7 @@ public class MediaPlayerActivity extends CoreActivity implements
 //    private PlaybackState mPlaybackState;
     
     private void recordMedia() {
+        if (mFromSend) return;
         long playTime;
         if (mCastManager.isConnected()) {
             playTime = mPlayCurrentTime;
@@ -155,17 +169,48 @@ public class MediaPlayerActivity extends CoreActivity implements
         setupCastListener();
 
         Intent intent = getIntent();
-
-        mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
-        mPlayUrl = intent.getStringExtra("path");
-        if (mMediaId.equals("-1")) {
-            mMediaId = mPlayUrl;
+        mHandler = new Handler();
+        if (intent.getAction() == "android.intent.action.SEND") {
+            mFromSend = true;
+            mPlayUrl = intent.getStringExtra("path");
+            if (mPlayUrl == null || mPlayUrl.length() <= 0) {
+                String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+                android.util.Log.d("XXXXXXXX", "text = " + text);
+                String head = "http://youtu.be/";
+                int last = text.lastIndexOf(head);
+                String id = "";
+                if (last < 0) {
+                    String[] strs = text.split("&");
+                    head = "https://www.youtube.com/watch?v=";
+                    last = text.lastIndexOf(head);
+                    id = strs[0].substring(last + head.length(), strs[0].length());
+                } else {
+                    id = text.substring(last + head.length(), text.length());
+                }
+                
+                android.util.Log.d("XXXXXXXXX", "url = " + id);
+                final String info_url = "http://www.youtube.com/get_video_info?video_id=" + id;
+                android.util.Log.d("XXXXXXXXX", "info_url = " + info_url);
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        calculateYouTubeUrl(info_url);
+                    }
+                });
+                t.start();
+            }
+        } else {
+            mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
+            mPlayUrl = intent.getStringExtra("path");
+            if (mMediaId.equals("-1")) {
+                mMediaId = mPlayUrl;
+            }
+            mMediaTitle = intent.getStringExtra("meidaTitle");
+            mMediaCount = intent.getIntExtra("available_episode_count", -1);
+            mCi = intent.getIntExtra("current_episode", -1);
+            mSource = intent.getIntExtra("source", -1);
+            mPageUrl = intent.getStringExtra("pageUrl");
         }
-        mMediaTitle = intent.getStringExtra("meidaTitle");
-        mMediaCount = intent.getIntExtra("available_episode_count", -1);
-        mCi = intent.getIntExtra("current_episode", -1);
-        mSource = intent.getIntExtra("source", -1);
-        mPageUrl = intent.getStringExtra("pageUrl");
 
         getSupportActionBar().setTitle(mMediaTitle);
 
@@ -361,9 +406,18 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         return true;
     }
-    
+    private ProgressDialog mDialog;
+    private ProgressDialog mDialog1;
     private void initVideo() {
-        if (mPlayUrl == "") return;
+        if (mPlayUrl == null || mPlayUrl.length() <= 0) {
+            if (mFromSend) {
+                if (mDialog == null) {
+                    mDialog = ProgressDialog.show(this, null, "正在获取播放地址...", true, false);
+                }
+                mDialog.show();
+            }
+            return;
+        }
         android.util.Log.d("XXXXXXXXX", "mPlayUrl = " + mPlayUrl);
         long seekTo = 0;
         LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
@@ -514,6 +568,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                 Intent notificationIntent = new Intent(MediaPlayerActivity.this,
                         MediaPlayerActivity.class);
                 notificationIntent.putExtras(getIntent());
+                notificationIntent.putExtra("path", mPlayUrl);
                 PendingIntent contentItent = PendingIntent.getActivity(this, 0,
                         notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 notification.setLatestEventInfo(this, contentTitle, contentText,
@@ -608,7 +663,7 @@ public class MediaPlayerActivity extends CoreActivity implements
 
     private void playToCast(String url, String title, long millisecond) {
         MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-        metadata.putString(MediaMetadata.KEY_TITLE, title);
+        metadata.putString(MediaMetadata.KEY_TITLE, (title == null) ? "" : title);
         
         MediaInfo mediaInfo = new MediaInfo.Builder(processLocalVideoUrl(url))
         .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
@@ -640,6 +695,7 @@ public class MediaPlayerActivity extends CoreActivity implements
     private void play() {
         hideCastingView();
 //        mIsPlayToCast = false;
+        mCastMediaController.setCastIsPlaying(false);
         mCastMediaController.setPlayMode(false);
         mCastMediaController.show();
 //        ITApp.getNetcastManager().setCastStatusUpdateListener(null);
@@ -792,4 +848,183 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         return 0;
     }
+
+    public void calculateYouTubeUrl(String infoUrl) {
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(infoUrl);
+            HttpResponse response = httpClient.execute(httpGet);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            response.getEntity().writeTo(baos);
+            String info = new String(baos.toString("UTF-8"));
+            android.util.Log.d("XXXXXXX", info);
+            String[] subs = info.split("&");
+            Map<String, String> map = new HashMap<String, String>();
+            for (int i = 0; i < subs.length; i++) {
+                String[] sub = subs[i].split("=");
+                if (sub != null) {
+                    if (sub.length >= 2) {
+                        map.put(sub[0], URLDecoder.decode(sub[1], "utf-8"));
+                    }
+                }
+            }
+            String fmt = map.get("fmt_list");
+            if (fmt == null || fmt.length() <= 0) {
+                mPlayUrl = "";
+                if (mDialog != null && mDialog.isShowing()) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDialog.dismiss();
+                            if (mDialog1 == null) {
+                                mDialog1 = ProgressDialog.show(getContext(), null, "播放地址获取失败！", true, false);
+                                mDialog1.setCancelable(true);
+                            }
+                            mDialog1.show();
+                        }
+                    });
+                }
+                return;
+            }
+            String fmtListStr = URLDecoder.decode(fmt, "utf-8");
+            ArrayList<Format> formatList = new ArrayList<Format>();
+            if (null != fmtListStr) {
+                String formates[] = fmtListStr.split(",");
+                for (String formateStr : formates) {
+                    Format formate = new Format(formateStr);
+                    formatList.add(formate);
+                }
+            }
+
+            String urlMap = map.get("url_encoded_fmt_stream_map");
+            if (urlMap != null) {
+                String videoUrls[] = urlMap.split(",");
+                ArrayList<VideoStream> videoList = new ArrayList<VideoStream>();
+                for (String videoUrl : videoUrls) {
+                    VideoStream video = new VideoStream(videoUrl);
+                    videoList.add(video);
+                }
+
+                int formatId = Integer.parseInt("18");
+                Format format = new Format(formatId);
+                while (!formatList.contains(format)) {
+                    int oldId = format.getId();
+                    int newId = getSupportedFallbackId(oldId);
+                    if (oldId == newId) {
+                        break;
+                    }
+                    format = new Format(newId);
+                }
+                int index = formatList.indexOf(format);
+                if (index >= 0) {
+                    VideoStream video = videoList.get(index);
+                    mPlayUrl = URLDecoder.decode(video.getUrl(), "utf-8");
+                    if (mDialog != null && mDialog.isShowing()) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDialog.dismiss();
+                                initVideo();
+                            }
+                        });
+                    }
+                    return;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mPlayUrl = "";
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mDialog.dismiss();
+                if (mDialog1 == null) {
+                    mDialog1 = ProgressDialog.show(getContext(), null, "播放地址获取失败！", true, false);
+                    mDialog1.setCancelable(true);
+                }
+                mDialog1.show();
+            }
+        });
+    }
+
+    public static int getSupportedFallbackId(int pOldId) {
+        final int lSupportedFormatIds[] = { 13, // 3GPP (MPEG-4 encoded) Low
+                                                // quality
+                17, // 3GPP (MPEG-4 encoded) Medium quality
+                18, // MP4 (H.264 encoded) Normal quality
+                22, // MP4 (H.264 encoded) High quality
+                37 // MP4 (H.264 encoded) High quality
+        };
+        int lFallbackId = pOldId;
+        for (int i = lSupportedFormatIds.length - 1; i >= 0; i--) {
+            if (pOldId == lSupportedFormatIds[i] && i > 0) {
+                lFallbackId = lSupportedFormatIds[i - 1];
+            }
+        }
+        return lFallbackId;
+    }
+
+    class Format {
+        protected int mId;
+
+        /**
+         * * Construct this object from one of the strings in the "fmt_list"
+         * parameter * @param pFormatString one of the comma separated strings
+         * in the "fmt_list" parameter
+         */
+        public Format(String pFormatString) {
+            String lFormatVars[] = pFormatString.split("/");
+            mId = Integer.parseInt(lFormatVars[0]);
+        }
+
+        /**
+         * * Construct this object using a format id * @param pId id of this
+         * format
+         */
+        public Format(int pId) {
+            this.mId = pId;
+        }
+
+        /** * Retrieve the id of this format * @return the id */
+        public int getId() {
+            return mId;
+        } /* (non-Javadoc) * @see java.lang.Object#equals(java.lang.Object) */
+
+        @Override
+        public boolean equals(Object pObject) {
+            if (!(pObject instanceof Format)) {
+                return false;
+            }
+            return ((Format) pObject).mId == mId;
+        }
+    }
+
+    class VideoStream {
+        protected String mUrl;
+
+        /**
+         * * Construct a video stream from one of the strings obtained * from
+         * the "url_encoded_fmt_stream_map" parameter if the video_info * @param
+         * pStreamStr - one of the strings from "url_encoded_fmt_stream_map"
+         */
+        public VideoStream(String pStreamStr) {
+            String[] lArgs = pStreamStr.split("&");
+            Map<String, String> lArgMap = new HashMap<String, String>();
+            for (int i = 0; i < lArgs.length; i++) {
+                String[] lArgValStrArr = lArgs[i].split("=");
+                if (lArgValStrArr != null) {
+                    if (lArgValStrArr.length >= 2) {
+                        lArgMap.put(lArgValStrArr[0], lArgValStrArr[1]);
+                    }
+                }
+            }
+            mUrl = lArgMap.get("url");
+        }
+
+        public String getUrl() {
+            return mUrl;
+        }
+    }
+
 }
