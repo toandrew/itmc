@@ -341,7 +341,7 @@ public class MediaPlayerActivity extends CoreActivity implements
 
             @Override
             public void onFailed(int resourceId, int statusCode) {
-                updatePlaybackLocation(PlaybackLocation.LOCAL);
+//                updatePlaybackLocation(PlaybackLocation.LOCAL);
             }
 
             @Override
