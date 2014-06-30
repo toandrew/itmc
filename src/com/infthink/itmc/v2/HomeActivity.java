@@ -1,6 +1,9 @@
 package com.infthink.itmc.v2;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
@@ -96,6 +99,16 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         mBottomItem = View.inflate(this, R.layout.home_bottom_item, null);
         mOnlineBottombar = View.inflate(this,
                 R.layout.home_onlinevideo_bottombar, null);
+        Button btn = (Button) mOnlineBottombar.findViewById(R.id.all_special);
+        btn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(HomeActivity.this,
+                        LiveChannelActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.appear, R.anim.stay_same);
+            }
+        });
         int height = ITApp.getStatusBarHeight();
         ViewGroup decorView = (ViewGroup) getWindow().getDecorView();
 
@@ -180,6 +193,7 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
 
         mLocalLocalMyFavoriteInfo = LocalMyFavoriteInfoManager.getInstance(HomeActivity.this);
     }
+    
     private void setupActionBar() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayUseLogoEnabled(false);
@@ -257,8 +271,28 @@ public class HomeActivity extends CoreActivity implements OnPageChangeListener,
         mBannerViewIndex = -1;
         if (mBannerMediaList != null) mBannerMediaCount = mBannerMediaList.length;
         mBannerIndicator.setIndicatorNum(mBannerMediaCount);
-
+        
         mFooterView = View.inflate(this, R.layout.all_specials_view, null);
+        Button btn = (Button) mFooterView.findViewById(R.id.all_special);
+        btn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(HomeActivity.this,
+                        LiveChannelActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.appear, R.anim.stay_same);
+            }
+        });
+        
+        mOnlineBottombar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(HomeActivity.this,
+                        LiveChannelActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.appear, R.anim.stay_same);
+            }
+        });
         mBtnSpecials = (Button) mOnlineBottombar.findViewById(R.id.all_special);
         // mBtnSpecials.setOnClickListener(this);
 

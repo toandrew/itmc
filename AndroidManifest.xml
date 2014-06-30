@@ -71,6 +71,20 @@
             android:windowSoftInputMode="adjustNothing" >
         </activity>
         <activity
+            android:name="com.infthink.itmc.v2.LiveChannelActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustNothing" >
+        </activity>
+        <activity
+            android:name="com.infthink.itmc.v2.LiveProgramActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustNothing" >
+        </activity>
+        <activity
             android:name="com.infthink.itmc.v2.MediaDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat"

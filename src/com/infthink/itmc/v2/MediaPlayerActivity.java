@@ -199,6 +199,10 @@ public class MediaPlayerActivity extends CoreActivity implements
                 });
                 t.start();
             }
+        } else if (intent.getBooleanExtra("live", false)) {
+            mFromSend = true;
+            mPlayUrl = intent.getStringExtra("path");
+            mMediaTitle = intent.getStringExtra("meidaTitle");
         } else {
             mMediaId = String.valueOf(intent.getIntExtra("media_id", -1));
             mPlayUrl = intent.getStringExtra("path");
@@ -420,16 +424,17 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         android.util.Log.d("XXXXXXXXX", "mPlayUrl = " + mPlayUrl);
         long seekTo = 0;
-        LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
-        if (history != null && history.mediaCi == mCi && history.mediaSource == mSource) {
-            seekTo = Integer.valueOf(history.playSeconds);
+        if (!"".equals(mMediaId)) {
+            LocalPlayHistory history = LocalPlayHistoryInfoManager.getInstance(this).getHistoryById(mMediaId);
+            if (history != null && history.mediaCi == mCi && history.mediaSource == mSource) {
+                seekTo = Integer.valueOf(history.playSeconds);
+            }
         }
 
         /*
          * Alternatively,for streaming media you can use
          * mVideoView.setVideoURI(Uri.parse(URLstring));
          */
-
         mVideoView.setVideoPath(mPlayUrl);
         mVideoView.setMediaController(mCastMediaController);
         
@@ -465,7 +470,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                         mediaPlayer.setPlaybackSpeed(1.0f);
                         mTextView.setVisibility(View.GONE);
                         if (!mCastManager.isConnected()) {
-                            if (mVideoView.getDuration() > (position + 1000))
+                            if (position > 1000 && mVideoView.getDuration() > (position + 1000))
                                 mVideoView.seekTo(position);
                         }
                     }
@@ -670,7 +675,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         .setContentType("video/mp4").setMetadata(metadata).build();
         
         try {
-            mCastManager.loadMedia(mediaInfo, true, (int) millisecond);
+            mCastManager.loadMedia(mediaInfo, true, 0);
         } catch (TransientNetworkDisconnectionException e) {
             e.printStackTrace();
         } catch (NoConnectionException e) {

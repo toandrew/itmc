@@ -16,6 +16,9 @@ import com.infthink.itmc.v2.ITApp;
 import com.infthink.itmc.v2.service.CoreService;
 import com.infthink.itmc.v2.type.Banner;
 import com.infthink.itmc.v2.type.Channel;
+import com.infthink.itmc.v2.type.LiveChannelInfo;
+import com.infthink.itmc.v2.type.LiveMediasInfo;
+import com.infthink.itmc.v2.type.LiveProgramInfo;
 import com.infthink.itmc.v2.type.LocalMyFavoriteItemInfo;
 import com.infthink.itmc.v2.type.MediaDetailInfo;
 import com.infthink.itmc.v2.type.MediaDetailInfo2;
@@ -67,6 +70,11 @@ public class DataManager {
     // 获得收藏
     private static final String URL_GET_FAVORITE = "http://demo.bibifa.com/getbookmark"; // ?deviceid=00:16:6d:e0:2a:6c
 
+    // 获得直播频道
+    private static final String URL_GET_LIVE_CHANNEL = "http://tvlookbackepg.is.ysten.com:8080//ysten-replay/getChannelList.jsp?sortorder=desc";
+    
+    private static final String URL_GET_LIVE_PROGRAM = "http://tvlookbackepg.is.ysten.com:8080//ysten-replay/getProgramAlltimeByUuid.jsp"; //?uuid=cctv-1&sortorder=desc
+    
     private CoreService mService;
     private ConcurrentLinkedQueue<Object> mRefCollection;
     private String mCommonArgs;
@@ -649,6 +657,95 @@ public class DataManager {
                     }
 
                 };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+    
+
+    public void loadLiveChannel(final IOnloadListener<List<LiveChannelInfo>> listener) {
+        String textUrl = URL_GET_LIVE_CHANNEL;
+
+        SimpleTextLoadListener<List<LiveChannelInfo>> textLoadListener = new SimpleTextLoadListener<List<LiveChannelInfo>>() {
+
+            @Override
+            public List<LiveChannelInfo> parseText(String text) {
+                List<LiveChannelInfo> infos = new ArrayList<LiveChannelInfo>();
+                if (text != null && text.length() > 0) {
+                    try {
+                        JSONArray data = new JSONArray(text);
+                        int count = data.length();
+                        for (int i = 0; i < count; i++) {
+                            JSONObject json = data.optJSONObject(i);
+                            LiveChannelInfo info = new LiveChannelInfo(json.toString());
+                            if (info.usable > 0) {
+                                infos.add(info);
+                            }
+                        }
+                        
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return infos;
+            }
+
+            @Override
+            public void onLoadResult(List<LiveChannelInfo> object) {
+                mRefCollection.remove(this);
+                listener.onLoad(object);
+            }
+
+        };
+        mRefCollection.add(textLoadListener);
+        TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
+    }
+
+    public void loadLiveProgram(final String uuid, final IOnloadListener<List<LiveProgramInfo>> listener) {
+        String textUrl = URL_GET_LIVE_PROGRAM + "?uuid=" + uuid + "&sortorder=desc";
+
+        SimpleTextLoadListener<List<LiveProgramInfo>> textLoadListener = new SimpleTextLoadListener<List<LiveProgramInfo>>() {
+
+            @Override
+            public List<LiveProgramInfo> parseText(String text) {
+                List<LiveProgramInfo> infos = new ArrayList<LiveProgramInfo>();
+                if (text != null && text.length() > 0) {
+                    try {
+                        JSONArray data = new JSONArray(text);
+                        int count = data.length();
+                        for (int i = 0; i < count; i++) {
+                            JSONUtils jsonUtil = JSONUtils.parse(data.getString(i));
+                            LiveMediasInfo info = new LiveMediasInfo();
+                            info.playDate = jsonUtil.opt("jsonUtil", "").toString();
+                            info.programs = new ArrayList<LiveProgramInfo>();
+                            Object obj = jsonUtil.opt("programs", null);
+                            if (obj != null  && obj instanceof JSONArray) {
+                                JSONArray programs = (JSONArray) obj;
+                                int length = programs.length();
+                                for (int j = 0; j < length; j++) {
+                                    JSONObject program = programs.optJSONObject(j);
+                                    LiveProgramInfo liveProgramInfo = new LiveProgramInfo(program.toString());
+                                    if (liveProgramInfo.urlType.equals("replay") && liveProgramInfo.programUrl.length() > 0)
+//                                        info.programs.add(liveProgramInfo);
+                                        infos.add(liveProgramInfo);
+                                }
+                            }
+//                            infos.add(info);
+                        }
+                        
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return infos;
+            }
+
+            @Override
+            public void onLoadResult(List<LiveProgramInfo> object) {
+                mRefCollection.remove(this);
+                listener.onLoad(object);
+            }
+
+        };
         mRefCollection.add(textLoadListener);
         TextLoader.loadText(mService.getTextCache(), textLoadListener, textUrl);
     }
