@@ -675,7 +675,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         .setContentType("video/mp4").setMetadata(metadata).build();
         
         try {
-            mCastManager.loadMedia(mediaInfo, true, 0);
+            mCastManager.loadMedia(mediaInfo, true, (int) millisecond);
         } catch (TransientNetworkDisconnectionException e) {
             e.printStackTrace();
         } catch (NoConnectionException e) {
