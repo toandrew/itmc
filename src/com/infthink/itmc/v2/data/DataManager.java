@@ -169,18 +169,20 @@ public class DataManager {
                                         channel.channelID = id;
                                         channel.channelName = ITApp.getChannelMap().get(id);
                                         channel.channelType = type;
-                                        recommendChannel.channelList.add(channel);
                                         JSONArray subDatas = channelJson.optJSONArray("data");
                                         int subCount = subDatas.length();
-                                        MediaInfo[] medias = new MediaInfo[subCount];
-                                        for (int j = 0; j < subCount; j++) {
-                                            JSONObject subData = subDatas.optJSONObject(j);
-                                            medias[j] = new MediaInfo(subData.toString());
+                                        if (subCount >= 3) {
+                                            MediaInfo[] medias = new MediaInfo[subCount];
+                                            for (int j = 0; j < subCount; j++) {
+                                                JSONObject subData = subDatas.optJSONObject(j);
+                                                medias[j] = new MediaInfo(subData.toString());
+                                            }
+                                            android.util.Log.d(TAG,
+                                                    "loadRecommendChannel channelID = "
+                                                            + channel.channelID);
+                                            recommendChannel.channelList.add(channel);
+                                            recommendChannel.recommend.put(channel, medias);
                                         }
-                                        android.util.Log.d(TAG,
-                                                "loadRecommendChannel channelID = "
-                                                        + channel.channelID);
-                                        recommendChannel.recommend.put(channel, medias);
                                     }
                                 }
                             }

@@ -67,9 +67,11 @@ public class HomeChannelAdapter extends BaseGroupAdapter<Channel> {
         mediaView[1].setTag(new HomeActivity.MediaViewMetaInfo(1, channel.channelID, channel.channelName));
         mediaView[2].setTag(new HomeActivity.MediaViewMetaInfo(2, channel.channelID, channel.channelName));
         MediaInfo[] medias = (MediaInfo[]) recommendationOfChannels.get(channel);
-        mediaView[0].setMediaInfo(medias[0]);
-        mediaView[1].setMediaInfo(medias[1]);
-        mediaView[2].setMediaInfo(medias[2]);
+        if (medias.length >= 3) {
+            mediaView[0].setMediaInfo(medias[0]);
+            mediaView[1].setMediaInfo(medias[1]);
+            mediaView[2].setMediaInfo(medias[2]);
+        }
         return convertView;
     }
 

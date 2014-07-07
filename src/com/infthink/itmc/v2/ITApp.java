@@ -79,6 +79,8 @@ public class ITApp extends BaseApplication {
         super.onCreate();
         
         //TODO: id
+//        APPLICATION_ID = "4F8B3483";
+
         APPLICATION_ID = Cast.CastApi.makeApplicationId("http://castapp.infthink.com/mediaplayer/index.html");
 
         sContext = getApplicationContext();
