@@ -1,8 +1,10 @@
 package com.infthink.itmc.v2;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -16,15 +18,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import tv.matchstick.fling.ApplicationMetadata;
+import tv.matchstick.fling.MediaInfo;
+import tv.matchstick.fling.MediaMetadata;
+import tv.matchstick.fling.MediaStatus;
+
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
 import com.firefly.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerImpl;
 import com.firefly.sample.castcompanionlibrary.cast.exceptions.CastException;
 import com.firefly.sample.castcompanionlibrary.cast.exceptions.NoConnectionException;
 import com.firefly.sample.castcompanionlibrary.cast.exceptions.TransientNetworkDisconnectionException;
-import com.fireflycast.cast.ApplicationMetadata;
-import com.fireflycast.cast.MediaInfo;
-import com.fireflycast.cast.MediaMetadata;
-import com.fireflycast.cast.MediaStatus;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Orientation;
 import com.infthink.itmc.v2.data.DataManager;
 import com.infthink.itmc.v2.data.LocalMyFavoriteInfoManager;
@@ -151,7 +154,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         }
         LocalPlayHistoryInfoManager.getInstance(this).saveHistory(this, mMediaId, mCi, String.valueOf(playTime), String.valueOf(Calendar.getInstance().getTimeInMillis()), mSource, mMediaTitle, mPlayUrl, mPageUrl, "none");
     }
-    
+
     @Override
     protected void onCreateAfterSuper(Bundle savedInstanceState) {
         super.onCreateAfterSuper(savedInstanceState);
@@ -214,12 +217,34 @@ public class MediaPlayerActivity extends CoreActivity implements
             mCi = intent.getIntExtra("current_episode", -1);
             mSource = intent.getIntExtra("source", -1);
             mPageUrl = intent.getStringExtra("pageUrl");
+            
         }
+        
+//        File file = new File("/sdcard/", "itmc_url");
+//        if (file.exists()) {
+//            BufferedReader reader;
+//            try {
+//                reader = new BufferedReader(new FileReader(file));
+//                String tempString = null;
+//                tempString = reader.readLine();
+//                if (tempString != null && tempString.length() > 0) {
+//                    mPlayUrl = tempString;
+//                }
+//            } catch (FileNotFoundException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//        }
 
         getSupportActionBar().setTitle(mMediaTitle);
 
         final FrameLayout contentView = new FrameLayout(this);
         mVideoView = new VideoView(this);
+
         mCastMediaController = new CastMediaController(
                 this);
         mCastMediaController.setOnChangeMediaStateListener(this);
@@ -323,19 +348,20 @@ public class MediaPlayerActivity extends CoreActivity implements
 
             @Override
             public void onApplicationDisconnected(int errorCode) {
-//                Log.d(TAG, "onApplicationDisconnected() is reached with errorCode: " + errorCode);
+                Log.d(TAG, "onApplicationDisconnected() is reached with errorCode: " + errorCode);
                 updatePlaybackLocation(PlaybackLocation.LOCAL);
             }
 
             @Override
             public void onDisconnected() {
-//                Log.d(TAG, "onDisconnected() is reached");
+                Log.d(TAG, "onDisconnected() is reached");
 //                mPlaybackState = PlaybackState.PAUSED;
                 updatePlaybackLocation(PlaybackLocation.LOCAL);
             }
 
             @Override
             public void onRemoteMediaPlayerMetadataUpdated() {
+                Log.d(TAG, "onRemoteMediaPlayerMetadataUpdated");
 //                try {
 //                    mRemoteMediaInformation = mCastManager.getRemoteMediaInformation();
 //                } catch (Exception e) {
@@ -345,17 +371,20 @@ public class MediaPlayerActivity extends CoreActivity implements
 
             @Override
             public void onFailed(int resourceId, int statusCode) {
+                Log.d(TAG, "onFailed");
 //                updatePlaybackLocation(PlaybackLocation.LOCAL);
             }
 
             @Override
             public void onConnectionSuspended(int cause) {
+                Log.d(TAG, "onConnectionSuspended");
 //                Utils.showToast(LocalPlayerActivity.this,
 //                        R.string.connection_temp_lost);
             }
 
             @Override
             public void onConnectivityRecovered() {
+                Log.d(TAG, "onConnectivityRecovered");
 //                Utils.showToast(LocalPlayerActivity.this,
 //                        R.string.connection_recovered);
             }
@@ -769,9 +798,9 @@ public class MediaPlayerActivity extends CoreActivity implements
             real_url = url.replaceAll("file://", "");
             return "http://" + mIpAddress + ":8080" + real_url;
 
-        } else if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {
+        } else if (url != null && !url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("rtsp://")) {
             initWebserver();
-            return "http://" + mIpAddress + ":8080" + real_url;
+            return "http://" + mIpAddress + ":8080/" + real_url;
         }
         return url;
     }

@@ -1,14 +1,9 @@
 package com.infthink.itmc.v2;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Formatter;
 import java.util.HashMap;
 
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
-import com.firefly.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerImpl;
-import com.fireflycast.cast.ApplicationMetadata;
 import com.infthink.itmc.v2.adapter.HomeChannelAdapter;
 import com.infthink.itmc.v2.adapter.HomeMediaStoreAdapter;
 import com.infthink.itmc.v2.adapter.ScrollBannerAdapter;
@@ -37,7 +32,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;

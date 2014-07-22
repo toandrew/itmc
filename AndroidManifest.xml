@@ -128,25 +128,16 @@
         </activity>
          
         <service android:name="com.infthink.itmc.v2.service.CoreService" />
-        
+
         <service android:name="com.infthink.itmc.v2.service.AppCastDeviceService" android:exported="false">
             <intent-filter>
                 <action android:name="android.media.MediaRouteProviderService" />
-            </intent-filter>
-            
-            <intent-filter>
-                <action android:name="com.fireflycast.cast.service.INTENT" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.fireflycast.cast.service.DEVICE_SCANNER_INTENT" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
 
         <service android:name="com.infthink.itmc.v2.service.AppCastService" android:exported="false">
             <intent-filter>
-                <action android:name="com.fireflycast.cast.service.BIND_CAST_DEVICE_CONTROLLER_SERVICE" />
+                <action android:name="tv.matchstick.fling.service.FLING" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

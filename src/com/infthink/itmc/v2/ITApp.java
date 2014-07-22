@@ -1,14 +1,17 @@
 package com.infthink.itmc.v2;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.HashMap;
 
+import tv.matchstick.fling.Fling;
+
 import com.firefly.sample.castcompanionlibrary.cast.VideoCastManager;
-import com.fireflycast.cast.Cast;
-import com.infthink.itmc.v2.data.ChromeCastManager;
 import com.infthink.libs.base.BaseApplication;
 import com.infthink.libs.common.message.MessageManager;
 
@@ -32,7 +35,6 @@ public class ITApp extends BaseApplication {
     private String mCastAppName;
 //    private static NetcastManager sNetcastManager;
     private int mMode = MODE_UNDEFINED;
-    private static ChromeCastManager sCastManager;
     private static VideoCastManager mCastMgr = null;
 
     public ITApp() {
@@ -74,14 +76,16 @@ public class ITApp extends BaseApplication {
 //    }
 
     private static String APPLICATION_ID;
+    
     @Override
     public void onCreate() {
         super.onCreate();
         
         //TODO: id
 //        APPLICATION_ID = "4F8B3483";
+//        APPLICATION_ID = Fling.FlingApi.makeApplicationId("http://10.0.0.139:80/");
 
-        APPLICATION_ID = Cast.CastApi.makeApplicationId("http://castapp.infthink.com/mediaplayer/index.html");
+        APPLICATION_ID = Fling.FlingApi.makeApplicationId("http://castapp.infthink.com/mediaplayer/index.html");
 
         sContext = getApplicationContext();
         sResources = getResources();
