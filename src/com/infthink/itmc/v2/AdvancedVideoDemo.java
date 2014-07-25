@@ -117,8 +117,7 @@ public class AdvancedVideoDemo extends ListActivity {
                         MediaStore.Video.Media.TITLE, MediaStore.Video.Media.MIME_TYPE};
 
         // 首先检索SDcard上所有的video
-        cursor =
-                this.managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaColumns, null,
+        cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaColumns, null,
                         null, null);
 
         ArrayList<VideoInfo> videoList = new ArrayList<AdvancedVideoDemo.VideoInfo>();

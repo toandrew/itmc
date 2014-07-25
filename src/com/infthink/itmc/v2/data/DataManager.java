@@ -726,7 +726,7 @@ public class DataManager {
                                 for (int j = 0; j < length; j++) {
                                     JSONObject program = programs.optJSONObject(j);
                                     LiveProgramInfo liveProgramInfo = new LiveProgramInfo(program.toString());
-                                    if (liveProgramInfo.urlType.equals("replay") && liveProgramInfo.programUrl.length() > 0)
+                                    if ((liveProgramInfo.urlType.equals("replay") || liveProgramInfo.urlType.equals("play")) && liveProgramInfo.programUrl.length() > 0)
 //                                        info.programs.add(liveProgramInfo);
                                         infos.add(liveProgramInfo);
                                 }

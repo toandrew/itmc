@@ -90,6 +90,7 @@ import android.widget.Toast;
 public class MediaPlayerActivity extends CoreActivity implements
         PlayUrlListener, OnChangeMediaStateListener {
     private static final String TAG = MediaPlayerActivity.class.getSimpleName();
+    private static final String LIVE_USERAGENT = "010121003000247#000000210000000300000A10000000E2#5#4.1.2.4#Apr  1 2013,13:43:17";
     private String mPlayUrl;
     private String mNextUrl;
     private VideoView mVideoView;
@@ -125,6 +126,8 @@ public class MediaPlayerActivity extends CoreActivity implements
     private boolean mFromSend;
     
     private Handler mHandler;
+    
+    private boolean mFromLive = false;
     
     /*
      * indicates whether we are doing a local or a remote playback
@@ -203,6 +206,7 @@ public class MediaPlayerActivity extends CoreActivity implements
                 t.start();
             }
         } else if (intent.getBooleanExtra("live", false)) {
+            mFromLive = true;
             mFromSend = true;
             mPlayUrl = intent.getStringExtra("path");
             mMediaTitle = intent.getStringExtra("meidaTitle");
@@ -295,8 +299,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         mLinearLayout.addView(mImageView, lp1);
         mLinearLayout.addView(mCastNameView, lp2);
-        
-        
+
         mFrameLayout.addView(mLinearLayout, new FrameLayout.LayoutParams(
                 size, size, Gravity.CENTER));
         mFrameLayout.setVisibility(View.GONE);
@@ -464,9 +467,19 @@ public class MediaPlayerActivity extends CoreActivity implements
          * Alternatively,for streaming media you can use
          * mVideoView.setVideoURI(Uri.parse(URLstring));
          */
-        mVideoView.setVideoPath(mPlayUrl);
-        mVideoView.setMediaController(mCastMediaController);
+//        if (!mFromLive) {
+            mVideoView.setVideoPath(mPlayUrl);
+//        } else {
+//            mTextView.setVisibility(View.GONE);
+//            Map<String,String> header = new HashMap<String,String>();
+//            header.put("User-Agent", LIVE_USERAGENT);
+//            header.put("If-Modified-Since", "Tue, 05 Jul 2011 05:12:53 GMT");
+//            Uri uri = Uri.parse(mPlayUrl);
+//            mVideoView.setVideoURI(uri, header);
+//        }
         
+        mVideoView.setMediaController(mCastMediaController);
+
         try {
             if ((mCastManager.isRemoteMoviePlaying() || mCastManager.isRemoteMoviePaused()) && processLocalVideoUrl(mPlayUrl).equals(mCastManager.getRemoteMovieUrl())) {
                 mCastMediaController.show(0);
@@ -528,7 +541,7 @@ public class MediaPlayerActivity extends CoreActivity implements
         mVideoView.setOnCompletionListener(new OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                finish();
+//                finish();
             }
         });
     }
@@ -727,6 +740,8 @@ public class MediaPlayerActivity extends CoreActivity implements
     }
 
     private void play() {
+        if (mFromLive) return;
+
         hideCastingView();
 //        mIsPlayToCast = false;
         mCastMediaController.setCastIsPlaying(false);

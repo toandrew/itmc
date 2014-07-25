@@ -133,7 +133,7 @@ public class CastMediaController extends MediaController {
             if (!mInstantSeeking) {
                 long position = (mDuration * bar.getProgress()) / 1000;
                 if (mIsPlayToCast) {
-                    if (mOnChangeMediaStateListener != null) {
+                    if (mOnChangeMediaStateListener != null && mCastDuration < 1000) {
                         mOnChangeMediaStateListener.seekEnd(position);
                     }
 //                    ITApp.getNetcastManager().seekTo((int) (mDuration * bar.getProgress()) / 1000 / 1000);
@@ -522,6 +522,11 @@ public class CastMediaController extends MediaController {
     }
     public void setCastDuration(long duration) {
         mCastDuration = duration;
+        if (duration <= 1000) {
+            mProgress.setEnabled(false);
+        } else {
+            mProgress.setEnabled(true);
+        }
     }
     
     public void setPlayMode(boolean cast) {
@@ -536,6 +541,7 @@ public class CastMediaController extends MediaController {
     public void setCastIsPlaying(boolean isPlaying) {
         mIsCastPlaying = isPlaying;
         if (mIsCastPlaying) {
+            setEnabled(true);
             restartTrickplayTimer();
         } else {
             stopTrickplayTimer();

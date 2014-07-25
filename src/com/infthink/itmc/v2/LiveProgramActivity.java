@@ -83,6 +83,7 @@ public class LiveProgramActivity extends CoreActivity {
                                                 Intent intent = new Intent(LiveProgramActivity.this, MediaPlayerActivity.class);
                                                 intent.putExtra("meidaTitle", info.programName);
                                                 intent.putExtra("path", info.programUrl);
+                                                intent.putExtra("live", true);
                                                 startActivity(intent);
                                             }
                                         });
